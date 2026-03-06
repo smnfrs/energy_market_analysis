@@ -1,0 +1,120 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "shortwave_radiation_agg",
+        "direct_radiation_agg",
+        "diffuse_radiation_agg",
+        "direct_normal_irradiance_agg",
+        "global_tilted_irradiance_agg",
+        "terrestrial_radiation_agg",
+        "HDH_agg",
+        "wind_chill_agg",
+        "pressure_trend_agg",
+        "rain_indicator_agg",
+        "wind_u_agg",
+        "wind_v_agg",
+        "wind_power_density_100m_agg",
+        "cloud_cover_fraction_agg",
+        "precip_lags_lag_1_agg",
+        "precip_lags_lag_3_agg",
+        "precip_lags_lag_6_agg",
+        "wind_offshore_50hz",
+        "wind_offshore_tenn",
+        "wind_onshore_ampr",
+        "wind_onshore_50hz",
+        "wind_onshore_tenn",
+        "wind_onshore_tran",
+        "solar_ampr",
+        "solar_50hz",
+        "solar_tenn",
+        "solar_tran",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "load_ampr": {
+                "mse": 1800367.349002036,
+                "rmse": 1341.7776824057091,
+                "mae": 1092.798074654018,
+                "mape": 4.722874750754833,
+                "smape": 9.545369102612623,
+                "bias": -266.26091917038684,
+                "variance": 1729472.4719245767,
+                "std": 1315.0940924225067,
+                "r2": 0.8439828746822975,
+                "prediction_interval_coverage": 0.20238095238095238,
+                "prediction_interval_width": 726.798105272964
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "load_ampr": {
+                "mse": 2328732.61805088,
+                "rmse": 1526.0185510179356,
+                "mae": 1062.7027000725448,
+                "mape": 4.672980955437884,
+                "smape": 9.678632257522302,
+                "bias": -589.8271868805804,
+                "variance": 1980836.5076674202,
+                "std": 1407.4219366158181,
+                "r2": 0.7635781947399318,
+                "prediction_interval_coverage": 0.24404761904761904,
+                "prediction_interval_width": 711.0467606016127
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "load_ampr": {
+                "mse": 604903.7494101444,
+                "rmse": 777.755584621637,
+                "mae": 624.8128471130952,
+                "mape": 2.8884375289911826,
+                "smape": 5.857363758873723,
+                "bias": -290.51263475446433,
+                "variance": 520506.1584581636,
+                "std": 721.4611274754611,
+                "r2": 0.9305541305737233,
+                "prediction_interval_coverage": 0.30952380952380953,
+                "prediction_interval_width": 719.1438842764519
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "load_ampr": {
+                "mse": 1071752.6369772335,
+                "rmse": 1035.2548657104846,
+                "mae": 797.668523340774,
+                "mape": 3.530925381704687,
+                "smape": 7.193444171795951,
+                "bias": -347.24472156994045,
+                "variance": 951173.7403190478,
+                "std": 975.281364693824,
+                "r2": 0.8667899349249107,
+                "prediction_interval_coverage": 0.32142857142857145,
+                "prediction_interval_width": 721.208741069654
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "load_ampr": {
+                "mse": 1521145.047615602,
+                "rmse": 1233.3470912989587,
+                "mae": 994.0253830710565,
+                "mape": 4.864542212602496,
+                "smape": 10.102024452726901,
+                "bias": -863.0387567168897,
+                "variance": 776309.1520201667,
+                "std": 881.084077724803,
+                "r2": 0.8146723820548191,
+                "prediction_interval_coverage": 0.24404761904761904,
+                "prediction_interval_width": 738.7678044776072
+            }
+        }
+    }
+}

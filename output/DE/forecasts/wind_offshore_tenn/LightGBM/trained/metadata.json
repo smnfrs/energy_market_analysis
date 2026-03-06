@@ -1,0 +1,111 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "relative_humidity_2m_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_direction_100m_agg",
+        "wind_gusts_10m_agg",
+        "air_density_moist_agg",
+        "wind_shear_agg",
+        "turbulence_intensity_agg",
+        "wind_ramp_agg",
+        "gust_factor_agg",
+        "dew_point_temperature_agg",
+        "vapor_pressure_agg",
+        "wind_speed_lag_1_agg",
+        "wind_speed_lag_6_agg",
+        "wind_speed_lag_12_agg",
+        "precip_lag_1_agg",
+        "precip_lag_6_agg",
+        "precip_lag_12_agg",
+        "precip_lag_24_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 746271.4872164245,
+                "rmse": 863.8700638501282,
+                "mae": 729.4206152090709,
+                "mape": 12.642268702673473,
+                "smape": 27.522324423929383,
+                "bias": -690.4090507164657,
+                "variance": 269606.8299052134,
+                "std": 519.2367763412116,
+                "r2": 0.31746913431114887,
+                "prediction_interval_coverage": 0.7142857142857143,
+                "prediction_interval_width": 1862.6226188931344
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 588892.5256584374,
+                "rmse": 767.3933317787153,
+                "mae": 576.2112982104868,
+                "mape": 10.386555412920735,
+                "smape": 21.765321619467297,
+                "bias": -162.91477437878464,
+                "variance": 562351.3019475469,
+                "std": 749.9008614127249,
+                "r2": -1.0130804404818181,
+                "prediction_interval_coverage": 0.8392857142857143,
+                "prediction_interval_width": 1853.4205540699975
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 326519.4276224016,
+                "rmse": 571.4187848000813,
+                "mae": 463.03483973250263,
+                "mape": 11.071314386553675,
+                "smape": 23.199248405230296,
+                "bias": -344.0802502560059,
+                "variance": 208128.209006166,
+                "std": 456.2107068079025,
+                "r2": 0.796176686930944,
+                "prediction_interval_coverage": 0.8988095238095238,
+                "prediction_interval_width": 1852.3680296163532
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 425517.7035698462,
+                "rmse": 652.3171801890904,
+                "mae": 499.58732762802157,
+                "mape": 42.99592264923929,
+                "smape": 52.823606467782305,
+                "bias": -360.44192374818766,
+                "variance": 295599.3231745519,
+                "std": 543.6904663267068,
+                "r2": 0.9194664249833844,
+                "prediction_interval_coverage": 0.8452380952380952,
+                "prediction_interval_width": 1841.486969819924
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 1553908.6614802324,
+                "rmse": 1246.558727649938,
+                "mae": 963.0594081453653,
+                "mape": 1808.2457837624638,
+                "smape": 54.930276228403365,
+                "bias": -772.4833387023127,
+                "variance": 957178.1529075605,
+                "std": 978.3548195351012,
+                "r2": 0.4788144886805963,
+                "prediction_interval_coverage": 0.5416666666666666,
+                "prediction_interval_width": 1822.4848415946212
+            }
+        }
+    }
+}

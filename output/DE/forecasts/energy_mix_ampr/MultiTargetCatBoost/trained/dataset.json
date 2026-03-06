@@ -1,0 +1,39 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Frankfurt am Main",
+        "Cologne",
+        "D\u00fcsseldorf",
+        "Essen",
+        "Dortmund"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": null,
+    "spatial_agg_method": "mean",
+    "targets": [
+        "biomass_ampr",
+        "coal_derived_gas_ampr",
+        "gas_ampr",
+        "hard_coal_ampr",
+        "lignite_ampr",
+        "other_fossil_ampr",
+        "renewables_ampr",
+        "waste_ampr"
+    ],
+    "label": "energy_mix_ampr",
+    "verbose": true,
+    "iterations": 933,
+    "learning_rate": 0.015339952834189282,
+    "depth": 9,
+    "l2_leaf_reg": 4.0691035785462756e-05,
+    "random_strength": 7.191232926003409e-05,
+    "bagging_temperature": 0.41839188764078283,
+    "border_count": 197,
+    "grow_policy": "Lossguide",
+    "leaf_estimation_iterations": 8,
+    "colsample_bylevel": 0.6107408448705873
+}

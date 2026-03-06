@@ -1,0 +1,16 @@
+{
+    "trial_id": 16,
+    "best_value": 1.0978615271927716,
+    "params": {
+        "iterations": 476,
+        "learning_rate": 0.018984048798853435,
+        "depth": 4,
+        "l2_leaf_reg": 0.002372125099674791,
+        "random_strength": 5.176114076337675e-08,
+        "bagging_temperature": 0.31778158346148133,
+        "border_count": 110,
+        "grow_policy": "SymmetricTree",
+        "leaf_estimation_iterations": 9,
+        "colsample_bylevel": 0.5977021867519845
+    }
+}

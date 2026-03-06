@@ -1,0 +1,37 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Reu\u00dfenk\u00f6ge Wind Farm",
+        "Jade Wind Park",
+        "B\u00fcrgerwindpark Veer D\u00f6rper"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": "WeatherWindPowerFE",
+    "targets": [
+        "wind_onshore_tenn"
+    ],
+    "label": "wind_onshore_tenn",
+    "verbose": true,
+    "compute_air_density": true,
+    "compute_wind_power_density": true,
+    "encode_wind_direction": true,
+    "compute_wind_shear": false,
+    "compute_wind_ramp": true,
+    "compute_air_density_moiust_air_correction": false,
+    "dew_point_temperature": true,
+    "vapor_pressure": true,
+    "gust_factor": false,
+    "turbulence_window": 2,
+    "lags_choice": "small",
+    "precip_lags_choice": "small",
+    "drop_raw_main_features": true,
+    "drop_raw_wind_features": false,
+    "spatial_agg_method": "None",
+    "lags_target": null,
+    "l1_ratio": 0.09770820569883931,
+    "alpha": 0.5874095478384274
+}

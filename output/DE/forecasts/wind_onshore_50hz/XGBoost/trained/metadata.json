@@ -1,0 +1,113 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "surface_pressure_agg",
+        "precipitation_agg",
+        "cloud_cover_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_direction_100m_agg",
+        "wind_gusts_10m_agg",
+        "turbulence_intensity_agg",
+        "wind_ramp_agg",
+        "gust_factor_agg",
+        "dew_point_temperature_agg",
+        "vapor_pressure_agg",
+        "wind_speed_lag_1_agg",
+        "wind_speed_lag_6_agg",
+        "wind_speed_lag_12_agg",
+        "precip_lag_1_agg",
+        "precip_lag_6_agg",
+        "precip_lag_12_agg",
+        "precip_lag_24_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 3833890.2136057885,
+                "rmse": 1958.0322299711486,
+                "mae": 1437.1270749137834,
+                "mape": 107.03497646371882,
+                "smape": 103.21283812745168,
+                "bias": 1238.5373232978052,
+                "variance": 2299915.5124040963,
+                "std": 1516.5472338190118,
+                "r2": -1.5475907265197772,
+                "prediction_interval_coverage": 0.48214285714285715,
+                "prediction_interval_width": 1755.8820155630497
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 2912192.5076095057,
+                "rmse": 1706.5147252835252,
+                "mae": 1254.5158678472608,
+                "mape": 121.99706148237355,
+                "smape": 84.69262553966894,
+                "bias": 685.9168745785668,
+                "variance": 2441710.548777876,
+                "std": 1562.5973725748665,
+                "r2": 0.5820518846198348,
+                "prediction_interval_coverage": 0.47023809523809523,
+                "prediction_interval_width": 1768.215524169594
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 894008.5928389115,
+                "rmse": 945.5202762706422,
+                "mae": 776.545077763512,
+                "mape": 62.53547805608014,
+                "smape": 87.81507662557144,
+                "bias": 205.69327037811274,
+                "variance": 851698.8713600682,
+                "std": 922.8753281782259,
+                "r2": 0.7687210616673841,
+                "prediction_interval_coverage": 0.5714285714285714,
+                "prediction_interval_width": 1758.7946136035157
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 1809268.1884087797,
+                "rmse": 1345.0904015748456,
+                "mae": 1062.6977705365134,
+                "mape": 49.51082359321027,
+                "smape": 93.27258358439208,
+                "bias": -538.6153242183867,
+                "variance": 1519161.7209259018,
+                "std": 1232.5427866511984,
+                "r2": 0.7485369213866493,
+                "prediction_interval_coverage": 0.5178571428571429,
+                "prediction_interval_width": 1704.1711920547027
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 1708633.292831834,
+                "rmse": 1307.1470050578985,
+                "mae": 999.6829731677828,
+                "mape": 34.56769189106839,
+                "smape": 49.64477074457085,
+                "bias": -328.06929190499443,
+                "variance": 1601003.8325407896,
+                "std": 1265.307801501591,
+                "r2": 0.8836056515158841,
+                "prediction_interval_coverage": 0.5892857142857143,
+                "prediction_interval_width": 1741.7452659027788
+            }
+        }
+    }
+}

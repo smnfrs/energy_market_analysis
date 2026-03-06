@@ -1,0 +1,114 @@
+{
+    "start_date": "2024-04-06T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "CDH_agg",
+        "wind_chill_agg",
+        "pressure_trend_agg",
+        "wind_u_agg",
+        "wind_v_agg",
+        "wind_power_density_100m_agg",
+        "temp_lag_1_agg",
+        "temp_lag_3_agg",
+        "cloud_lags_lag_1_agg",
+        "cloud_lags_lag_3_agg",
+        "wind_offshore_50hz",
+        "wind_offshore_tenn",
+        "wind_onshore_ampr",
+        "wind_onshore_50hz",
+        "wind_onshore_tenn",
+        "wind_onshore_tran",
+        "solar_ampr",
+        "solar_50hz",
+        "solar_tenn",
+        "solar_tran",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos",
+        "load_tran_lag_1"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "load_tran": {
+                "mse": 757077.1422261917,
+                "rmse": 870.1017999212459,
+                "mae": 521.1177440618914,
+                "mape": 7.085280071857729,
+                "smape": 12.91459067021497,
+                "bias": 343.4994838099445,
+                "variance": 639085.2468484932,
+                "std": 799.4280748438181,
+                "r2": 0.5454561103378812,
+                "prediction_interval_coverage": 0.4583333333333333,
+                "prediction_interval_width": 430.5172965074373
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "load_tran": {
+                "mse": 506842.70058660686,
+                "rmse": 711.9288592174129,
+                "mae": 499.1618657393237,
+                "mape": 6.679034772809918,
+                "smape": 12.631965187315314,
+                "bias": 130.37658934674013,
+                "variance": 489844.64553691837,
+                "std": 699.8890237294183,
+                "r2": 0.730044630470392,
+                "prediction_interval_coverage": 0.32142857142857145,
+                "prediction_interval_width": 429.8005937586667
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "load_tran": {
+                "mse": 124660.3359833434,
+                "rmse": 353.0727063698685,
+                "mae": 247.38696513853407,
+                "mape": 3.3343470979043768,
+                "smape": 6.6035381165927625,
+                "bias": -21.621843617861103,
+                "variance": 124192.83186190815,
+                "std": 352.4100337134403,
+                "r2": 0.9274142172058792,
+                "prediction_interval_coverage": 0.5952380952380952,
+                "prediction_interval_width": 427.5045427152352
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "load_tran": {
+                "mse": 57135.718450570734,
+                "rmse": 239.0307897543133,
+                "mae": 191.0502562836099,
+                "mape": 2.5554378514444207,
+                "smape": 5.212944971396561,
+                "bias": -146.2604863844782,
+                "variance": 35743.58857314659,
+                "std": 189.0597486858231,
+                "r2": 0.9652824139709701,
+                "prediction_interval_coverage": 0.6607142857142857,
+                "prediction_interval_width": 425.2617761345568
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "load_tran": {
+                "mse": 469577.8638009498,
+                "rmse": 685.2575164133187,
+                "mae": 555.6084263189725,
+                "mape": 7.9050163743678725,
+                "smape": 15.528508599850294,
+                "bias": -34.233208047308054,
+                "variance": 468405.9512677396,
+                "std": 684.401893091873,
+                "r2": 0.6592150075766346,
+                "prediction_interval_coverage": 0.23214285714285715,
+                "prediction_interval_width": 424.00257257538203
+            }
+        }
+    }
+}

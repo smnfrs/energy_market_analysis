@@ -1,0 +1,110 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "surface_pressure_agg",
+        "precipitation_agg",
+        "cloud_cover_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_gusts_10m_agg",
+        "wind_dir_sin_agg",
+        "wind_dir_cos_agg",
+        "wind_shear_agg",
+        "turbulence_intensity_agg",
+        "wind_ramp_agg",
+        "gust_factor_agg",
+        "vapor_pressure_agg",
+        "wind_speed_lag_1_agg",
+        "wind_speed_lag_6_agg",
+        "wind_speed_lag_12_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 5763420.901237109,
+                "rmse": 2400.7125819716757,
+                "mae": 2112.5410861924597,
+                "mape": 140.6196112763532,
+                "smape": 133.73085153920982,
+                "bias": 2106.7222145148503,
+                "variance": 1325142.4121067536,
+                "std": 1151.1483015262427,
+                "r2": -2.8297491119894773,
+                "prediction_interval_coverage": 0.5773809523809523,
+                "prediction_interval_width": 4359.148517127508
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 5106045.299652327,
+                "rmse": 2259.656013567624,
+                "mae": 1937.2742565937576,
+                "mape": 169.79152460461145,
+                "smape": 112.69785226993574,
+                "bias": 1672.3337874716842,
+                "variance": 2309345.0029329383,
+                "std": 1519.652921865035,
+                "r2": 0.2671974794045463,
+                "prediction_interval_coverage": 0.6785714285714286,
+                "prediction_interval_width": 4426.824716350743
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 1650339.900499734,
+                "rmse": 1284.6555571435224,
+                "mae": 1056.8538134073892,
+                "mape": 104.27622420265858,
+                "smape": 112.06197351661922,
+                "bias": 889.1346893166645,
+                "variance": 859779.4047534923,
+                "std": 927.2429049356443,
+                "r2": 0.5730590699766251,
+                "prediction_interval_coverage": 0.9523809523809523,
+                "prediction_interval_width": 4471.761651367746
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 1922638.4107697627,
+                "rmse": 1386.5923736880145,
+                "mae": 1152.7973809357427,
+                "mape": 58.26101419340192,
+                "smape": 116.25141496883562,
+                "bias": -459.389983161571,
+                "variance": 1711599.2541405743,
+                "std": 1308.28103026092,
+                "r2": 0.7327800395044527,
+                "prediction_interval_coverage": 0.9285714285714286,
+                "prediction_interval_width": 4489.154576645407
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "wind_onshore_50hz": {
+                "mse": 2963265.231179582,
+                "rmse": 1721.4137303912682,
+                "mae": 1369.217962711635,
+                "mape": 46.09566306325291,
+                "smape": 66.01801082730158,
+                "bias": -802.3269697322794,
+                "variance": 2319536.6648198003,
+                "std": 1523.0025163537323,
+                "r2": 0.7981384727689919,
+                "prediction_interval_coverage": 0.7678571428571429,
+                "prediction_interval_width": 4492.228509493922
+            }
+        }
+    }
+}

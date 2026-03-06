@@ -1,0 +1,129 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_direction_100m_agg",
+        "wind_gusts_10m_agg",
+        "shortwave_radiation_agg",
+        "direct_radiation_agg",
+        "diffuse_radiation_agg",
+        "direct_normal_irradiance_agg",
+        "global_tilted_irradiance_agg",
+        "terrestrial_radiation_agg",
+        "HDH_agg",
+        "temp_gradient_agg",
+        "wind_chill_agg",
+        "pressure_trend_agg",
+        "air_density_agg",
+        "wind_u_agg",
+        "wind_v_agg",
+        "cloud_cover_fraction_agg",
+        "temp_lag_1_agg",
+        "temp_lag_3_agg",
+        "precip_lags_lag_1_agg",
+        "precip_lags_lag_3_agg",
+        "precip_lags_lag_6_agg",
+        "temp_roll_3_agg",
+        "temp_roll_6_agg",
+        "wind_offshore_50hz",
+        "wind_offshore_tenn",
+        "wind_onshore_ampr",
+        "wind_onshore_50hz",
+        "wind_onshore_tenn",
+        "wind_onshore_tran",
+        "solar_ampr",
+        "solar_50hz",
+        "solar_tenn",
+        "solar_tran",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "load_tenn": {
+                "mse": 319363.7657066999,
+                "rmse": 565.1227881679342,
+                "mae": 437.72054510788684,
+                "mape": 2.439556726231007,
+                "smape": 4.826431974155679,
+                "bias": 235.27077306547605,
+                "variance": 264011.4290478732,
+                "std": 513.8204249033637,
+                "r2": 0.962224681028295,
+                "prediction_interval_coverage": 0.4166666666666667,
+                "prediction_interval_width": 537.8106426503408
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "load_tenn": {
+                "mse": 97138.82169875524,
+                "rmse": 311.67101517265803,
+                "mae": 232.84450739397315,
+                "mape": 1.3152474093193576,
+                "smape": 2.6246542766405914,
+                "bias": 31.099398763020915,
+                "variance": 96171.64909533387,
+                "std": 310.11554152498366,
+                "r2": 0.9879207024954181,
+                "prediction_interval_coverage": 0.6666666666666666,
+                "prediction_interval_width": 537.8106426503409
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "load_tenn": {
+                "mse": 102009.59074377158,
+                "rmse": 319.38940299229023,
+                "mae": 244.6447784133185,
+                "mape": 1.432083037114825,
+                "smape": 2.876811286589537,
+                "bias": -38.855993908110165,
+                "variance": 100499.8024811845,
+                "std": 317.0170381559712,
+                "r2": 0.9863732884449121,
+                "prediction_interval_coverage": 0.6369047619047619,
+                "prediction_interval_width": 537.8106426503409
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "load_tenn": {
+                "mse": 78422.83155140711,
+                "rmse": 280.04076765965186,
+                "mae": 215.85138481212783,
+                "mape": 1.2466998104558438,
+                "smape": 2.476584001657799,
+                "bias": 88.7079113188244,
+                "variance": 70553.7380208587,
+                "std": 265.61953621836386,
+                "r2": 0.9881378118713813,
+                "prediction_interval_coverage": 0.7261904761904762,
+                "prediction_interval_width": 537.8106426503409
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "load_tenn": {
+                "mse": 803391.0006948145,
+                "rmse": 896.3208134896871,
+                "mae": 738.4365592447916,
+                "mape": 4.4001023510936,
+                "smape": 8.75932720484673,
+                "bias": 175.2631014694942,
+                "variance": 772673.8459581083,
+                "std": 879.018683509121,
+                "r2": 0.8555243910474319,
+                "prediction_interval_coverage": 0.17857142857142858,
+                "prediction_interval_width": 537.8106426503409
+            }
+        }
+    }
+}

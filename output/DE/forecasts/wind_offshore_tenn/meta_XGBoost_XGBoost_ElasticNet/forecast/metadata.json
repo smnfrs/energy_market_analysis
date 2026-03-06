@@ -1,0 +1,109 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "relative_humidity_2m_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_direction_100m_agg",
+        "wind_gusts_10m_agg",
+        "air_density_moist_agg",
+        "turbulence_intensity_agg",
+        "wind_ramp_agg",
+        "dew_point_temperature_agg",
+        "vapor_pressure_agg",
+        "wind_speed_lag_1_agg",
+        "wind_speed_lag_6_agg",
+        "wind_speed_lag_12_agg",
+        "precip_lag_1_agg",
+        "precip_lag_6_agg",
+        "precip_lag_12_agg",
+        "precip_lag_24_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 102336.11472947401,
+                "rmse": 319.90016369091467,
+                "mae": 229.67732165527343,
+                "mape": 4.896403624742287,
+                "smape": 9.386818873930599,
+                "bias": 105.50261733282184,
+                "variance": 91205.31246539818,
+                "std": 302.00217294813984,
+                "r2": 0.9064046286451714,
+                "prediction_interval_coverage": 0.7261904761904762,
+                "prediction_interval_width": 605.4681365566776
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 73916.58832844831,
+                "rmse": 271.8760532456809,
+                "mae": 179.85213539341515,
+                "mape": 3.271152394436255,
+                "smape": 6.643830191741074,
+                "bias": -27.867696870349704,
+                "variance": 73139.97979959061,
+                "std": 270.4440419007056,
+                "r2": 0.7473222503125277,
+                "prediction_interval_coverage": 0.8095238095238095,
+                "prediction_interval_width": 605.4681365566773
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 56764.66843839546,
+                "rmse": 238.25337025611088,
+                "mae": 187.8034142020089,
+                "mape": 4.8175242028229075,
+                "smape": 9.432258361397128,
+                "bias": 37.24345161365331,
+                "variance": 55377.59375029694,
+                "std": 235.3244435886271,
+                "r2": 0.9645657752415266,
+                "prediction_interval_coverage": 0.7916666666666666,
+                "prediction_interval_width": 605.4681365566775
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 44906.19514594956,
+                "rmse": 211.91081885064187,
+                "mae": 145.80636110033305,
+                "mape": 17.62399592433108,
+                "smape": 21.168854103187744,
+                "bias": 37.6880160471599,
+                "variance": 43485.808592378584,
+                "std": 208.5325120751644,
+                "r2": 0.9915010435402402,
+                "prediction_interval_coverage": 0.8928571428571429,
+                "prediction_interval_width": 605.4681365566775
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "wind_offshore_tenn": {
+                "mse": 1205333.1520190611,
+                "rmse": 1097.8766561044374,
+                "mae": 849.7284975585939,
+                "mape": 1586.621244824968,
+                "smape": 49.905358561635374,
+                "bias": -593.2673904273624,
+                "variance": 853366.955474569,
+                "std": 923.7786290419199,
+                "r2": 0.5957277343786307,
+                "prediction_interval_coverage": 0.23809523809523808,
+                "prediction_interval_width": 605.4681365566773
+            }
+        }
+    }
+}

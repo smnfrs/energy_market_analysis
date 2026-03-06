@@ -1,0 +1,112 @@
+{
+    "start_date": "2024-03-30T00:00:00+00:00",
+    "end_date": "2026-02-27T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "surface_pressure_agg",
+        "precipitation_agg",
+        "cloud_cover_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_gusts_10m_agg",
+        "air_density_moist_agg",
+        "wind_dir_sin_agg",
+        "wind_dir_cos_agg",
+        "wind_shear_agg",
+        "turbulence_intensity_agg",
+        "wind_ramp_agg",
+        "gust_factor_agg",
+        "dew_point_temperature_agg",
+        "precip_lag_1_agg",
+        "precip_lag_6_agg",
+        "precip_lag_12_agg",
+        "precip_lag_24_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-01-24T00:00:00+00:00": {
+            "wind_onshore_ampr": {
+                "mse": 1413036.600348555,
+                "rmse": 1188.7121604276433,
+                "mae": 887.0204247473644,
+                "mape": 69.11338235227275,
+                "smape": 90.88097034065683,
+                "bias": 631.583058371955,
+                "variance": 1014139.4407260825,
+                "std": 1007.0449050196731,
+                "r2": -0.18791362714654203,
+                "prediction_interval_coverage": 0.5833333333333334,
+                "prediction_interval_width": 1614.761872817235
+            }
+        },
+        "2026-01-31T00:00:00+00:00": {
+            "wind_onshore_ampr": {
+                "mse": 662552.2156291334,
+                "rmse": 813.9731049789873,
+                "mae": 638.7594335115623,
+                "mape": 24.37557286314068,
+                "smape": 43.820172599465465,
+                "bias": 190.06044825447702,
+                "variance": 626429.2416384406,
+                "std": 791.4728306381974,
+                "r2": 0.7345240283100578,
+                "prediction_interval_coverage": 0.7202380952380952,
+                "prediction_interval_width": 1650.5654792572975
+            }
+        },
+        "2026-02-07T00:00:00+00:00": {
+            "wind_onshore_ampr": {
+                "mse": 1865952.95048992,
+                "rmse": 1365.9988837806275,
+                "mae": 1042.6782501524083,
+                "mape": 69.48832479066166,
+                "smape": 79.99194734703912,
+                "bias": -296.6693626139745,
+                "variance": 1777940.239776138,
+                "std": 1333.394255190916,
+                "r2": 0.4891313234095809,
+                "prediction_interval_coverage": 0.5297619047619048,
+                "prediction_interval_width": 1596.67843868598
+            }
+        },
+        "2026-02-14T00:00:00+00:00": {
+            "wind_onshore_ampr": {
+                "mse": 1534581.7361448116,
+                "rmse": 1238.7823602815838,
+                "mae": 982.3496246532067,
+                "mape": 48.30740938373055,
+                "smape": 64.4917763325879,
+                "bias": -528.6614641744434,
+                "variance": 1255098.7924417453,
+                "std": 1120.311917477336,
+                "r2": 0.7058227822503577,
+                "prediction_interval_coverage": 0.5,
+                "prediction_interval_width": 1646.668909190976
+            }
+        },
+        "2026-02-21T00:00:00+00:00": {
+            "wind_onshore_ampr": {
+                "mse": 1202588.6711363124,
+                "rmse": 1096.6260397858116,
+                "mae": 833.056290426585,
+                "mape": 29.89954995668931,
+                "smape": 45.04498330764878,
+                "bias": -438.0482407735513,
+                "variance": 1010702.4098915092,
+                "std": 1005.3369633568186,
+                "r2": 0.8663173808205219,
+                "prediction_interval_coverage": 0.5773809523809523,
+                "prediction_interval_width": 1657.0440753996154
+            }
+        }
+    }
+}

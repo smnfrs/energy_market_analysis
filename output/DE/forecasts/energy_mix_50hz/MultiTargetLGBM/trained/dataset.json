@@ -1,0 +1,39 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Berlin",
+        "Hamburg",
+        "Leipzig",
+        "Dresden",
+        "Magdeburg"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": null,
+    "spatial_agg_method": "mean",
+    "targets": [
+        "hard_coal_50hz",
+        "lignite_50hz",
+        "oil_50hz",
+        "other_fossil_50hz",
+        "gas_50hz",
+        "renewables_50hz",
+        "biomass_50hz",
+        "waste_50hz"
+    ],
+    "label": "energy_mix_50hz",
+    "verbose": true,
+    "n_estimators": 465,
+    "learning_rate": 0.014478668529614736,
+    "num_leaves": 122,
+    "max_depth": 9,
+    "min_child_samples": 41,
+    "subsample": 0.6940506696615834,
+    "colsample_bytree": 0.5012794827213422,
+    "reg_alpha": 0.03026127520831537,
+    "reg_lambda": 0.3644795407469115,
+    "min_split_gain": 0.44995511457865334
+}
