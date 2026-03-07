@@ -3,6 +3,7 @@ from .collect_data_smard import (
     update_smard_from_api,
     create_smard_from_api
 )
+from .collect_data_smard_v2 import update_smard_v2
 from .collect_data_epexspot import update_epexspot_from_files
 from .collect_data_openmeteo import (
     OpenMeteo,

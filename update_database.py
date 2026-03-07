@@ -10,6 +10,7 @@ from datetime import datetime
 from data_collection_modules import (
     update_openmeteo_from_api,
     update_smard_from_api,
+    update_smard_v2,
     update_epexspot_from_files,
     update_entsoe_from_api,
     OpenMeteo,
@@ -55,6 +56,7 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
         'update_epexspot',
         'update_entsoe',
         'update_smard',
+        'update_smard_v2',
         'update_openmeteo_windfarms_offshore',
         'update_openmeteo_windfarms_onshore',
         'update_openmeteo_solarfarms',
@@ -77,6 +79,12 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
     if country_code=='DE' and (task == "update_smard" or task == "all"):
         update_smard_from_api(
             today=today, data_dir=db_path + 'smard/', freq=freq, verbose=verbose
+        )
+
+    if country_code=='DE' and (task == "update_smard_v2" or task == "all"):
+        update_smard_v2(
+            today=today, data_dir=db_path + 'smard_v2/', freq=freq, verbose=verbose,
+            start_from='2015-01-01'
         )
 
     if task == "update_epexspot" or task == "all":
