@@ -11,8 +11,7 @@ conda activate $CONDA_ENV_NAME
 # cd /path/to/your/project
 
 # Run the update scripts --country --task --frequency
-python update_database.py all update_entsoe hourly
-python update_database.py DE update_smard hourly
+python update_database.py DE update_smard_v2 hourly
 python update_database.py all update_epexspot hourly
 python update_database.py all update_openmeteo_windfarms_offshore hourly
 python update_database.py all update_openmeteo_windfarms_onshore hourly

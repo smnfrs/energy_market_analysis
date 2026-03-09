@@ -15,7 +15,6 @@ jobs:
     permissions:
       contents: write
     env:
-      ENTSOE_API_KEY: ${{ secrets.ENTSOE_API_KEY }}
       LOG_LEVEL: WARNING
     steps:
       - name: Checkout Repository
@@ -33,11 +32,8 @@ jobs:
       - name: Install Dependencies
         run: pipenv install
 
-      - name: Update ENTSOE Data
-        run: pipenv run python update_database.py all update_entsoe hourly
-
-      - name: Update SMARD Data
-        run: pipenv run python update_database.py DE update_smard minutely_15
+      - name: Update SMARD v2 Data
+        run: pipenv run python update_database.py DE update_smard_v2 hourly
 
       - name: Update EPEXSPOT Data
         run: pipenv run python update_database.py all update_epexspot hourly

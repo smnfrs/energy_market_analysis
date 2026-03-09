@@ -18,13 +18,6 @@ logger = get_logger(__name__)
 
 # TODO: refacto this into a proper ETL pipeline
 
-# energy_mix_config = {
-#     'targets' : ["hard_coal", "lignite", "coal_derived_gas", "oil", "other_fossil", "gas", "renewables"],
-#     "aggregations": {"renewables": [
-#         "biomass","waste","geothermal","pumped_storage","run_of_river","water_reservoir","other_renewables"
-#     ]}
-# }
-
 def compute_residual_load(df:pd.DataFrame, suffix:str):
     load = copy.deepcopy(df['load{}'.format(suffix)])
     if f'wind_offshore{suffix}' in df.columns:
@@ -185,14 +178,14 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     df_om_cities, df_om_cities_f = load_combine_continous_weather(regions,db_path, freq, suffix='cities')
 
 
-    df_entsoe = pd.read_parquet(db_path + 'entsoe/' + 'history_hourly.parquet')
-    df_entsoe = df_entsoe.apply(pd.to_numeric, errors='coerce')
+    df_targets = pd.read_parquet(db_path + 'smard_v2/' + 'history_hourly.parquet')
+    df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
 
     # ----- CHECKS AND NOTES ----
     if verbose:
         logger.info("---------- LOADING DATABASE DATA ----------")
         # logger.info(f"SMARD data shapes hist={df_smard.shape} (days={len(df_smard)/24}) start={df_smard.index[0]} end={df_smard.index[-1]}")
-        logger.info(f"ENTSOE data shapes hist={df_entsoe.shape} (days={len(df_entsoe)/24}) start={df_entsoe.index[0]} end={df_entsoe.index[-1]}")
+        logger.info(f"SMARD target data shapes hist={df_targets.shape} (days={len(df_targets)/24}) start={df_targets.index[0]} end={df_targets.index[-1]}")
         logger.info(f"OM offshore data shapes hist={df_om_offshore.shape} (days={len(df_om_offshore)/24}) start={df_om_offshore.index[0]} end={df_om_offshore.index[-1]}")
         logger.info(f"OM offshore data shapes forecast={df_om_offshore_f.shape} (days={len(df_om_offshore_f)/24}) start={df_om_offshore_f.index[0]} end={df_om_offshore_f.index[-1]}")
         logger.info(f"OM onshore data shapes hist={df_om_onshore.shape} (days={len(df_om_onshore)/24}) start={df_om_onshore.index[0]} end={df_om_onshore.index[-1]}")
@@ -246,25 +239,13 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     # single target processing
     if len(targets) == 1:
         target = targets[0]
-        # if target in df_entsoe.columns.tolist():
-        #     raise KeyError(f"Target column {target} name already exists. This should not happen for aggregated columns.")
-        if 'other_renewables_agg' in target:
-            keys_to_agg = main_pars['aggregations'][target]
-            keys_to_agg_ = [key for key in keys_to_agg if key in df_entsoe.columns.tolist()]
-            if len(keys_to_agg_) != len(keys_to_agg):
-                logger.warning(f"Not all keys for aggregating {target} are found in entsoe dataframe. "
-                               f"{len(keys_to_agg_)} out of {len(keys_to_agg)} will be used ")
-            # aggregate for the required column
-            target_cols = pd.DataFrame(df_entsoe[keys_to_agg_].sum(axis=1), columns=[target])
-        else:
-            target_cols = df_entsoe[target]
+        target_cols = df_targets[target]
 
         # select feature weather frame
         if 'wind_offshore' in target: dataframe, dataframe_f = df_om_offshore, df_om_offshore_f
         elif 'wind_onshore' in target: dataframe, dataframe_f = df_om_onshore, df_om_onshore_f
         elif 'solar' in target: dataframe, dataframe_f = df_om_solar, df_om_solar_f
         elif 'load' in target: dataframe, dataframe_f = df_om_cities, df_om_cities_f
-        elif 'other_renewables_agg' in target: dataframe, dataframe_f = df_om_cities, df_om_cities_f
         else: raise NotImplementedError(f"No dataframe selection for target={target} tso_name={tso_name}")
 
         # select locations
@@ -273,7 +254,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
         elif 'wind_onshore' in target: locations = c_dict['locations']['onshore']
         elif 'solar' in target: locations = c_dict['locations']['solar']
         elif 'load' in target: locations = c_dict['locations']['cities']
-        elif 'other_renewables_agg' in target: locations = c_dict['locations']['cities']
         else: raise NotImplementedError(f"Locations are not available for target={target} tso_name={tso_name}")
         # build df_hist and df_forecast
         om_suffixes = [loc['suffix'] for loc in locations if loc['TSO'] == tso_dict['TSO']]
@@ -296,26 +276,26 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
             raise NotImplementedError(f"Target label={target_label_notso} not implemented.")
         aggregations =  main_pars['aggregations'] if 'aggregations' in main_pars else {}
         # build target columns
-        target_cols =  df_entsoe[[
-            target_ for target_ in targets if not target_ in list(aggregations.keys()) and target_ in df_entsoe.columns
+        target_cols =  df_targets[[
+            target_ for target_ in targets if not target_ in list(aggregations.keys()) and target_ in df_targets.columns
         ]]
         dropped_cols = []
         for col in target_cols:
-            if len(df_entsoe[col].unique()) < len(df_entsoe[col])*.01:
+            if len(df_targets[col].unique()) < len(df_targets[col])*.01:
                 if verbose: logger.warning(
-                    f"Dropping target column {col} as there are only { len(df_entsoe[col].unique()) } unique values. "
-                    f"Sum={pd.Series(df_entsoe[col]).sum():.1e}."
+                    f"Dropping target column {col} as there are only { len(df_targets[col].unique()) } unique values. "
+                    f"Sum={pd.Series(df_targets[col]).sum():.1e}."
                 )
                 target_cols = target_cols.drop(columns=[col])
                 dropped_cols.append(col)
-        dropped_data = {col: df_entsoe[col].sum()/target_cols.sum().sum() for col in dropped_cols}
+        dropped_data = {col: df_targets[col].sum()/target_cols.sum().sum() for col in dropped_cols}
         for col, val in dropped_data.items():
             if val > 0.1:
                 logger.error(
                     f"Dropped column {col} has {val:.2f} fraction of power for TSO={tso_name} in all columns to forecast. "
                     f"Adding it back."
                 )
-                target_cols = pd.merge(target_cols, df_entsoe[col], left_index=True, right_index=True, how='left')
+                target_cols = pd.merge(target_cols, df_targets[col], left_index=True, right_index=True, how='left')
 
                 # import matplotlib.pyplot as plt
                 # plt.plot(target_cols.index, target_cols[col])
@@ -326,15 +306,15 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
             if key in list(aggregations.keys()):
                 keys_to_agg = [
                     col for col in aggregations[key]
-                    if col in list(df_entsoe.keys())
+                    if col in list(df_targets.keys())
                 ]
                 if len(keys_to_agg) != len(aggregations[key]):
-                    logger.warning(f"Not all keys for aggregating {key} are found in entsoe dataframe. "
+                    logger.warning(f"Not all keys for aggregating {key} are found in target dataframe. "
                           f"{len(keys_to_agg)} out of {len(aggregations[key])} will be used ")
                 # aggregate for the required column
-                df_entsoe[key] = df_entsoe[keys_to_agg].sum(axis=1)
+                df_targets[key] = df_targets[keys_to_agg].sum(axis=1)
                 target_cols = pd.merge(
-                    target_cols, df_entsoe[key], left_index=True, right_index=True, how='left'
+                    target_cols, df_targets[key], left_index=True, right_index=True, how='left'
                 )
 
         # fixed weather dataframes and locations
@@ -369,7 +349,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
 
     # add additional quantities
     if len(targets) == 1 and 'load' in targets[0]: add_exog = ["wind_offshore", "wind_onshore", "solar"]
-    elif len(targets) == 1 and 'other_renewables_agg' in targets[0]: add_exog = ["wind_offshore", "wind_onshore", "solar", 'load', 'residual_load']
     elif len(targets) > 1 and 'energy_mix' in target_label: add_exog = ["wind_offshore", "wind_onshore", "solar", 'load', 'residual_load']
     else: add_exog = []
 
@@ -386,8 +365,8 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
 
                 logger.info(f"Adding exogenous feature {exog_tso_} to dataframe")
 
-                if not exog_tso_ in df_entsoe.columns.tolist() and not exog == 'residual_load':
-                    if verbose: logger.warning(f"Required exogenous feature {exog_tso_} is not in ENTSO-E dataset. Skipping.")
+                if not exog_tso_ in df_targets.columns.tolist() and not exog == 'residual_load':
+                    if verbose: logger.warning(f"Required exogenous feature {exog_tso_} is not in target dataset. Skipping.")
                     continue
 
                 if exog == 'residual_load':
@@ -406,8 +385,8 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                     continue
 
 
-                entsoe_col = df_entsoe[exog_tso_]
-                df_hist = pd.merge(left=df_hist, right=entsoe_col, left_index=True, right_index=True, how='left')
+                target_col = df_targets[exog_tso_]
+                df_hist = pd.merge(left=df_hist, right=target_col, left_index=True, right_index=True, how='left')
 
                 # load forecast from current best forecast
                 # best_model = None

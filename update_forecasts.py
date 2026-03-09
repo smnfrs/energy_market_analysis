@@ -628,14 +628,10 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
                 for t in task_list_:
                     t['label'] = f"energy_mix{tso_reg['suffix']}"
                     t['targets'] = [key+tso_reg['suffix'] for key in [
-                        "hard_coal", "lignite", "coal_derived_gas", "oil",
-                        "other_fossil", "gas", "renewables","biomass","waste",'nuclear'
-                    ]
-                                    ]
-                    t['aggregations'] = {f"renewables{tso_reg['suffix']}": [
-                        key+tso_reg['suffix'] for key in
-                        ["geothermal","pumped_storage","run_of_river","water_reservoir","other_renewables"]
-                    ]}
+                        "hard_coal", "lignite", "gas", "biomass",
+                        "pumped_storage", "hydro", "other_conv", "other_renew"
+                    ]]
+                    t['aggregations'] = {}
 
                     t['plot_label'] = f"Energy Mix ({tso_reg['name']}) [MW]"
                     t['region'] = tso_reg['name']

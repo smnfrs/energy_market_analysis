@@ -42,6 +42,7 @@ def create_holiday_weekend_series(df_index):
     return date_series
 
 def create_time_features(index)->pd.DataFrame:
+    index = pd.DatetimeIndex(index)
     df_time_featues = pd.DataFrame(index=index)
     df_time_featues['hour'] = df_time_featues.index.hour
     df_time_featues['dayofweek'] = df_time_featues.index.dayofweek
