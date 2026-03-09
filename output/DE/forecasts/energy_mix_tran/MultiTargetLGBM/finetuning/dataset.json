@@ -16,11 +16,11 @@
     "spatial_agg_method": "mean",
     "targets": [
         "hard_coal_tran",
-        "oil_tran",
         "gas_tran",
-        "renewables_tran",
         "biomass_tran",
-        "waste_tran"
+        "pumped_storage_tran",
+        "hydro_tran",
+        "other_conv_tran"
     ],
     "label": "energy_mix_tran"
 }

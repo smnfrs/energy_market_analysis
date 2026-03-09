@@ -17,13 +17,12 @@
     "targets": [
         "hard_coal_ampr",
         "lignite_ampr",
-        "coal_derived_gas_ampr",
-        "oil_ampr",
-        "other_fossil_ampr",
         "gas_ampr",
-        "renewables_ampr",
         "biomass_ampr",
-        "waste_ampr"
+        "pumped_storage_ampr",
+        "hydro_ampr",
+        "other_conv_ampr",
+        "other_renew_ampr"
     ],
     "label": "energy_mix_ampr"
 }

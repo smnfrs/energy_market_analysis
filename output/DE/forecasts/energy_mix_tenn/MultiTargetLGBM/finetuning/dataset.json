@@ -16,11 +16,12 @@
     "spatial_agg_method": "mean",
     "targets": [
         "hard_coal_tenn",
-        "oil_tenn",
         "gas_tenn",
-        "renewables_tenn",
         "biomass_tenn",
-        "waste_tenn"
+        "pumped_storage_tenn",
+        "hydro_tenn",
+        "other_conv_tenn",
+        "other_renew_tenn"
     ],
     "label": "energy_mix_tenn"
 }
