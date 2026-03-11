@@ -6,6 +6,7 @@ import pandas as pd, numpy as np, matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from sklearn.linear_model import ElasticNetCV, ElasticNet, Ridge
 from mapie.regression import MapieRegressor
+from mapie.conformity_scores import AbsoluteConformityScore
 import xgboost as xgb
 import shap
 import logging
@@ -607,10 +608,15 @@ def instantiate_base_singletarget_forecaster(model_name:str, targets:list, model
     # train the forecasting model several times to evaluate its performance, get all results
     if model_name == 'XGBoost':
         if len(targets) > 1: raise ValueError("XGBoost does not support multiple targets")
+        # XGBoost predicts in float32, causing MAPIE's default consistency
+        # check (eps=1e-8) to fail. Relax to accommodate float32 precision.
+        cs = AbsoluteConformityScore(sym=True)
+        cs.eps = 1e-4
         return XGBoostMapieRegressor(
             model=MapieRegressor(
                 xgb.XGBRegressor(**model_pars),
-                method='naive', cv='prefit'#TimeSeriesSplit(n_splits=5)
+                method='naive', cv='prefit',
+                conformity_score=cs,
             ), target=targets[0], alpha=0.05, verbose=verbose)
 
     if model_name == 'LightGBM':

@@ -139,21 +139,19 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
 
             # ---------------- MULTITARGET ------------------
 
-            # {'model':'MultiTargetCatBoost',
-            #  'dataset_pars':{
-            #      'log_target':False,
-            #      # 'lags_target': None,
-            #      'forecast_horizon':None,
-            #      'target_scaler':'StandardScaler',
-            #      'feature_scaler':'StandardScaler',
-            #      'copy_input':True,
-            #      'locations':[],
-            #      'add_cyclical_time_features':True,
-            #      'feature_engineer':None,#'WeatherLoadPowerFE',
-            #      'spatial_agg_method': 'mean' # fix
-            #
-            #  },
-            #  'finetuning_pars':{'n_trials':20,'optim_metric':'rmse','cv_folds':cv_folds_ft}},
+            {'model':'MultiTargetCatBoost',
+             'dataset_pars':{
+                 'log_target':False,
+                 'forecast_horizon':None,
+                 'target_scaler':'StandardScaler',
+                 'feature_scaler':'StandardScaler',
+                 'copy_input':True,
+                 'locations':[],
+                 'add_cyclical_time_features':True,
+                 'feature_engineer':None,
+                 'spatial_agg_method': 'mean'
+             },
+             'finetuning_pars':{'n_trials':20,'optim_metric':'rmse','cv_folds':cv_folds_ft}},
             {'model':'MultiTargetLGBM',
              'dataset_pars':{
                  'log_target':False,
@@ -211,7 +209,7 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             {'model':'ensemble[XGBoost](XGBoost,ElasticNet)','pars':{'cv_folds':cv_folds_eval}},
             {'model':'ensemble[LightGBM](LightGBM,ElasticNet)','pars':{'cv_folds':cv_folds_eval}},
             # --- MULTITARGET ---
-            # {'model':'MultiTargetCatBoost', 'pars':{'cv_folds':cv_folds_eval}},
+            {'model':'MultiTargetCatBoost', 'pars':{'cv_folds':cv_folds_eval}},
             {'model':'MultiTargetLGBM', 'pars':{'cv_folds':cv_folds_eval}},
             {'model':'MultiTargetElasticNet', 'pars':{'cv_folds':cv_folds_eval}},
             # {'model':'ensemble[MultiTargetLGBM](MultiTargetLGBM,MultiTargetCatBoost,MultiTargetElasticNet)', 'pars':{'cv_folds':cv_folds_eval}}
@@ -224,7 +222,7 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             {'model':'ensemble[XGBoost](XGBoost,ElasticNet)','past_folds':cv_folds_eval},
             {'model':'ensemble[LightGBM](LightGBM,ElasticNet)','past_folds':cv_folds_eval},
             # ----
-            # {'model':'MultiTargetCatBoost', 'past_folds':cv_folds_eval},
+            {'model':'MultiTargetCatBoost', 'past_folds':cv_folds_eval},
             {'model':'MultiTargetLGBM', 'past_folds':cv_folds_eval},
             {'model':'MultiTargetElasticNet', 'past_folds':cv_folds_eval},
             # {'model':'ensemble[MultiTargetLGBM](MultiTargetLGBM,MultiTargetCatBoost,MultiTargetElasticNet)', 'past_folds':cv_folds_eval}
@@ -244,8 +242,8 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             {'model':'ensemble[ElasticNet](XGBoost,ElasticNet)','n':2,
              'name':'Ensemble','lw':1.0,'color':"magenta",'ci_alpha':0.2, 'train_forecast':'train'},
             # ----
-            # {'model':'MultiTargetCatBoost','n':2,  'name':'MultiTargetCatBoost','lw':1.0,
-            #  'color':"blue", 'ci_alpha':0.2, 'train_forecast':'train'},
+            {'model':'MultiTargetCatBoost','n':2,  'name':'MultiTargetCatBoost','lw':1.0,
+             'color':"blue", 'ci_alpha':0.2, 'train_forecast':'train'},
             {'model':'MultiTargetLGBM','n':2,  'name':'MultiTargetLGBM','lw':1.0,
              'color':"green", 'ci_alpha':0.2, 'train_forecast':'train'},
             {'model':'MultiTargetElasticNet','n':2,  'name':'MultiTargetElasticNet','lw':1.0,
@@ -261,7 +259,7 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             {'model':'ensemble[XGBoost](XGBoost,ElasticNet)', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             {'model':'ensemble[LightGBM](LightGBM,ElasticNet)', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             # ----
-            # { 'model':'MultiTargetCatBoost', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
+            { 'model':'MultiTargetCatBoost', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             { 'model':'MultiTargetLGBM', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             { 'model':'MultiTargetElasticNet', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             # { 'model':'ensemble[MultiTargetLGBM](MultiTargetLGBM,MultiTargetCatBoost,MultiTargetElasticNet)', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'}
