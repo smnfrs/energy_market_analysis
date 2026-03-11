@@ -1,0 +1,30 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Munich",
+        "Bremen",
+        "Kiel",
+        "Kassel",
+        "Bremerhaven"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": null,
+    "spatial_agg_method": "mean",
+    "targets": [
+        "hard_coal_tenn",
+        "gas_tenn",
+        "biomass_tenn",
+        "pumped_storage_tenn",
+        "hydro_tenn",
+        "other_conv_tenn",
+        "other_renew_tenn"
+    ],
+    "label": "energy_mix_tenn",
+    "verbose": true,
+    "l1_ratio": 0.20006270701678303,
+    "alpha": 0.010465667182943766
+}

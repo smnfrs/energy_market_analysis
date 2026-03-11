@@ -1,0 +1,29 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Stuttgart",
+        "Karlsruhe",
+        "Mannheim",
+        "Freiburg im Breisgau",
+        "Heidelberg"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": null,
+    "spatial_agg_method": "mean",
+    "targets": [
+        "hard_coal_tran",
+        "gas_tran",
+        "biomass_tran",
+        "pumped_storage_tran",
+        "hydro_tran",
+        "other_conv_tran"
+    ],
+    "label": "energy_mix_tran",
+    "verbose": true,
+    "l1_ratio": 0.016134414475041783,
+    "alpha": 0.010948435445615294
+}
