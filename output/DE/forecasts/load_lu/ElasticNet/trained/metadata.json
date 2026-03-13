@@ -1,0 +1,127 @@
+{
+    "start_date": "2024-04-17T00:00:00+00:00",
+    "end_date": "2026-03-10T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_city_luxembourg",
+        "relative_humidity_2m_city_luxembourg",
+        "shortwave_radiation_city_luxembourg",
+        "direct_radiation_city_luxembourg",
+        "diffuse_radiation_city_luxembourg",
+        "direct_normal_irradiance_city_luxembourg",
+        "global_tilted_irradiance_city_luxembourg",
+        "terrestrial_radiation_city_luxembourg",
+        "HDH_city_luxembourg",
+        "CDH_city_luxembourg",
+        "humidex_city_luxembourg",
+        "wind_speed_gradient_city_luxembourg",
+        "wind_power_density_100m_city_luxembourg",
+        "cloud_cover_fraction_city_luxembourg",
+        "effective_solar_city_luxembourg",
+        "temp_lag_1_city_luxembourg",
+        "temp_lag_3_city_luxembourg",
+        "temp_lag_6_city_luxembourg",
+        "precip_lags_lag_1_city_luxembourg",
+        "precip_lags_lag_3_city_luxembourg",
+        "precip_lags_lag_6_city_luxembourg",
+        "temp_roll_6_city_luxembourg",
+        "temp_roll_12_city_luxembourg",
+        "temp_roll_24_city_luxembourg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos",
+        "load_lu_lag_1",
+        "load_lu_lag_2",
+        "load_lu_lag_3",
+        "load_lu_lag_4",
+        "load_lu_lag_5",
+        "load_lu_lag_6",
+        "load_lu_lag_7",
+        "load_lu_lag_8",
+        "load_lu_lag_9",
+        "load_lu_lag_10",
+        "load_lu_lag_11",
+        "load_lu_lag_12"
+    ],
+    "error_metrics": {
+        "2026-02-04T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 1772.3934457843854,
+                "rmse": 42.09980339365477,
+                "mae": 33.75803747170322,
+                "mape": 5.350352304394673,
+                "smape": 11.026436091577754,
+                "bias": -21.142336769710017,
+                "variance": 1325.3950417005533,
+                "std": 36.40597535708326,
+                "r2": 0.7945324376806742,
+                "prediction_interval_coverage": 0.43452380952380953,
+                "prediction_interval_width": 46.60479163752835
+            }
+        },
+        "2026-02-11T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 1270.6065444002777,
+                "rmse": 35.645568369718525,
+                "mae": 29.626464118528762,
+                "mape": 4.972742026130995,
+                "smape": 10.058008011860311,
+                "bias": -6.9872089255032135,
+                "variance": 1221.7854558316455,
+                "std": 34.954047774637566,
+                "r2": 0.8129802379527875,
+                "prediction_interval_coverage": 0.44642857142857145,
+                "prediction_interval_width": 46.736509928865296
+            }
+        },
+        "2026-02-18T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 1181.9627427940584,
+                "rmse": 34.37968503046615,
+                "mae": 28.132473760592763,
+                "mape": 4.8360136335958215,
+                "smape": 9.840226229075236,
+                "bias": -10.037117549437202,
+                "variance": 1081.219014092838,
+                "std": 32.88189492855967,
+                "r2": 0.8504026757630077,
+                "prediction_interval_coverage": 0.49404761904761907,
+                "prediction_interval_width": 47.01084729648927
+            }
+        },
+        "2026-02-25T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 1155.4618732990557,
+                "rmse": 33.99208545086717,
+                "mae": 26.755866604826092,
+                "mape": 4.873966927346174,
+                "smape": 9.753492576522211,
+                "bias": 0.31441008214070637,
+                "variance": 1155.363019599304,
+                "std": 33.99063135040748,
+                "r2": 0.804716398780033,
+                "prediction_interval_coverage": 0.5119047619047619,
+                "prediction_interval_width": 47.19300356714331
+            }
+        },
+        "2026-03-04T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 924.2490971750003,
+                "rmse": 30.401465378744497,
+                "mae": 24.071727145560825,
+                "mape": 4.50480044715902,
+                "smape": 8.986459305236307,
+                "bias": 2.3853464324274927,
+                "variance": 918.5592195723061,
+                "std": 30.307741908171025,
+                "r2": 0.8419471355897356,
+                "prediction_interval_coverage": 0.5714285714285714,
+                "prediction_interval_width": 47.279805221840626
+            }
+        }
+    }
+}

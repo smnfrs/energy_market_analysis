@@ -1,0 +1,35 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Hein Wind Farm"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": "WeatherWindPowerFE",
+    "targets": [
+        "wind_onshore_lu"
+    ],
+    "label": "wind_onshore_lu",
+    "verbose": true,
+    "compute_air_density": false,
+    "compute_wind_power_density": false,
+    "encode_wind_direction": true,
+    "compute_wind_shear": false,
+    "compute_wind_ramp": true,
+    "compute_air_density_moiust_air_correction": false,
+    "dew_point_temperature": true,
+    "vapor_pressure": false,
+    "gust_factor": true,
+    "turbulence_window": 2,
+    "lags_choice": "none",
+    "precip_lags_choice": "large",
+    "drop_raw_main_features": true,
+    "drop_raw_wind_features": false,
+    "spatial_agg_method": "distance_capacity",
+    "lags_target": null,
+    "l1_ratio": 0.5342116986380077,
+    "alpha": 0.11266641393797931
+}

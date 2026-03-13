@@ -1,0 +1,36 @@
+{
+    "log_target": false,
+    "forecast_horizon": null,
+    "target_scaler": "StandardScaler",
+    "feature_scaler": "StandardScaler",
+    "copy_input": true,
+    "locations": [
+        "Berlin",
+        "Hamburg",
+        "Leipzig",
+        "Dresden",
+        "Magdeburg",
+        "Munich",
+        "Bremen",
+        "Kiel",
+        "Kassel",
+        "Bremerhaven",
+        "Stuttgart",
+        "Karlsruhe",
+        "Mannheim",
+        "Freiburg im Breisgau",
+        "Heidelberg",
+        "Frankfurt am Main",
+        "Cologne",
+        "D\u00fcsseldorf",
+        "Essen",
+        "Dortmund",
+        "Luxembourg City"
+    ],
+    "add_cyclical_time_features": true,
+    "feature_engineer": "WeatherLoadFE",
+    "targets": [
+        "gen_load_diff_delu"
+    ],
+    "label": "gen_load_diff_delu"
+}

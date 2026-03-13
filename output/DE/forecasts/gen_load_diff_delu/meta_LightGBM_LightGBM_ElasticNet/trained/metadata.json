@@ -1,0 +1,110 @@
+{
+    "start_date": "2024-04-10T00:00:00+00:00",
+    "end_date": "2026-03-10T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "shortwave_radiation_agg",
+        "direct_radiation_agg",
+        "diffuse_radiation_agg",
+        "direct_normal_irradiance_agg",
+        "global_tilted_irradiance_agg",
+        "terrestrial_radiation_agg",
+        "HDH_agg",
+        "CDH_agg",
+        "dew_point_temperature_agg",
+        "dew_point_spread_agg",
+        "pressure_trend_agg",
+        "cloud_cover_fraction_agg",
+        "precip_lags_lag_1_agg",
+        "precip_lags_lag_3_agg",
+        "temp_roll_6_agg",
+        "temp_roll_12_agg",
+        "temp_roll_24_agg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-02-04T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 6983176.7185682515,
+                "rmse": 2642.570097191038,
+                "mae": 2169.625428528383,
+                "mape": 120.29931941087439,
+                "smape": 137.03977541281637,
+                "bias": 586.1010575770342,
+                "variance": 6639662.268875333,
+                "std": 2576.754211964217,
+                "r2": 0.617792087457337,
+                "prediction_interval_coverage": 0.7738095238095238,
+                "prediction_interval_width": 6446.076346761883
+            }
+        },
+        "2026-02-11T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 12768611.138335513,
+                "rmse": 3573.319344578023,
+                "mae": 2929.714695199115,
+                "mape": 421.5320388794281,
+                "smape": 170.58156247231597,
+                "bias": -1326.0001264898242,
+                "variance": 11010334.802884482,
+                "std": 3318.182454730975,
+                "r2": 0.6336639038926728,
+                "prediction_interval_coverage": 0.5833333333333334,
+                "prediction_interval_width": 6169.488780406163
+            }
+        },
+        "2026-02-18T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 8384411.800525999,
+                "rmse": 2895.5848805597116,
+                "mae": 2328.006196144196,
+                "mape": 152.68502906063745,
+                "smape": 120.76510885293514,
+                "bias": 166.78586163184588,
+                "variance": 8356594.276885723,
+                "std": 2890.777451981685,
+                "r2": 0.8437933661370043,
+                "prediction_interval_coverage": 0.7202380952380952,
+                "prediction_interval_width": 6076.960098072172
+            }
+        },
+        "2026-02-25T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 10408783.947764147,
+                "rmse": 3226.264705160466,
+                "mae": 2596.6427868220067,
+                "mape": 1203.0335091962527,
+                "smape": 167.84571530732825,
+                "bias": -1449.52798304938,
+                "variance": 8307652.574120942,
+                "std": 2882.2998758146146,
+                "r2": 0.7453027168371187,
+                "prediction_interval_coverage": 0.6607142857142857,
+                "prediction_interval_width": 6188.631766257247
+            }
+        },
+        "2026-03-04T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 6160322.0198745215,
+                "rmse": 2481.999601102813,
+                "mae": 1930.2028150146957,
+                "mape": 96.86607998346723,
+                "smape": 98.67452946153703,
+                "bias": 564.4216595292554,
+                "variance": 5841750.210128763,
+                "std": 2416.97128864386,
+                "r2": 0.8764525265775502,
+                "prediction_interval_coverage": 0.8630952380952381,
+                "prediction_interval_width": 6290.246590346469
+            }
+        }
+    }
+}

@@ -1,0 +1,118 @@
+{
+    "start_date": "2024-04-10T00:00:00+00:00",
+    "end_date": "2026-03-10T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "shortwave_radiation_sol_bissen",
+        "direct_radiation_sol_bissen",
+        "diffuse_radiation_sol_bissen",
+        "direct_normal_irradiance_sol_bissen",
+        "global_tilted_irradiance_sol_bissen",
+        "terrestrial_radiation_sol_bissen",
+        "solar_elevation_deg_sol_bissen_x",
+        "solar_azimuth_deg_sol_bissen_x",
+        "cloud_cover_fraction_sol_bissen",
+        "air_density_sol_bissen",
+        "air_density_moist_sol_bissen",
+        "direct_ratio_sol_bissen",
+        "diffuse_ratio_sol_bissen",
+        "dni_ratio_sol_bissen",
+        "dew_point_temperature_sol_bissen",
+        "precip_lag_1_sol_bissen",
+        "precip_lag_6_sol_bissen",
+        "precip_lag_12_sol_bissen",
+        "precip_lag_24_sol_bissen",
+        "cloud_lag_1_sol_bissen",
+        "cloud_lag_3_sol_bissen",
+        "cloud_lag_6_sol_bissen",
+        "shortwave_lag_1_sol_bissen",
+        "shortwave_lag_3_sol_bissen",
+        "shortwave_lag_6_sol_bissen",
+        "solar_elevation_deg_sol_bissen_y",
+        "solar_azimuth_deg_sol_bissen_y",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-02-04T00:00:00+00:00": {
+            "solar_lu": {
+                "mse": 133.30670982073866,
+                "rmse": 11.545852494326205,
+                "mae": 7.912342460646972,
+                "mape": 7593.133178534375,
+                "smape": 273.89660933634616,
+                "bias": 1.394653348567013,
+                "variance": 131.36165185806948,
+                "std": 11.461311088094131,
+                "r2": 0.7722069819700037,
+                "prediction_interval_coverage": 0.9940476190476191,
+                "prediction_interval_width": 99.85131308076954
+            }
+        },
+        "2026-02-11T00:00:00+00:00": {
+            "solar_lu": {
+                "mse": 192.40694897272562,
+                "rmse": 13.87108319392273,
+                "mae": 9.51093704957427,
+                "mape": 6398.318397967192,
+                "smape": 280.4169201000498,
+                "bias": 2.0459196719291315,
+                "variance": 188.22116166873903,
+                "std": 13.71937176654744,
+                "r2": 0.6592713047824766,
+                "prediction_interval_coverage": 0.9940476190476191,
+                "prediction_interval_width": 99.92552494606075
+            }
+        },
+        "2026-02-18T00:00:00+00:00": {
+            "solar_lu": {
+                "mse": 337.84022082481687,
+                "rmse": 18.38043037648512,
+                "mae": 10.917769054750188,
+                "mape": 6518.660949580165,
+                "smape": 279.27287077740624,
+                "bias": 3.108118463050895,
+                "variance": 328.179820444459,
+                "std": 18.115734057566062,
+                "r2": 0.6070485382456922,
+                "prediction_interval_coverage": 0.9702380952380952,
+                "prediction_interval_width": 99.64776384715849
+            }
+        },
+        "2026-02-25T00:00:00+00:00": {
+            "solar_lu": {
+                "mse": 829.667942492966,
+                "rmse": 28.803957063101,
+                "mae": 18.994613520060064,
+                "mape": 6109.62063356258,
+                "smape": 248.88580731086867,
+                "bias": -5.691198645560935,
+                "variance": 797.2782004697312,
+                "std": 28.236115180203726,
+                "r2": 0.8628582917908161,
+                "prediction_interval_coverage": 0.8690476190476191,
+                "prediction_interval_width": 98.71317935537785
+            }
+        },
+        "2026-03-04T00:00:00+00:00": {
+            "solar_lu": {
+                "mse": 893.6504379292766,
+                "rmse": 29.893986651654153,
+                "mae": 20.20057580298982,
+                "mape": 203436.88234500025,
+                "smape": 241.72405133695142,
+                "bias": -5.521766385244563,
+                "variance": 863.1605339160596,
+                "std": 29.379593835110445,
+                "r2": 0.8707222663681997,
+                "prediction_interval_coverage": 0.8690476190476191,
+                "prediction_interval_width": 98.5374494275413
+            }
+        }
+    }
+}

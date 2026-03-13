@@ -1,0 +1,101 @@
+{
+    "start_date": "2024-04-10T00:00:00+00:00",
+    "end_date": "2026-03-10T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_city_luxembourg",
+        "relative_humidity_2m_city_luxembourg",
+        "CDH_city_luxembourg",
+        "temp_gradient_city_luxembourg",
+        "humidex_city_luxembourg",
+        "air_density_city_luxembourg",
+        "wind_speed_gradient_city_luxembourg",
+        "precip_lags_lag_1_city_luxembourg",
+        "precip_lags_lag_3_city_luxembourg",
+        "precip_lags_lag_6_city_luxembourg",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-02-04T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 323.8297650489368,
+                "rmse": 17.995270630055465,
+                "mae": 14.787284591664022,
+                "mape": 2.428557570496164,
+                "smape": 4.920165914900727,
+                "bias": -8.820368662001782,
+                "variance": 246.03086171531365,
+                "std": 15.685370946053958,
+                "r2": 0.9624595133832721,
+                "prediction_interval_coverage": 0.9583333333333334,
+                "prediction_interval_width": 73.2204549012599
+            }
+        },
+        "2026-02-11T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 495.2102575877078,
+                "rmse": 22.253320147512994,
+                "mae": 16.208325189521325,
+                "mape": 2.65500151784029,
+                "smape": 5.372767352030169,
+                "bias": -2.976366638454268,
+                "variance": 486.35149922120434,
+                "std": 22.053378408334726,
+                "r2": 0.9271103199133093,
+                "prediction_interval_coverage": 0.9047619047619048,
+                "prediction_interval_width": 72.24887815845928
+            }
+        },
+        "2026-02-18T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 859.2553449062956,
+                "rmse": 29.313057583716777,
+                "mae": 23.953732086673845,
+                "mape": 4.099501116000767,
+                "smape": 8.372468371320752,
+                "bias": -9.52645188109344,
+                "variance": 768.502059463507,
+                "std": 27.72186969638785,
+                "r2": 0.8912467408824979,
+                "prediction_interval_coverage": 0.7559523809523809,
+                "prediction_interval_width": 71.0802331835549
+            }
+        },
+        "2026-02-25T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 395.70827069243353,
+                "rmse": 19.89241741700675,
+                "mae": 16.38928184306075,
+                "mape": 2.9584794501108354,
+                "smape": 6.035124631717137,
+                "bias": -11.873711295519607,
+                "variance": 254.7232507630836,
+                "std": 15.960051715551664,
+                "r2": 0.9331216910578722,
+                "prediction_interval_coverage": 0.9345238095238095,
+                "prediction_interval_width": 71.6263284746447
+            }
+        },
+        "2026-03-04T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 535.6060581680429,
+                "rmse": 23.143164394007204,
+                "mae": 17.89688843374387,
+                "mape": 3.3078652441304826,
+                "smape": 6.782166165879352,
+                "bias": -10.319086827168828,
+                "variance": 429.12250522139357,
+                "std": 20.715272270028063,
+                "r2": 0.9084077312623858,
+                "prediction_interval_coverage": 0.875,
+                "prediction_interval_width": 70.02168240637877
+            }
+        }
+    }
+}
