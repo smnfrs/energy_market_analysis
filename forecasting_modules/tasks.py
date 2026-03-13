@@ -4,6 +4,18 @@ import os.path
 import json
 import csv
 import gc
+
+
+class NumpyEncoder(json.JSONEncoder):
+    """Handle numpy types in JSON serialization (e.g. XGBoost float32 metrics)."""
+    def default(self, obj):
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super().default(obj)
 import inspect
 import optuna
 import joblib
@@ -537,7 +549,7 @@ class BaseModelTasks(TaskPaths):
             'error_metrics':{key.isoformat() : val for key, val in self.metrics.items()}
         }
         with open(dir+'metadata.json', 'w') as f:
-            json.dump(metadata, f, indent=4)
+            json.dump(metadata, f, indent=4, cls=NumpyEncoder)
 
         df_result = pd.concat([
             ds.inverse_transform_targets(self.results[key]) for key in list(self.results.keys())
@@ -571,10 +583,10 @@ class BaseModelTasks(TaskPaths):
             joblib.dump(ds.feature_scaler, dir + 'feature_scaler.pkl')
 
         with open(dir+'dataset.json', 'w') as f:
-            json.dump(self.model_dataset_pars, f, indent=4)
+            json.dump(self.model_dataset_pars, f, indent=4, cls=NumpyEncoder)
 
         with open(dir+'best_parameters.json', 'w') as f:
-            json.dump(self.optuna_pars, f, indent=4)
+            json.dump(self.optuna_pars, f, indent=4, cls=NumpyEncoder)
 
         if self.verbose:
             logger.info(f"Metadata for the trained base model {self.model_label} and dataset are saved into {dir}")
@@ -945,7 +957,7 @@ class ForecastingTaskSingleTarget:
 
         ft_outdir = wrapper.to_finetuned()
         with open(ft_outdir+'dataset.json', 'w') as f:
-            json.dump(dataset_pars, f, indent=4)
+            json.dump(dataset_pars, f, indent=4, cls=NumpyEncoder)
 
         # ensemble_features = dataset_pars['ensemble_features']; del dataset_pars['ensemble_features']
         wrapper.set_dataset_from_df(self.df_history, self.df_forecast, pars=dataset_pars)
@@ -1005,7 +1017,7 @@ class ForecastingTaskSingleTarget:
         ft_outdir = wrapper.to_finetuned()
         save_optuna_results(study, {}, ft_outdir)
         with open(ft_outdir+'dataset.json', 'w') as f:
-            json.dump(dataset_pars, f, indent=4)
+            json.dump(dataset_pars, f, indent=4, cls=NumpyEncoder)
 
         wrapper.clear()
 
@@ -1044,7 +1056,7 @@ class ForecastingTaskSingleTarget:
         wrapper.save_full_model(dir='trained', ds=wrapper.meta_ds) # trained
         wrapper.save_results(dir='trained', ds=wrapper.meta_ds)
         with open(t_outdir+'dataset.json', 'w') as f:
-            json.dump(wrapper.model_dataset_pars | wrapper.optuna_pars, f, indent=4)
+            json.dump(wrapper.model_dataset_pars | wrapper.optuna_pars, f, indent=4, cls=NumpyEncoder)
 
 
     def process_training_task_base(self, t_task):
@@ -1064,7 +1076,7 @@ class ForecastingTaskSingleTarget:
         wrapper.save_full_model(dir='trained', ds=None) # trained
         wrapper.save_results(dir='trained', ds=None)
         with open(t_outdir+'dataset.json', 'w') as f:
-            json.dump(wrapper.model_dataset_pars | wrapper.optuna_pars, f, indent=4)
+            json.dump(wrapper.model_dataset_pars | wrapper.optuna_pars, f, indent=4, cls=NumpyEncoder)
 
     # ------ FORECASTING -------
 
@@ -1280,9 +1292,9 @@ class ForecastingTaskSingleTarget:
             data=df, n_folds=task_['n_folds_best'], metric=task_['summary_metric']
         )
         with open(outdir + "best_model.json", "w") as json_file:
-            json.dump(best_models_train, json_file, indent=4)
+            json.dump(best_models_train, json_file, indent=4, cls=NumpyEncoder)
         with open(outdir + "best_model_forecast.json", "w") as json_file:
-            json.dump(best_models_forecast, json_file, indent=4)
+            json.dump(best_models_forecast, json_file, indent=4, cls=NumpyEncoder)
 
 
         # with open(outdir + "best_model.json", 'w') as file:

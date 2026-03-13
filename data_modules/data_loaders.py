@@ -29,6 +29,31 @@ def compute_residual_load(df:pd.DataFrame, suffix:str):
     return pd.Series(load.values, index=df.index, name=f'residual_load{suffix}')
 
 
+def impute_smard_nans(df: pd.DataFrame) -> pd.DataFrame:
+    """Fill known gaps in SMARD v2 per-TSO data.
+
+    These are reporting gaps (SMARD didn't publish the data), not actual zeros.
+    Strategy: fill with the column's mean from periods where data exists.
+    """
+    for col in df.columns:
+        if df[col].isna().any() and not df[col].isna().all():
+            col_mean = df[col].mean()
+            df[col] = df[col].fillna(col_mean)
+    return df
+
+
+def compute_gen_load_diff(df: pd.DataFrame) -> pd.Series:
+    """DE/LU bidding zone gen_load_diff = sum(all generation) - sum(all load).
+    Includes net exports + grid losses + storage effects.
+    """
+    load_cols = [c for c in df.columns if c.startswith('load_')]
+    gen_cols = [c for c in df.columns if c not in load_cols]
+    total_gen = df[gen_cols].sum(axis=1, min_count=1)
+    total_load = df[load_cols].sum(axis=1, min_count=1)
+    result = total_gen - total_load
+    return pd.Series(result.values, index=result.index, name='gen_load_diff_delu')
+
+
 def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suffix:str)->tuple[pd.DataFrame, pd.DataFrame]:
 
     # def drop_trailing_nan_columns(df):
@@ -170,16 +195,27 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     n_horizons = 100 # amount of data to extract
     horizon = 7*24 if freq == 'hourly' else 7*24*4
 
+    # For DE_ALL (national target), load weather from all real TSO regions
+    if any(r['TSO'] == 'DE_ALL' for r in regions):
+        weather_regions = [r for r in c_dict['regions'] if r['TSO'] != 'DE_ALL']
+    else:
+        weather_regions = regions
+
     # -------- laod database TODO move to SQLlite DB
     # df_smard = pd.read_parquet(db_path + 'smard/' + 'history_hourly.parquet')
-    df_om_offshore, df_om_offshore_f = load_combine_continous_weather(regions,db_path, freq, suffix='offshore')
-    df_om_onshore, df_om_onshore_f = load_combine_continous_weather(regions,db_path, freq, suffix='onshore')
-    df_om_solar, df_om_solar_f = load_combine_continous_weather(regions,db_path, freq, suffix='solar')
-    df_om_cities, df_om_cities_f = load_combine_continous_weather(regions,db_path, freq, suffix='cities')
+    df_om_offshore, df_om_offshore_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='offshore')
+    df_om_onshore, df_om_onshore_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='onshore')
+    df_om_solar, df_om_solar_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='solar')
+    df_om_cities, df_om_cities_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='cities')
 
 
     df_targets = pd.read_parquet(db_path + 'smard_v2/' + 'history_hourly.parquet')
     df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
+    df_targets = impute_smard_nans(df_targets)
+
+    # Compute gen_load_diff on-the-fly if needed
+    if 'gen_load_diff' in target_label:
+        df_targets = df_targets.join(compute_gen_load_diff(df_targets))
 
     # ----- CHECKS AND NOTES ----
     if verbose:
@@ -246,6 +282,7 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
         elif 'wind_onshore' in target: dataframe, dataframe_f = df_om_onshore, df_om_onshore_f
         elif 'solar' in target: dataframe, dataframe_f = df_om_solar, df_om_solar_f
         elif 'load' in target: dataframe, dataframe_f = df_om_cities, df_om_cities_f
+        elif 'gen_load_diff' in target: dataframe, dataframe_f = df_om_cities, df_om_cities_f
         else: raise NotImplementedError(f"No dataframe selection for target={target} tso_name={tso_name}")
 
         # select locations
@@ -254,9 +291,13 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
         elif 'wind_onshore' in target: locations = c_dict['locations']['onshore']
         elif 'solar' in target: locations = c_dict['locations']['solar']
         elif 'load' in target: locations = c_dict['locations']['cities']
+        elif 'gen_load_diff' in target: locations = c_dict['locations']['cities']
         else: raise NotImplementedError(f"Locations are not available for target={target} tso_name={tso_name}")
         # build df_hist and df_forecast
-        om_suffixes = [loc['suffix'] for loc in locations if loc['TSO'] == tso_dict['TSO']]
+        if tso_dict.get('TSO') == 'DE_ALL':
+            om_suffixes = [loc['suffix'] for loc in locations]
+        else:
+            om_suffixes = [loc['suffix'] for loc in locations if loc['TSO'] == tso_dict['TSO']]
         feature_col_names = dataframe.columns[dataframe.columns.str.endswith(tuple(om_suffixes))]
 
         if verbose:
@@ -349,6 +390,7 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
 
     # add additional quantities
     if len(targets) == 1 and 'load' in targets[0]: add_exog = ["wind_offshore", "wind_onshore", "solar"]
+    elif len(targets) == 1 and 'gen_load_diff' in targets[0]: add_exog = ["wind_offshore", "wind_onshore", "solar", "load"]
     elif len(targets) > 1 and 'energy_mix' in target_label: add_exog = ["wind_offshore", "wind_onshore", "solar", 'load', 'residual_load']
     else: add_exog = []
 
@@ -357,8 +399,14 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
             f"No TSO dict available for target_label={target_label} tso_name={tso_name}"
         )
 
+        # For national targets (DE_ALL), use all real TSO regions for exog
+        if any(r['TSO'] == 'DE_ALL' for r in regions):
+            exog_regions = [r for r in c_dict['regions'] if r['TSO'] != 'DE_ALL']
+        else:
+            exog_regions = regions
+
         for exog in add_exog:
-            for tso_dict in regions:
+            for tso_dict in exog_regions:
                 # load historic data
                 exog_tso_ = exog + tso_dict['suffix']
                 suffix_ = tso_dict['suffix']
@@ -385,18 +433,17 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                     continue
 
 
+                # Check forecast model exists before adding exog to either dataframe
+                best_model_path = outdir+exog_tso_+'/' + 'best_model.json'
+                if not os.path.isfile(best_model_path):
+                    logger.warning(f"No trained model for exogenous feature {exog_tso_} (best_model.json not found). Skipping.")
+                    continue
+
                 target_col = df_targets[exog_tso_]
                 df_hist = pd.merge(left=df_hist, right=target_col, left_index=True, right_index=True, how='left')
 
                 # load forecast from current best forecast
-                # best_model = None
-                # fpath = outdir+exog_tso_+'/'+'best_model.txt'
-                # if not os.path.isfile(fpath):
-                #     raise FileNotFoundError(f"Best model file not found {fpath}")
-                # with open(fpath, 'r') as f:
-                #     best_model = f.read().strip()
-
-                with open(outdir+exog_tso_+'/' + 'best_model.json', 'r') as file:
+                with open(best_model_path, 'r') as file:
                     best_models : dict = json.load(file)
                 target_dict = best_models[exog_tso_]
                 best_model = target_dict['model_label']
@@ -427,6 +474,14 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                     how='left'
                 )
 
+
+    # Drop exog columns that are all-NaN in df_forecast (stale forecast CSVs)
+    if len(add_exog) > 0:
+        nan_cols = [col for col in df_forecast.columns if df_forecast[col].isna().all()]
+        if nan_cols:
+            logger.warning(f"Dropping {len(nan_cols)} exog columns with stale/missing forecasts: {nan_cols}")
+            df_forecast = df_forecast.drop(columns=nan_cols)
+            df_hist = df_hist.drop(columns=[c for c in nan_cols if c in df_hist.columns])
 
     # limit dataframe to the required max size
     df_hist = df_hist.tail(len(df_forecast)*n_horizons)

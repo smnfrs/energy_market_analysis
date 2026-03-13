@@ -430,6 +430,17 @@ def update_openmeteo_from_api(
         logger.warning(f"No locations provided for {datadir} and freq={freq}. Exiting...")
         return
 
+    # If directory doesn't exist or history file is missing, do initial download
+    history_file = datadir + f'history_{freq}.parquet'
+    if not os.path.isdir(datadir) or (freq == 'hourly' and not os.path.isfile(history_file)):
+        logger.info(f"No existing data at {datadir}, falling back to initial download")
+        start_date = pd.Timestamp(datetime(year=2015, month=1, day=1), tz='UTC')
+        create_openmeteo_from_api(
+            datadir=datadir, locations=locations, variables=variables,
+            start_date=start_date, freq=freq, verbose=verbose
+        )
+        return
+
     def _update_historic(
             datadir:str, dtype_label:str, verbose:bool, locations:list, variables:tuple, freq:str
     ):

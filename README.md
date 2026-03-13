@@ -1,202 +1,195 @@
 # Predictive Analytics for the German Energy Market
 
-Live version: [Energy Market Analysis](https://vsevolodnedora.github.io/energy_market_analysis/)  
-<img src="data/sample_mwp.png" alt="Predictions displayed using ApexCharts" style="zoom:50%;" />
+> **This is a fork of [vsevolodnedora/energy_market_analysis](https://github.com/vsevolodnedora/energy_market_analysis).**
+> All original domain knowledge -- curated weather station locations, physics-based feature engineering, spatial aggregation methods, and the overall forecasting architecture -- comes from the upstream project by Vsevolod Nedora. See the [upstream README](https://github.com/vsevolodnedora/energy_market_analysis#readme) and the author's [Medium articles](https://medium.com/@vsevolod.nedora) for the full project history and motivation. This fork adapts the infrastructure for a specific use case (see below) and is not affiliated with the original author.
 
-## MLOps Forecasting and Analysis Portfolio Project 
+## What This Fork Does
 
-This portfolio project explores data collection from industry-standard APIs, developing 
-custom ETL solutions, implementing multi-step and multi-target forecasting models, and 
-reporting results on web-based dashboards, as well as providing data through APIs.  
+This fork produces **weather-based forecasts of electricity generation and load** for the German market, broken down by TSO region (50Hertz, TenneT, Amprion, TransnetBW). It is a companion to a separate [energy_prices](https://github.com/smnfrs) project that forecasts day-ahead electricity prices.
 
-### Motivation
+The problem: SMARD publishes TSO generation/load forecasts at ~18:00 CET, six hours *after* the 12:00 CET day-ahead auction. The price models need these forecasts as input features but cannot wait for the official numbers. This project produces equivalent forecasts from Open-Meteo weather data, which is available days in advance.
 
-Energy market participants rely on accurate and regularly updated forecasts of energy generation, load, 
-and market indicators to optimize operations, schedule maintenance, and improve bidding strategies. These forecasts help minimize disruptions, reduce costs, and mitigate financial risks.  
+### Forecasting targets
 
-The high penetration of renewable energy in the German grid makes it particularly vulnerable to harmful events such as _Dunkelflaute_, where low availability of solar and wind generation leads to extreme price volatility and operational disruptions. Forecasting such events sufficiently in advance enables market participants, especially storage asset operators, to mitigate their negative impacts. 
+| Target | Models | Horizon | TSO regions |
+|--------|--------|---------|-------------|
+| Wind offshore | LightGBM, XGBoost, ElasticNet, ensemble | 168h (7 days) | 50Hz, TenneT |
+| Wind onshore | LightGBM, XGBoost, ElasticNet, ensemble | 168h | All 4 |
+| Solar | LightGBM, XGBoost, ElasticNet, ensemble | 168h | All 4 |
+| Load | LightGBM, XGBoost, ElasticNet, ensemble | 168h | All 4 |
+| Energy mix | MultiTargetLGBM, CatBoost | 168h | All 4 |
 
-### Solution Proposition
+## Changes From Upstream
 
-By leveraging weather data and energy market data, this project aims to create a predictive analytics framework that regularly provides up-to-date forecasts for the German energy market.  
+### Completed
 
-**Core technology:** Supervised learning models using historical and forecasted weather data as features, and energy data (generation, load, market signals) as targets.  
-**Deployment:** A static webpage with interactive charts and tables, along with a basic API for querying displayed data.  
-**Automation & Deployment:** GitHub Actions for automation, GitHub Pages for deployment.  
+1. **Replaced ENTSO-E with SMARD v2** -- The upstream repo requires an ENTSO-E API key (multi-month wait). This fork uses the SMARD v2 API for per-TSO generation and load actuals, eliminating the ENTSO-E dependency entirely. (`8eeacca`, `b754a9a`)
 
-### Current Project Structure
+2. **Added SMARD v2 per-TSO collector** -- New `collect_data_smard_v2.py` module that fetches generation and load data for each TSO from the SMARD v2 API, with proper handling of missing data series (e.g., no offshore wind for Amprion/TransnetBW, no lignite for TenneT/TransnetBW). (`1e62d7e`)
 
-- `./data/` — Contains data scraped from EPEX for Day-Ahead and Intraday market signals.  
-- `./data_collection_modules/` — Scripts for collecting and updating databases with weather and energy data.  
-- `./database/` — Weather and energy database with _hourly_ time-series data.  
-- `./database_15min/` [Experimental] — Contains weather forecasts and energy data for _15-minute_ time-series data.  
-- `./deploy/` — Files for the static webpage. The webpage is deployed in the `gh-pages` branch instead of the main branch.  
-- `./forecasting_modules/` — Scripts for supervised learning multi-step forecasting models (Prophet, gradient boosting, and elastic net) and their wrappers.  
-- `./output/` — Trained models and hyperparameter settings for different targets and models.  
-- `publish_data.py` — Parses results from databases and `output/` for the webpage and API in `./deploy/`.  
-- `update_database.py` — Collects weather and energy data from APIs and updates databases (starting from the last available data).  
-- `update_forecasts.py` — Runs the forecasting pipeline to generate new forecasts, with results stored in `./output/`.  
+3. **Redefined energy_mix targets** -- Adapted from ENTSO-E's fine-grained generation splits to SMARD's categories: `hydro`, `other_conv`, `other_renew` replace the ENTSO-E-specific subdivisions. (`8eeacca`)
 
-### Project Workflows
+4. **Fixed XGBoost + MAPIE precision crash** -- XGBoost 3.x predicts float32 while MAPIE's `AbsoluteConformityScore` defaulted to `eps=1e-6` (below float32 precision). Fixed by setting `eps=1e-4`. (`420aded`)
 
-1. **Database Update** — Data is collected from APIs by calling `update_database.py` (see `collect_data.yml`) and from external repositories (see `sync_new_file.yml`).  
-2. **Forecast Update** — Forecasts for all targets are updated by running `update_forecasts.py` (see `update_forecasts.yml`), and the latest forecasts are saved in `./output/`.  
-3. **Publish Update** — Updated database data and forecasts are processed by `publish_data.py`, with results saved in `./deploy/data/`.  
-4. **Webpage Refresh** — The webpage is updated with the latest data.  
+5. **Enabled CatBoost in energy_mix pipeline** -- CatBoost was commented out in all task stages in the upstream repo. Uncommented and wired into the pipeline. (`420aded`)
 
-The workflow executes automatically whenever a new file from the _Eterman_ repository (EPEX data) is synced, which occurs once per day.  
+6. **Added batch retraining script** -- `run_full_retraining.sh` runs finetune + train for all targets and models sequentially. (`809a1e2`)
 
-The project is available under MIT licence. 
+### Planned
 
-## Detailed Project Explanation
+7. **`gen_load_diff` national target** -- Forecasting the generation-load differential for the DE/LU bidding zone. This allows deriving `sonstige` (conventional generation = total_gen - wind - solar) which is a key price model feature. Implementation involves adding Luxembourg (Creos TSO) data collection and weather locations, then training a national-level model. See `scratch/total-generation-forecast-plan.md` for background analysis.
 
+## Setup
 
-### Core Features and Workflow
+### Prerequisites
 
----
+- Python 3.11 (tested with 3.11.5)
+- conda (recommended) or pip
 
-- **Daily Data Collection**: Automated data retrieval from public APIs and webpages. Data is collected daily via GitHub Actions and appended to their respective datasets inside the `database/`.
-    - [SMARD](https://www.smard.de/home): Accurate _aggregated over Germany_ energy-related quantities, e.g., generation per type (and their day-ahead forecasts), load (and its forecast), cross-border flow.
-    - [ENTSO-E](https://transparency.entsoe.eu/): Energy-related quantities for each TSO-controlled region, e.g., generation from renewables for each TSO (Amprion, 50Hz, TenneT, TransnetBW).
-    - [openmeteo](https://open-meteo.com/): Weather quantities such as wind speed, temperature, shortwave radiation, and precipitation for multiple locations, e.g., major cities, wind, and solar farm locations.
-    - [epexspot](https://www.epexspot.com/en): Day-ahead and intraday auction electricity prices. Data is retrieved from files generated by [webscraper](https://github.com/vsevolodnedora/epex_de_collector).
-- **Data Cleaning and Preprocessing**: Forecasting different quantities requires different approaches.
-    - _Offshore Wind Generation_: Wind generation depends primarily on weather conditions, assuming operational changes (maintenance, failures) are negligible. There are several wind farms in Germany connected to the grid by TenneT (main) and 50Hz (secondary) TSOs. Each TSO connects several geographically dispersed wind farms.
-    - _Onshore Wind Generation_: Similar to offshore generation but more volatile due to rapid weather changes on land. Germany produces most of its wind energy from onshore farms connected to the grid by all four TSOs.
-    - _Solar Energy_: Primarily produced by PV panels in the southeast of Germany. Generation is highly periodic (e.g., no generation at night).
-    - _Gas_, _biomass_, _hard coal_, _lignite_, _waste_, _hydro_, _other fossil_, and _other renewables_: These sources either compensate for the _base load_ when renewables are weak (e.g., gas) or add to the energy mix.
-- **Multi-Step Forecasting**: Each quantity needs to be forecasted many timesteps ahead. Currently, we perform a week-ahead forecast of hourly data.
-    - _Main technique_: Multi-step, recursive, single-target forecasting — we forecast each timestep using the previous one (opposite to direct multi-output forecasting, where an entire array of values is generated simultaneously).
-    - _Main models_: Currently, we employ Prophet (for data with clear seasonality), XGBoost, and Elastic Net (for all data), as well as ensemble models trained on out-of-sample (OOS) predictions.
-- **Feature Engineering**: Each quantity is forecasted using its own selection of raw and engineered features.
-    - _Offshore and Onshore Wind Generation_: We use raw weather features (e.g., wind speed, wind direction, pressure) and engineered features (e.g., air density, wind shear, wind power density) aggregated over multiple wind farm locations (e.g., using weighted average or Inverse Distance Weighting (IDW)).
-- **Hyperparameter Optimization**: Model hyperparameters (e.g., `n_estimators`, `learning_rate`, etc., for XGBoost) and feature engineering hyperparameters (e.g., which features to use, lag, drop, and how to aggregate) are set automatically.
-    - _Main technique_: Different combinations of model and dataset hyperparameters are considered, and the combination that gives the lowest error (root-mean-squared error averaged over the last N horizons) is chosen.
-- **Pipeline Automation**: Data collection and forecast serving are done using GitHub Actions. Model and dataset hyperparameter tuning is performed on premises due to computational cost.
-- **Web Integration**: Forecasts are served on a static webpage designed with HTML, JavaScript, and CSS. The webpage is deployed from a separate GitHub branch, `_gh-pages_`.
-- **Extendability**: Currently, each forecasting model is trivially explainable (via direct methods, e.g., coefficients and tree weights, and indirect methods, e.g., SHAP values for feature importances).
+### Installation
 
+```bash
+# Clone this fork
+git clone <this-repo-url>
+cd energy_market_analysis
 
+# Create conda environment
+conda create -n energy_market python=3.11
+conda activate energy_market
 
-### Project Development Roadmap
+# Install dependencies
+pip install -r requirements.txt
+```
 
----
+No API keys are required. All data sources (SMARD, Open-Meteo) are freely accessible.
 
-The project was initiated as a _personal portfolio project_ in the summer of 2024 with the goal of gaining experience in working with time-series data, forecasting, API and data engineering, machine learning and predictive analytics, MLOps and DataOps, and front-end development (HTML, JavaScript).
+### Key dependencies
 
-#### Proof of Concept (POC)  
-A multi-step electricity load forecasting model was released on [Kaggle](https://www.kaggle.com/code/vsevolodnedora/multi-output-electrical-load-forecasting) in September 2024.
+- lightgbm 4.6, xgboost 3.2, catboost
+- mapie 0.9.2 (not 1.x -- API break with `MapieRegressor`)
+- optuna (hyperparameter tuning)
+- open-meteo SDK, pandas, scikit-learn
 
-#### Minimum Viable Product (MVP)  
-The MVP, featuring a fully automated pipeline for data collection, preprocessing, forecasting, and serving, along with a front-end deployed on GitHub Pages, was released in January 2025.
+## Usage
 
----
+The pipeline has three stages, run in order.
 
-#### Stage 1: [Data Collection](https://medium.com/@vsevolod.nedora/mlops-electricity-price-forecasting-project-2-ad1012350067)  
+### 1. Update database
 
-In this stage, I prototyped data collection and scraping scripts and pipelines:
-- Approximately 10 years of hourly data were collected from SMARD, Open-Meteo, and EPEX SPOT. For technical reasons, web-scraping techniques were used in addition to APIs. For instance, a [scraper](https://github.com/vsevolodnedora/energy_charts_collector) was developed for [energy-charts](https://energy-charts.info/?l=en&c=DE) to pull data via ApexCharts.
-- Additional scrapers were developed, such as [nordpool_collector](https://github.com/vsevolodnedora/nordpool_collector) and [eex_collector](https://github.com/vsevolodnedora/eex_collector), to enable potential expansion to other countries beyond Germany.
-- Several weather data providers were considered, such as [OpenWeather](https://openweathermap.org/) and [Open-Meteo](https://open-meteo.com/). Open-Meteo was chosen due to cost considerations and the ease of collecting past and present forecasts.
-    - Open-Meteo provides separate APIs for past data, past forecasts, and future forecasts. To ensure data continuity for model training and ease of use, all three APIs were used to construct a _continuous_ time series.
-    - During each data collection run, past forecasts are updated with observed data _to preserve data quality_.
+Collect weather and energy data from APIs:
 
----
+```bash
+# SMARD generation/load actuals (DE only)
+python update_database.py DE update_smard hourly
 
-#### Stage 2: [Baseline Forecasting](https://medium.com/@vsevolod.nedora/mlops-electricity-price-forecasting-project-2-ad1012350067)  
+# Open-Meteo weather data (multiple location types)
+python update_database.py all update_openmeteo_windfarms_offshore hourly
+python update_database.py all update_openmeteo_windfarms_onshore hourly
+python update_database.py all update_openmeteo_solarfarms hourly
+python update_database.py all update_openmeteo_cities hourly
+```
 
-Once regularly updated energy and weather data were available, I began constructing forecasting models:
-- **SARIMAX**: A classical forecasting model applied to forecast _electricity load_ using raw weather features as exogenous variables. Training was prohibitively slow, and performance was moderate at best.
-- **LSTM**: An advanced deep-learning model that showed promising results but required significant time for hyperparameter and architecture tuning, raising questions about ROI.
-- **Multi-step XGBoost**: A gradient boosting model that demonstrated excellent (visual) performance but had extensive training time.
+### 2. Update forecasts
 
-After developing the Multi-step XGBoost model, I was confident in achieving the project goal and released the POC on [Kaggle](https://www.kaggle.com/code/vsevolodnedora/multi-output-electrical-load-forecasting).
+Train models and generate forecasts:
 
-The primary challenge was the lack of reference forecasts. Discovering that SMARD (and ENTSO-E) provides TSO day-ahead forecasts, I extended the data collection pipeline to include ENTSO-E using their [Python API](https://github.com/EnergieID/entsoe-py). This enabled week-ahead forecast comparisons.
+```bash
+# Finetune hyperparameters (Optuna, computationally expensive -- run on-premises)
+python update_forecasts.py DE wind_offshore LightGBM finetune hourly
 
-After observing that single models underperformed against TSO forecasts, I developed an ensemble model. The ensemble model, trained on out-of-sample (OOS) forecasts from base models like XGBoost, aimed to learn and overcome systematic errors. However, for superior performance, advanced feature engineering and numerous models were required.
+# Train model on full dataset with best parameters
+python update_forecasts.py DE wind_offshore LightGBM train hourly
 
----
+# Generate forecasts using trained models (lightweight -- runs in GitHub Actions)
+python update_forecasts.py DE all all forecast hourly
 
-#### Stage 3: [Automated Fine-Tuning and Training](https://medium.com/@vsevolod.nedora/building-a-modular-forecasting-framework-fine-tuning-and-predicting-offshore-wind-generation-c668e343f6c2)  
+# Run everything for all targets
+python update_forecasts.py DE all all all hourly
+```
 
-Forecasting various targets necessitated a systematic approach to fine-tuning, training, and applying models:
-- **Method**: Iterating over combinations of model and dataset parameters, evaluating performance metrics to determine the optimal setup.
-- **Technology**: Optuna optimization trials.
+### 3. Publish data
 
-The codebase underwent multiple refactorings to balance size, complexity, extendability, and reusability:
-- A base forecasting class with a shared API was developed for all models.
-- A single dataset class provided unified access to train and test data.
-- A task-based pipeline allowed scheduling for each forecasting model:
-    - **Finetune**: Runs Optuna trials, saves the best parameters.
-    - **Train**: Loads parameters, trains the model on the full dataset.
-    - **Forecast**: Performs inference using trained models.
+Prepare forecasts for the static webpage:
 
-This split enables computationally intensive tasks (fine-tuning and training) on-premises while running inferences in the cloud via GitHub Actions.
+```bash
+python publish_data.py DE all
+```
 
----
+### Batch retraining
 
-#### Stage 4: Static Webpage Display (MVP Release) [_In Progress_]  
+To retrain all models from scratch:
 
-With a database updated daily and a forecasting pipeline ready for cloud inference, I focused on serving the data via a static webpage. This required HTML and JavaScript engineering due to the limitations of static pages. A modular structure with interactive dashboards was implemented to handle future enhancements.
+```bash
+bash run_full_retraining.sh
+```
 
----
+### Argument reference
 
-### Future Enhancements [_Planned_]
+| Script | Argument | Values |
+|--------|----------|--------|
+| `update_database.py` | country | `DE`, `FR`, `all` |
+| | task | `update_smard`, `update_openmeteo_windfarms_offshore`, `update_openmeteo_windfarms_onshore`, `update_openmeteo_solarfarms`, `update_openmeteo_cities`, `all` |
+| | freq | `hourly`, `minutely_15` |
+| `update_forecasts.py` | target | `wind_offshore`, `wind_onshore`, `solar`, `load`, `energy_mix`, `all` |
+| | model | `LightGBM`, `XGBoost`, `ElasticNet`, `ensemble[...]`, `MultiTargetLGBM`, `MultiTargetElasticNet`, `all` |
+| | mode | `finetune`, `train`, `forecast`, `plot`, `summarize`, `all` |
 
-- **Expanded Forecasting**: Incorporating onshore wind, solar generation, load, residual load, and cross-border flow aggregates. Forecasts will use a waterfall structure to account for the interdependencies of energy systems.
-- **Electricity Price Forecasting**: Introducing advanced techniques such as transformer-based deep neural networks.
-- **Automated Reports**: Generating market reports using historical and forecasted data combined with large language models (LLMs).
-- **Cloud Migration**: Moving to GCP, AWS, or Azure as needed for scalability.
-- **Geographic Expansion**: Adding European countries for improved cross-border interaction modeling.
+## Architecture
 
-For collaboration, additional features, or functionality, feel free to reach out.
+For detailed architecture documentation, see [CLAUDE.md](CLAUDE.md).
 
----
+### Data flow
 
-## Installation
+```
+Open-Meteo API ──> database/{country}/openmeteo/   ──┐
+SMARD v2 API   ──> database/{country}/smard/        ──┤──> update_forecasts.py ──> output/{country}/forecasts/
+                                                      │                                    │
+                                                      └──────────────────────── publish_data.py ──> deploy/data/
+```
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/vsevolodnedora/energy_market_analysis
-   cd mlops-forecasting-framework
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Create _local_ `.env` file with API keys.
-   ```bash
-   gedit .env
-   ```
-   The following API keys are needed:
-   - `ENTSOE_API_KEY` (it is given for free, when creating account on [ENTSOE](https://transparency.entsoe.eu/)) 
-3. Create database if not cloned from the repo (see 'create_database.py'): 
-   ```bash
-   python create_database.py create_entsoe hourly 
-   ```
-4. Update forecasts: 
-   ```bash
-   python update_forecasts.py 
-   ```
-5. Publish data: 
-   ```bash
-   python publish.py 
-   ```
+### Key modules
 
+- **`data_collection_modules/`** -- API collectors and location metadata. `eu_locations.py` contains 30+ curated weather station coordinates near actual generation assets, TSO mappings, and installed capacity data.
+- **`data_modules/`** -- Physics-informed feature engineering (`feature_eng.py`): wind power density, air density correction, wind shear profiles, solar angle calculations, heating/cooling degree days.
+- **`forecasting_modules/`** -- ML pipeline with Optuna hyperparameter tuning, MAPIE prediction intervals, and ensemble stacking.
 
-### Contributing
+### Pipeline flow
 
-Contributions are welcome! Please create an issue or submit a pull request with your suggestions or enhancements.
+1. `update_forecasts.py` creates task configs per target/TSO region
+2. `interface.py` loads and cleans data, creates forecasting tasks
+3. Tasks execute: **finetune** (Optuna) -> **train** (full dataset) -> **forecast** (inference) -> **summarize** (metrics)
+4. Finetuning/training run on-premises; forecasting runs in GitHub Actions
 
-### License
+## Model Performance
 
-This project codebase is licensed under the MIT License. See the `LICENSE` file for details.  
-Datasets collected and used in this project may be subjected to additional licencing. 
-Please view
-[SMARD](https://www.smard.de/home), 
-[ENTSO-E](https://transparency.entsoe.eu/), 
-[openmeteo](https://open-meteo.com/),  
-[epexspot](https://www.epexspot.com/en),
-[nordpool](https://www.nordpoolgroup.com/en/) 
-for more details. 
+Best single-model R² (5-week rolling evaluation, SMARD v2 targets):
+
+| Target | Best model | R² range across TSOs |
+|--------|-----------|---------------------|
+| Solar | LightGBM | 0.32 -- 0.90 |
+| Load | Ensemble | 0.77 -- 0.91 |
+| Wind onshore | LightGBM | 0.45 -- 0.80 |
+| Wind offshore | Ensemble | 0.51 -- 0.81 |
+
+Energy mix (conventional generation by fuel type) has poor performance (negative R² on gas/coal/lignite) due to missing economic features (fuel prices, CO2 prices). This is a known limitation also present in the upstream repo.
+
+## License
+
+The upstream project codebase is licensed under the MIT License.
+
+Datasets collected and used in this project may be subject to additional licensing. See:
+- [SMARD](https://www.smard.de/home)
+- [Open-Meteo](https://open-meteo.com/)
+- [EPEX SPOT](https://www.epexspot.com/en)
+
+## Credits
+
+This project is a fork of [vsevolodnedora/energy_market_analysis](https://github.com/vsevolodnedora/energy_market_analysis) by [Vsevolod Nedora](https://github.com/vsevolodnedora). The upstream project provides:
+
+- Curated locations of wind farms, solar parks, and cities across Germany with TSO mappings
+- Physics-informed feature engineering for wind power, solar power, and load forecasting
+- Multi-step recursive forecasting architecture with ensemble stacking
+- Spatial aggregation using installed capacity weights
+- Automated pipeline with GitHub Actions
+
+See the upstream repo for the full project history, live demo, and detailed technical write-up.

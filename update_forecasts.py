@@ -29,6 +29,7 @@ available_models = {
     "wind_onshore":single_target_model_list,
     "solar":single_target_model_list,
     "load":single_target_model_list,
+    "gen_load_diff":single_target_model_list,
     "energy_mix":multi_target_model_list
 }
 
@@ -519,11 +520,16 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
     # if 'forecasting' in tasks:
 
 
-def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variable:str,outdir:str,verbose:bool):
+def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variable:str,outdir:str,verbose:bool, region_filter:str=None):
 
     ''' pass '''
 
     de_regions = c_dict['regions']
+    if region_filter:
+        de_regions = [r for r in de_regions if r['name'] == region_filter]
+        if not de_regions:
+            raise ValueError(f"Region '{region_filter}' not found. Available: {[r['name'] for r in c_dict['regions']]}")
+        logger.info(f"Region filter active: processing only {region_filter}")
 
     ''' -------------- OFFSHORE WIND POWER GENERATION (2 TSOs) ------------- '''
 
@@ -651,7 +657,26 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
                     f"\tRuntime: {int(hours)} hr. & {int(minutes)} min."
                 )
 
-def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:bool):
+    ''' -------------- GEN_LOAD_DIFF (DE/LU national, runs once) ------------- '''
+
+    if variable == "gen_load_diff":
+        task_list_ = copy.deepcopy(task_list)
+        for t in task_list_:
+            t['label'] = "gen_load_diff_delu"
+            t['targets'] = ["gen_load_diff_delu"]
+            t['plot_label'] = "Generation-Load Differential (DE/LU) [MW]"
+            t['region'] = "DE_LU"
+            for tt in t['task_fine_tuning']:
+                tt['dataset_pars']['feature_engineer'] = 'WeatherLoadFE'
+                tt['dataset_pars']['locations'] = [
+                    loc['name'] for loc in c_dict['locations']['cities']
+                ]
+        main_forecasting_pipeline(
+            c_dict=c_dict, task_list=task_list_, outdir=outdir,
+            database=database, freq=freq, verbose=verbose
+        )
+
+def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:bool, region:str=None):
 
     countries = ['DE', 'FR', 'all']
     if not country_code in countries:
@@ -659,7 +684,7 @@ def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:boo
     if country_code == 'all': country_code = countries[:-1] # all countries
     else: country_code = [country_code]
 
-    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'energy_mix', 'all']
+    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'gen_load_diff', 'energy_mix', 'all']
     if not target in targets:
         raise ValueError(f'target must be in {targets}. Given: {target}')
     if target == 'all': target = targets[:-1]
@@ -717,7 +742,8 @@ def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:boo
             tasks = create_task_list(country,target_,freq,model_,mode)
 
             adjust_and_run_for_tasklist(
-                database=db_path, c_dict=c_dict, task_list=tasks,variable=target_,outdir=outdir,verbose=verbose
+                database=db_path, c_dict=c_dict, task_list=tasks,variable=target_,outdir=outdir,verbose=verbose,
+                region_filter=region
             )
 
         end_time = time.time()  # End the timer
@@ -779,18 +805,20 @@ if __name__ == '__main__':
 
     print("launching update_forecasts.py")
 
-    if len(sys.argv) != 6:
-        # raise KeyError("Usage: python update_database.py <country_code> <target> <model> <task> <freq>")
+    if len(sys.argv) < 6:
+        # raise KeyError("Usage: python update_database.py <country_code> <target> <model> <task> <freq> [region]")
         country_code = str( 'DE' )
         target = str( 'energy_mix' )
         model = str( 'MultiTargetLGBM' )
         mode = str( 'train' )
         freq = str( 'hourly' )
+        region = None
     else:
         country_code = str( sys.argv[1] )
         target = str( sys.argv[2] )
         model = str( sys.argv[3] )
         mode = str( sys.argv[4] )
         freq = str( sys.argv[5] )
+        region = str( sys.argv[6] ) if len(sys.argv) > 6 else None
 
-    main(country_code, target, model, mode, freq, True)
+    main(country_code, target, model, mode, freq, True, region=region)

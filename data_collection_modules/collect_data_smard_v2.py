@@ -25,6 +25,7 @@ TSO_SUFFIX = {
     "Amprion": "_ampr",
     "TenneT": "_tenn",
     "TransnetBW": "_tran",
+    "Creos": "_lu",
 }
 
 # Filter -> column base name mapping
@@ -50,6 +51,11 @@ KNOWN_MISSING = {
     (1223, "TransnetBW"),   # no lignite in TransnetBW
     (1225, "Amprion"),      # no offshore wind in Amprion
     (1225, "TransnetBW"),   # no offshore wind in TransnetBW
+    (1225, "Creos"),        # no offshore wind in Luxembourg
+    (4069, "Creos"),        # no hard coal in Luxembourg
+    (1223, "Creos"),        # no lignite in Luxembourg
+    (4070, "Creos"),        # no pumped storage in Luxembourg
+    (1228, "Creos"),        # no other renewables in Luxembourg
 }
 
 # Resolution mapping
@@ -128,7 +134,11 @@ def _merge_column_into_parquet(fname, col_name, series):
     """Merge a single new column/series into an existing parquet file (or create it)."""
     if os.path.isfile(fname):
         df = ParquetOperations.read(fname)
-        df[col_name] = series
+        if col_name in df.columns:
+            # Update: preserve existing data, overwrite only where new data exists
+            df[col_name] = series.combine_first(df[col_name])
+        else:
+            df[col_name] = series
         # Reindex to cover the full union of timestamps
         df = df.sort_index()
         df = df[~df.index.duplicated(keep="last")]
@@ -197,6 +207,13 @@ def update_smard_v2(today, data_dir, freq, verbose=True, start_from=None):
             logger.info(f"Resuming: {len(existing_cols)} cols already present, "
                         f"{len(combos)} remaining")
 
+    # Split into existing (incremental) and new (full history) columns
+    new_combos = [(f, r, c) for f, r, c in combos if c not in existing_cols]
+    existing_combos = [(f, r, c) for f, r, c in combos if c in existing_cols]
+    if new_combos and after_ts is not None and verbose:
+        logger.info(f"New columns detected: {[c for _, _, c in new_combos]}. "
+                    f"Fetching full history for these.")
+
     total = len(combos)
     if total == 0:
         if verbose:
@@ -207,7 +224,9 @@ def update_smard_v2(today, data_dir, freq, verbose=True, start_from=None):
         if verbose:
             logger.info(f"[{i}/{total}] {col_name}: fetching...")
 
-        series = fetch_filter_region(filter_id, region, resolution, after_ts)
+        # New columns get full history; existing columns get incremental
+        ts_cutoff = None if col_name not in existing_cols else after_ts
+        series = fetch_filter_region(filter_id, region, resolution, ts_cutoff)
 
         if series is not None and len(series) > 0:
             shape = _merge_column_into_parquet(fname, col_name, series)

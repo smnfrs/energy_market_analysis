@@ -35,7 +35,7 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
     c_dict:dict = [dict_ for dict_ in countries_metadata if dict_["code"] == country_code][0]
     if len(list(c_dict.keys())) == 0:
         raise KeyError(f"No country dict found for country code {country_code}. Check your country code.")
-    regions = c_dict["regions"]
+    regions = [r for r in c_dict["regions"] if r['TSO'] != 'DE_ALL']
     if len(regions) == 0:
         logger.warning(f"No regions (TSOs) dicts found for country code {country_code}.")
     locations = list(c_dict['locations'].keys())

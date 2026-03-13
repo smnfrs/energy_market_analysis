@@ -641,7 +641,30 @@ de_loc_cities = [
         },
         "electric_vehicle_count": 2000,  # Number of EVs in the city
         "daylight_savings": True  # Whether the city observes daylight savings
-    }
+    },
+    # Luxembourg (DE/LU bidding zone)
+    {
+        "name": "Luxembourg City",
+        "label": "luxembourg_city",
+        "type": "city",
+        "suffix": "_city_luxembourg",
+        "TSO": "Creos",
+        "lat": 49.6117,
+        "lon": 6.1300,
+        "population": 132778,
+        "population_density": 2500,
+        "area": 51.46,
+        "industrial_activity_fraction": 0.15,
+        "renewable_energy_fraction": {"solar": 0.05, "wind": 0.10, "others": 0.05},
+        "non_renewable_energy_fraction": 0.80,
+        "total_energy_consumption": 900,
+        "peak_demand": 750,
+        "heating_degree_days": 2800,
+        "cooling_degree_days": 150,
+        "installed_renewable_capacity": {"solar": 50, "wind": 100},
+        "electric_vehicle_count": 5000,
+        "daylight_savings": True
+    },
 ]
 
 de_loc_onshore_windfarms = [
@@ -855,6 +878,24 @@ de_loc_onshore_windfarms = [
         "TSO": "Amprion",
         "suffix":"_won_a31",
         "type": "onshore wind farm",
+    },
+    # Luxembourg (DE/LU bidding zone)
+    {
+        "name": "Hein Wind Farm",
+        "label": "hein_wind",
+        "capacity": 10,
+        "n_turbines": 5,
+        "hub_height": 100,
+        "rotor_diameter": 90,
+        "elevation": 450,
+        "z0": 0.1,
+        "terrain_category": "Open terrain with few obstacles",
+        "location": "Heinerscheid, Luxembourg",
+        "lat": 50.0667,
+        "lon": 6.0833,
+        "TSO": "Creos",
+        "suffix": "_wf_hein",
+        "type": "wind farm",
     }
 ]
 
@@ -1247,8 +1288,25 @@ de_loc_solarfarms = [
         "TSO": "Amprion",  # str; TSO that connects this solar farm to the grid
         "suffix": "_sol_frankfurt",
         "type": "solar farm",
+    },
+    # Luxembourg (DE/LU bidding zone)
+    {
+        "name": "Bissen Solar Park",
+        "label": "bissen_solar",
+        "capacity": 15,
+        "n_panels": 15000,
+        "type_panels": "Polycrystalline silicon",
+        "elevation": 310,
+        "z0": 0.03,
+        "terrain_category": "Open terrain",
+        "location": "Bissen, Luxembourg",
+        "size": 20,
+        "lat": 49.7856,
+        "lon": 6.0514,
+        "TSO": "Creos",
+        "suffix": "_sol_bissen",
+        "type": "solar farm",
     }
-
 ]
 
 de_all_locations = de_loc_cities + de_loc_solarfarms + de_loc_offshore_windfarms + de_loc_onshore_windfarms
@@ -1723,6 +1781,10 @@ countries_metadata = [
                 "available_targets":["wind_offshore","wind_onshore","solar","load","energy_mix"]},
             {'name':'DE_TRANSNET', 'suffix':'_tran', 'TSO':'TransnetBW',
                 "available_targets":["wind_onshore","solar","load","energy_mix"]},
+            {'name':'LU_CREOS', 'suffix':'_lu', 'TSO':'Creos',
+                "available_targets":["wind_onshore","solar","load"]},
+            {'name':'DE_LU', 'suffix':'_delu', 'TSO':'DE_ALL',
+                "available_targets":["gen_load_diff"]},
         ],
         # "entsoe_neighbors":["AT","BE","CH","CZ","DK_1","DK_2","FR","NO_2","NL","PL","SE_4"],
         "locations":{
