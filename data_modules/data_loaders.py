@@ -11,8 +11,6 @@ from data_collection_modules.eu_locations import (
 from data_modules.utils import (
     validate_dataframe
 )
-from forecasting_modules.utils import convert_ensemble_string
-
 from logger import get_logger
 logger = get_logger(__name__)
 
@@ -55,19 +53,6 @@ def compute_gen_load_diff(df: pd.DataFrame) -> pd.Series:
 
 
 def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suffix:str)->tuple[pd.DataFrame, pd.DataFrame]:
-
-    # def drop_trailing_nan_columns(df):
-    #     # Find the index of the last non-NaN column
-    #     last_valid_idx = df.columns[::-1][df.notna().any()].max()
-    #
-    #     # If all columns are NaN, return an empty dataframe with the same index
-    #     if last_valid_idx is None:
-    #         return df.iloc[:, :0]
-    #
-    #         # Drop all columns after (including) the last NaN-only column
-    #     return df.loc[:, :last_valid_idx]
-
-    # regions = c_dict['regions']
 
     if freq == 'hourly':
         df_past = pd.DataFrame()
@@ -118,63 +103,16 @@ def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suf
         df_past_forecast = df_past_forecast[df_past.index[-1]:df_forecast.index[0]-timedelta(hours=1)]
 
 
-        # if df_forecast.index[0] < df_past.index[-1]:
-        #     raise ValueError(
-        #         f"Past actual data is later than forecast: (freq={freq} suffix={suffix}) "
-        #         f"past[-1]={df_past.index[-1]} forecast[0]={df_forecast.index[0]}"
-        #     )
-        # if df_forecast.index[0] < df_past_forecast.index[0]:
-        #     raise ValueError(
-        #         f"Past actual data is later than forecast: (freq={freq} suffix={suffix}) "
-        #         f"past[-1]={df_past.index[-1]} forecast[0]={df_forecast.index[0]}"
-        #     )
-
-
-
-        # last_valid_index = df_past.dropna(how='all').index[-1]
-        # df_past_forecast = pd.read_parquet(db_path + 'openmeteo/' + f'{suffix}_hist_forecast.parquet')
-        # df_past = df_past.loc[:last_valid_index]
-        # df_forecast = pd.read_parquet(db_path + 'openmeteo/' + f'{suffix}_forecast.parquet')
-        # df_past = df_past.loc[:df_forecast.index[0]]
-        # df_past_forecast = df_past_forecast.loc[:df_forecast.index[0]]
-        # if df_forecast.index[0] < df_past.index[0]:
-        #     raise ValueError(
-        #         f"Past actual data is later than forecast: past[-1]={df_past.index[-1]} forecast[0]={df_forecast.index[0]}"
-        #     )
-        # if df_forecast.index[0] < df_past.index[0]:
-        #     raise ValueError(
-        #         f"Past actual data is later than forecast: past[-1]={df_past.index[-1]} forecast[0]={df_forecast.index[0]}"
-        #     )
-
-        # df = pd.concat([
-        #     df_past, df_past_forecast[ df_past.index[-1] : df_forecast.index[0] - timedelta(hours=1)]
-        # ], axis=0)
         df = pd.concat([df_past, df_past_forecast],axis=0)
         df.sort_index(inplace=True)
         df = df.loc[~df.index.duplicated(keep='first')]
         assert len(df_past.columns) == len(df.columns)
-        # import matplotlib.pyplot as plt
-        # plt.title(f'freq={freq}, suffix={suffix}')
-        # plt.plot(df.tail(24).index, df.tail(24)[df.columns.tolist()[0]],color='black',label='combined',marker='.',ls='none',fillstyle='none')
-        # plt.plot(df_past.tail(24).index, df_past.tail(24)[df_past.columns.tolist()[0]],color='red',label='past',marker='d',ls='none',fillstyle='none')
-        # plt.plot(df_past_forecast.tail(24).index, df_past_forecast.tail(24)[df_past_forecast.columns.tolist()[0]],color='orange', label='past forecast',marker='o',ls='none',fillstyle='none')
-        # plt.plot(df_forecast.head(24).index, df_forecast.head(24)[df_forecast.columns.tolist()[0]],color='green',label='forecast',marker='s',ls='none',fillstyle='none')
-        # plt.legend()
-        # plt.show()
         return df, df_forecast
     else:
         df_past = pd.read_parquet(db_path + 'openmeteo/' + f'{suffix}_history.parquet')
         df_past_forecast = pd.read_parquet(db_path + 'openmeteo/' + f'{suffix}_hist_forecast.parquet')
         df_forecast = pd.read_parquet(db_path + 'openmeteo/' + f'{suffix}_forecast.parquet')
 
-        # import matplotlib.pyplot as plt
-        # plt.title(f'freq={freq}, suffix={suffix}')
-        # plt.plot(df.tail(24).index, df.tail(24)[df.columns.tolist()[0]],color='black',label='combined',marker='.',ls='none',fillstyle='none')
-        # plt.plot(df_past.tail(24).index, df_past.tail(24)[df_past.columns.tolist()[0]],color='red',label='past',marker='d',ls='none',fillstyle='none')
-        # plt.plot(df_past_forecast.tail(24).index, df_past_forecast.tail(24)[df_past_forecast.columns.tolist()[0]],color='orange', label='past forecast',marker='o',ls='none',fillstyle='none')
-        # plt.plot(df_forecast.head(24).index, df_forecast.head(24)[df_forecast.columns.tolist()[0]],color='green',label='forecast',marker='s',ls='none',fillstyle='none')
-        # plt.legend()
-        # plt.show()
         raise NotImplementedError("Frequency not implemented {}".format(freq))
 
 # TODO: USE SQL HERE!!!
@@ -184,7 +122,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     tso_name = main_pars['region']
     targets = main_pars['targets']
     target_label = main_pars['label']
-    # regions = [tso_dict for tso_dict in c_dict['regions'] if target_label in tso_dict['available_targets']]
     regions = [
         tso_dict for tso_dict in c_dict['regions']
         if any(target_label.startswith(target) for target in tso_dict['available_targets'])
@@ -202,7 +139,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
         weather_regions = regions
 
     # -------- laod database TODO move to SQLlite DB
-    # df_smard = pd.read_parquet(db_path + 'smard/' + 'history_hourly.parquet')
     df_om_offshore, df_om_offshore_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='offshore')
     df_om_onshore, df_om_onshore_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='onshore')
     df_om_solar, df_om_solar_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='solar')
@@ -220,7 +156,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     # ----- CHECKS AND NOTES ----
     if verbose:
         logger.info("---------- LOADING DATABASE DATA ----------")
-        # logger.info(f"SMARD data shapes hist={df_smard.shape} (days={len(df_smard)/24}) start={df_smard.index[0]} end={df_smard.index[-1]}")
         logger.info(f"SMARD target data shapes hist={df_targets.shape} (days={len(df_targets)/24}) start={df_targets.index[0]} end={df_targets.index[-1]}")
         logger.info(f"OM offshore data shapes hist={df_om_offshore.shape} (days={len(df_om_offshore)/24}) start={df_om_offshore.index[0]} end={df_om_offshore.index[-1]}")
         logger.info(f"OM offshore data shapes forecast={df_om_offshore_f.shape} (days={len(df_om_offshore_f)/24}) start={df_om_offshore_f.index[0]} end={df_om_offshore_f.index[-1]}")
@@ -228,7 +163,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
         logger.info(f"OM onshore data shapes forecast={df_om_onshore_f.shape} (days={len(df_om_onshore_f)/24}) start={df_om_onshore_f.index[0]} end={df_om_onshore_f.index[-1]}")
         logger.info(f"OM solar data shapes hist={df_om_solar.shape} (days={len(df_om_solar)/24}) start={df_om_solar.index[0]} end={df_om_solar.index[-1]}")
         logger.info(f"OM solar data shapes forecast={df_om_solar_f.shape} (days={len(df_om_solar_f)/24}) start={df_om_solar_f.index[0]} end={df_om_solar_f.index[-1]}")
-        # logger.info(f"EPEXSPOT data shapes hist={df_es.shape} (days={len(df_es)/24}) start={df_es.index[0]} end={df_es.index[-1]}")
         logger.info("-------------------------------------------")
 
     if len(df_om_offshore_f) != len(df_om_offshore_f) or len(df_om_solar_f) != len(df_om_solar_f):
@@ -256,7 +190,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     target_label_notso = ''
     tso_dict = {}
 
-    # regions = c_dict['regions']
     for de_reg in regions:
         if target_label.__contains__(de_reg['suffix']) and tso_name != de_reg['name']:
             raise IOError(f"The region must be {de_reg} for target_label={target_label}")
@@ -337,10 +270,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                     f"Adding it back."
                 )
                 target_cols = pd.merge(target_cols, df_targets[col], left_index=True, right_index=True, how='left')
-
-                # import matplotlib.pyplot as plt
-                # plt.plot(target_cols.index, target_cols[col])
-                # plt.show()
 
         # add aggregations if any
         for key in targets:
@@ -449,6 +378,7 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                 best_model = target_dict['model_label']
 
                 if best_model.__contains__('ensemble'):
+                    from forecasting_modules.utils import convert_ensemble_string
                     best_model = convert_ensemble_string(best_model)
 
                 fpath = outdir+exog_tso_+'/' + best_model + '/' + 'forecast/' + 'forecast.csv'
@@ -459,12 +389,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                 df_ = pd.read_csv(fpath, index_col=0)
                 df_.index = pd.to_datetime(df_.index)
                 df_.rename(columns={f'{exog_tso_}_fitted':f'{exog_tso_}'},inplace=True)
-
-                # import matplotlib.pyplot as plt
-                # plt.plot(df_.index, df_[f'{exog_tso}_fitted'])
-                # plt.plot(df_forecast.index, df_forecast[df_forecast.columns.tolist()[0]])
-                # plt.show()
-                # exit(1)
 
                 df_forecast = pd.merge(
                     left=df_forecast,
@@ -498,11 +422,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     if len(df_hist) <= 1 or len(df_forecast) <= 1:
         raise ValueError(f'The DataFrames must have >1 rows '
                          f'hist={df_hist.shape} forecast={df_forecast.shape}')
-    # ------------------
-    # if not validate_dataframe(df_hist):
-    #     raise ValueError(f"History dataframe for target = {target} and region = {region} failed to validate.")
-    # if not validate_dataframe(df_forecast):
-    #     raise ValueError(f"History dataframe for target = {target} and region = {region} failed to validate.")
     if (freq=='hourly'):
         if not (df_forecast.index[0] == df_hist.index[-1]+pd.Timedelta(hours=1)):
             raise ValueError(f"Forecast dataframe must have index[0] = historic index[-1] + 1 hour"
@@ -519,20 +438,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
             raise ValueError("full_index must be continuous with 15min frequency.")
 
 
-    # if (freq=='hourly') and (not (df_forecast.index[0] == df_hist.index[-1]+pd.Timedelta(hours=1))):
-    #     raise ValueError(f"Forecast dataframe must have index[0] = historic index[-1] + 1 hour"
-    #                      f"forecast starts on {df_forecast.index[0]} history ends on {df_hist.index[-1]} ")
-    #
-    # elif (freq=='minutely_15') and (not (df_forecast.index[0] == df_hist.index[-1]+pd.Timedelta(minutes=15))):
-    #     raise ValueError(f"Forecast dataframe must have index[0] = historic index[-1] + 15 minutes"
-    #                      f"forecast starts on {df_forecast.index[0]} history ends on {df_hist.index[-1]} ")
-    # else:
-    #     pass
-
-    # expected_range = pd.date_range(start=df_hist.index.min(), end=df_hist.index.max(), freq='h')
-    # if not df_hist.index.equals(expected_range):
-    #     raise ValueError("full_index must be continuous with hourly frequency.")
-
     if df_forecast.isna().any().any():
         raise ValueError(
             f"df_forecast contains NaN entries."
@@ -546,78 +451,6 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
             logger.warning(f"Target {target_} not in historic data")
 
     return df_hist, df_forecast
-
-    # # --- PREPARE DATA FOR WIND POWER FORECASTING ---
-    # if (('wind_offshore' in target) or ('wind_onshore' in target) or ('solar' in target)):
-    #     # quick sanity checks that regions is set correctly
-    #     if (target.__contains__('_tenn') and tso_name != 'DE_TENNET'):
-    #         raise IOError(f"The region must be 'DE_TENNE' for target={target}")
-    #     if (target.__contains__('_50hz') and tso_name != 'DE_50HZ'):
-    #         raise IOError(f"The region must be 'DE_50HZ' for target={target}")
-    #     if (target.__contains__('_amp') and tso_name != 'DE_AMPRION'):
-    #         raise IOError(f"The region must be 'DE_AMPRION' for target={target}")
-    #     if (target.__contains__('_tran') and tso_name != 'DE_TRANSNET'):
-    #         raise IOError(f"The region must be 'DE_TRANSNET' for target={target}")
-    #
-    #     if verbose: print(f"Target={target} Nans={df_entsoe[target].isna().sum().sum()}")
-    #
-    #     tsos = ['_tenn', '_50hz', '_amp', '_tran']
-    #     regions = ['DE_TENNET', 'DE_50HZ', 'DE_AMPRION', 'DE_TRANSNET']
-    #     target_general = ''
-    #     for tso_suffix, reg in zip(tsos, regions):
-    #         if target.__contains__(tso_suffix) and tso_name != reg:
-    #             raise IOError(f"The region must be {reg} for target={target} (given region={tso_name}")
-    #         if target.endswith(tso_suffix):
-    #             target_general = target.replace(tso_suffix, '')
-    #             break
-    #     region_:dict = [reg for reg in de_regions if reg['name'] == tso_name][0]
-    #     reg_suffix = region_['suffix']
-    #
-    #
-    #     # get openmeteo data for locations within this region (for windmills associated with this TSO)
-    #     region_:dict = [reg for reg in de_regions if reg['name'] == tso_name][0]
-    #     reg_suffix = region_['suffix']
-    #     entsoe_column = str('wind_offshore' if 'wind_offshore' in target else 'wind_onshore') + reg_suffix
-    #     wind_farms = loc_offshore_windfarms if 'wind_offshore' in target else loc_onshore_windfarms
-    #     om_suffixes = [wind_farm['suffix'] for wind_farm in wind_farms if wind_farm['TSO'] == region_['TSO']]
-    #     dataframe = df_om_offshore if 'wind_offshore' in target else df_om_onshore
-    #     columns_to_select = dataframe.columns[dataframe.columns.str.endswith(tuple(om_suffixes))]
-    #
-    #     # combine weather data and target column (convention)
-    #     df_hist = pd.merge(left=dataframe[columns_to_select],right=df_entsoe[entsoe_column], left_index=True, right_index=True, how='left')
-    #     dataframe_f = df_om_offshore_f if 'wind_offshore' in target else df_om_onshore_f
-    #
-    #     df_forecast = dataframe_f[columns_to_select]
-    #
-    #
-    #     df_hist = df_hist.tail(len(df_forecast)*n_horizons) # crop the dataset if needed
-    #
-    #     if not len(df_hist.columns) == len(df_forecast.columns)+1:
-    #         raise ValueError(f'The DataFrames have different columns. '
-    #                          f'hist={df_hist.shape} forecast={df_forecast.shape}')
-    #
-    #     if len(df_hist) <= 1 or len(df_forecast) <= 1:
-    #         raise ValueError(f'The DataFrames must have >1 rows '
-    #                          f'hist={df_hist.shape} forecast={df_forecast.shape}')
-    # else:
-    #     raise NotImplementedError(f"Target {target} and region {tso_name} are not implemented.")
-    #
-    #
-    #
-    #
-    # # ------------------
-    # # if not validate_dataframe(df_hist):
-    # #     raise ValueError(f"History dataframe for target = {target} and region = {region} failed to validate.")
-    # # if not validate_dataframe(df_forecast):
-    # #     raise ValueError(f"History dataframe for target = {target} and region = {region} failed to validate.")
-    # if not df_forecast.index[0] == df_hist.index[-1]+pd.Timedelta(hours=1):
-    #     raise ValueError(f"Forecast dataframe must have index[0] = historic index[-1] + 1 hour")
-    #
-    # expected_range = pd.date_range(start=df_hist.index.min(), end=df_hist.index.max(), freq='h')
-    # if not df_hist.index.equals(expected_range):
-    #     raise ValueError("full_index must be continuous with hourly frequency.")
-    #
-    # return (df_hist, df_forecast)
 
 def mask_outliers_and_unphysical_values(
         df_hist: pd.DataFrame,
@@ -692,16 +525,6 @@ def mask_outliers_and_unphysical_values(
                     f"{outliers_hist_count} outliers found in df_hist (z-score > {threshold})."
                 )
             df_hist.loc[outliers_hist_mask, target] = np.nan
-
-            # Identify outliers in df_forecast using the same mean, std
-            # outliers_fore_mask = (df_forecast[target] - mean_val).abs() > threshold * std_val
-            # outliers_fore_count = outliers_fore_mask.sum()
-            # if verbose and outliers_fore_count > 0:
-            #     print(
-            #         f"[Anomaly Detection] '{target}' | "
-            #         f"{outliers_fore_count} outliers found in df_forecast (z-score > {threshold})."
-            #     )
-            # df_forecast.loc[outliers_fore_mask, target] = np.nan
 
     # Return the cleaned dataframes
     return df_hist, df_forecast

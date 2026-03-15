@@ -42,8 +42,8 @@ def visualize_splits(
 def compute_timeseries_split_cutoffs(
         full_index: pd.DatetimeIndex,
         horizon: int,
-        folds: int
-        # min_train_size: int
+        folds: int,
+        step: int = None,
 ) -> tuple[list[pd.Timestamp], list[tuple[pd.DatetimeIndex, pd.DatetimeIndex]]]:
     """
     Computes cutoffs and corresponding train and test indices for time series cross-validation.
@@ -52,19 +52,29 @@ def compute_timeseries_split_cutoffs(
         full_index: DatetimeIndex containing timestamps for the entire dataset
         horizon: Forecast horizon in hours
         folds: Number of folds for cross-validation
-        min_train_size: Minimum required training size in hours
+        step: Step size in hours between consecutive folds. Defaults to horizon
+              (non-overlapping). Use step < horizon for overlapping folds
+              (e.g. step=24 for daily-rolling evaluation with 168h horizon).
 
     Returns:
         Tuple containing a list of cutoffs and a list of tuples with train and test indices
     """
 
-    min_train_size = len(full_index) - folds * horizon
+    if step is None:
+        step = horizon
 
-    # print(f"| folds={folds} min_train_size={min_train_size} full_index={len(full_index)} |")
+    # For overlapping folds (step < horizon), the general formula:
+    # total data needed = min_train_size + (folds - 1) * step + horizon
+    min_train_size = len(full_index) - ((folds - 1) * step + horizon)
 
     if horizon % 24 != 0:
         raise ValueError("Horizon must be divisible by 24 (whole days).")
-    if min_train_size % 24 != 0 or min_train_size < 1:
+    if min_train_size < horizon:
+        raise ValueError(
+            f"Not enough data for {folds} folds with step={step} and horizon={horizon}. "
+            f"Need at least {(folds - 1) * step + 2 * horizon} hours, have {len(full_index)}."
+        )
+    if step == horizon and (min_train_size % 24 != 0 or min_train_size < 1):
         raise ValueError("Minimum train size must be divisible by 24 (whole days).")
     # Check if full_index is continuous (hourly data)
     expected_range = pd.date_range(start=full_index.min(), end=full_index.max(), freq='h')
@@ -74,10 +84,7 @@ def compute_timeseries_split_cutoffs(
     cutoffs = []
     train_test_splits = []
 
-    step = horizon
     current_index = len(full_index) - 1
-
-
 
     while len(cutoffs) < folds and current_index >= 0:
         cutoff = full_index[current_index]
@@ -117,13 +124,13 @@ def compute_timeseries_split_cutoffs(
             current_index -= 1
             continue
 
-        # Check divisibility conditions
-        if len(train_idx) % len(test_idx) != 0:
-            current_index -= 1
-            continue
-
-        assert len(test_idx) == horizon
-        assert len(train_idx) % horizon == 0
+        # Divisibility constraints only apply to non-overlapping (step == horizon) mode
+        if step == horizon:
+            if len(train_idx) % len(test_idx) != 0:
+                current_index -= 1
+                continue
+            assert len(test_idx) == horizon
+            assert len(train_idx) % horizon == 0
 
         # Append valid cutoff and splits
         cutoffs.append(cutoff)
@@ -132,19 +139,12 @@ def compute_timeseries_split_cutoffs(
         # Move to the next potential cutoff point
         current_index -= step
 
-        # print(f"\tFor cutoff={cutoff} | "
-        #       f"(folds={folds}) len(cutoffs)={len(cutoffs)} min_train_size={min_train_size} "
-        #       f"full_index={len(full_index)} | train={len(train_idx)} test={len(test_idx)} | "
-        #       f"train_start = {train_start} | train_end = {train_end} | test_start = {test_start}")
-
     if len(cutoffs) < folds:
         raise ValueError("Unable to generate the required number of folds with the given constraints. ")
 
     # invert so that the last fold is the latest fold
     cutoffs = cutoffs[::-1]
     train_test_splits = train_test_splits[::-1]
-
-    # visualize_splits(full_index, cutoffs, train_test_splits)
 
     return cutoffs, train_test_splits
 

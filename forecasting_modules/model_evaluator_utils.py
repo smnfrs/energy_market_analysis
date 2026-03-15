@@ -157,7 +157,7 @@ def analyze_model_performance( data: pd.DataFrame, n_folds: int, metric: str )->
     # Creating the JSON structure
     json_output_forecast = {
         row["target"]: {
-            "method": "trained",
+            "method": "forecast",
             "model_label": row["model_label"],
             "avg_rmse": row[metric],
         } for _, row in best_models_forecast.iterrows()

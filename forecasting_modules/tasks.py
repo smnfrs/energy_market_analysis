@@ -157,7 +157,7 @@ class BaseModelTasks(TaskPaths):
 
     def train_evaluate_out_of_sample(
             self, folds:int, X_train: pd.DataFrame or None, y_train: pd.DataFrame or None,
-            ds: HistForecastDataset or None, do_fit:bool)->tuple[pd.DataFrame,pd.DataFrame]:
+            ds: HistForecastDataset or None, do_fit:bool, step: int = None)->tuple[pd.DataFrame,pd.DataFrame]:
 
         start_time = time.time()  # Start the timer
 
@@ -206,7 +206,7 @@ class BaseModelTasks(TaskPaths):
 
         targets_list = ds.targets_list
 
-        if not len(y_for_model) % len(ds.forecast_idx) == 0:
+        if (step is None or step == len(ds.forecast_idx)) and not len(y_for_model) % len(ds.forecast_idx) == 0:
             logger.info(f"Train: {y_for_model.index[0]} to {y_for_model.index[-1]} ({len(y_for_model.index)/7/24} weeks, "
                   f"{len(y_for_model.index)/len(ds.forecast_idx)} horizons) Horizon={len(ds.forecast_idx)/7/24} weeks")
             logger.info(f"Test: {ds.forecast_idx[0]} to {ds.forecast_idx[-1]}")
@@ -219,11 +219,10 @@ class BaseModelTasks(TaskPaths):
 
         # cutoffs, splits = get_ts_cutoffs(ds, folds=folds) # last one is the latest one
         cutoffs, splits = compute_timeseries_split_cutoffs(
-            # ds.hist_idx,
             X_for_model.index,
             horizon=len(ds.forecast_idx),
             folds=folds,
-            # min_train_size=len(X_for_model.index) - folds * len(ds.forecast_idx),
+            step=step,
         )
 
         if self.verbose:
@@ -240,7 +239,7 @@ class BaseModelTasks(TaskPaths):
                     logger.info(f"Warning! Empty train data batch idx={idx}/{len(cutoffs)}. Skipping.")
                 continue
 
-            if not len(train_idx) % len(test_idx) == 0:
+            if (step is None or step == len(ds.forecast_idx)) and not len(train_idx) % len(test_idx) == 0:
                 logger.info(f"Train: {train_idx[0]} to {train_idx[-1]} ({len(train_idx)/7/24} weeks, "
                       f"{len(train_idx)/len(test_idx)} horizons) Horizon={len(test_idx)/7/24} weeks")
                 logger.info(f"Test: {test_idx[0]} to {test_idx[-1]}")
@@ -560,6 +559,35 @@ class BaseModelTasks(TaskPaths):
 
         if self.verbose:
             logger.info(f"Results of {self.model_label} fits are saved into {dir}")
+
+    def save_evaluation_results(self, dir: str, ds=None):
+        """Save daily-rolling evaluation results with cutoff and hours_ahead columns.
+
+        Unlike save_results() which concatenates folds into result.csv, this writes
+        evaluation_daily.csv with explicit cutoff and hours_ahead metadata for each
+        prediction, enabling proper per-horizon stratification.
+        """
+        if ds is None:
+            ds = self.base_ds
+        dir = self.to_dir(dir=dir)
+
+        rows = []
+        for cutoff, result in self.results.items():
+            result_inv = ds.inverse_transform_targets(result.copy())
+            result_inv["cutoff"] = cutoff
+            result_inv["hours_ahead"] = (
+                (result_inv.index - cutoff).total_seconds() / 3600
+            ).astype(int)
+            rows.append(result_inv)
+
+        df_eval = pd.concat(rows, axis=0)
+        df_eval.to_csv(dir + "evaluation_daily.csv")
+
+        if self.verbose:
+            logger.info(
+                f"Daily-rolling evaluation for {self.model_label}: "
+                f"{len(self.results)} folds, {len(df_eval)} total rows → {dir}evaluation_daily.csv"
+            )
 
     def save_full_model(self, dir:str, ds:HistForecastDataset or None):
 
@@ -1144,6 +1172,125 @@ class ForecastingTaskSingleTarget:
         wrapper.train_evaluate_out_of_sample(folds=folds, X_train=None, y_train=None, ds=None, do_fit=False)
         wrapper.save_results(dir='forecast', ds=None)
         wrapper.run_save_forecast(X_test=None, y_train=None, folds=folds)
+
+    # ------ EVALUATION (daily-rolling, inference-only) --------
+
+    def process_evaluation_task_base(self, e_task):
+        """Run daily-rolling evaluation: inference-only with step=24h.
+
+        Loads a trained model and runs overlapping-fold CV (step=24h) so that
+        each calendar day appears at all 7 forecast horizon positions. Results
+        are saved to evaluation_daily.csv with cutoff + hours_ahead metadata.
+        """
+        model_label = e_task['model']
+        step = e_task.get('step', 24)
+        folds = e_task.get('folds', None)
+
+        wrapper = BaseModelTasks(
+            run_label=self.run_label, targets_list=self.targets_list, model_label=model_label,
+            working_dir=self.outdir_, verbose=self.verbose
+        )
+
+        try:
+            wrapper.set_load_dataset_from_dir(dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast)
+            wrapper.load_forecaster_from_dir(dir='trained')
+        except FileNotFoundError as e:
+            logger.warning(f"Skipping evaluation for {model_label}: trained model not found ({e})")
+            return
+
+        # Compute max folds if not specified: fill available data with step=24 folds
+        horizon = len(wrapper.base_ds.forecast_idx)
+        n_available = len(wrapper.base_ds.exog_hist)
+        if folds is None:
+            # Need: min_train >= horizon, so max folds = (n_available - 2*horizon) // step + 1
+            folds = (n_available - 2 * horizon) // step + 1
+            folds = min(folds, 35)  # Cap at ~5 weeks of daily folds
+        if folds < 1:
+            logger.warning(f"Not enough data for evaluation of {model_label} (need ≥{2*horizon}h, have {n_available}h)")
+            return
+
+        logger.info(f"Daily-rolling evaluation: {model_label}, {folds} folds, step={step}h, horizon={horizon}h")
+        wrapper.train_evaluate_out_of_sample(
+            folds=folds, X_train=None, y_train=None, ds=None, do_fit=False, step=step
+        )
+        wrapper.save_evaluation_results(dir='forecast', ds=None)
+
+    def process_evaluation_task_ensemble(self, e_task):
+        """Run daily-rolling evaluation for ensemble models.
+
+        Follows the same pattern as process_forecasting_task_ensemble:
+        1. Load trained base models and meta-model
+        2. Run base models with enough non-overlapping folds to cover the eval window
+        3. Build meta-features from base model predictions
+        4. Run meta-model with step=24 on the meta-features
+        """
+        model_label = e_task['model']
+        step = e_task.get('step', 24)
+        folds = e_task.get('folds', None)
+
+        wrapper = EnsembleModelTasks(
+            run_label=self.run_label, targets_list=self.targets_list, model_label=model_label,
+            working_dir=self.outdir_, verbose=self.verbose
+        )
+
+        try:
+            wrapper.set_load_dataset_from_dir(
+                dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
+            )
+            wrapper.set_load_datasets_for_base_models_from_dir(
+                dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
+            )
+            wrapper.load_base_models_from_dir(dir='trained')
+            model_pars, extra_model_pars = wrapper.load_forecaster_from_dir(dir='trained')
+        except FileNotFoundError as e:
+            logger.warning(f"Skipping ensemble evaluation for {model_label}: trained model not found ({e})")
+            return
+
+        # Run base models with enough non-overlapping folds to generate meta-features.
+        # Need: (eval_folds - 1) * step + 2 * horizon hours of meta-feature data.
+        # Meta-feature data = base_folds * horizon hours.
+        horizon = len(wrapper.meta_ds.forecast_idx)
+        n_available = len(wrapper.base_ds.exog_hist) if wrapper.base_ds else len(wrapper.meta_ds.exog_hist)
+
+        if folds is None:
+            folds = (n_available - 2 * horizon) // step + 1
+            folds = min(folds, 35)
+
+        # Base models need enough folds so that meta-feature data covers the eval window
+        min_meta_hours = (folds - 1) * step + 2 * horizon
+        base_folds_needed = (min_meta_hours + horizon - 1) // horizon  # ceiling division
+        base_folds_needed = max(base_folds_needed, folds)
+        # Cap by what's available (same formula as non-overlapping mode)
+        max_base_folds = (n_available - horizon) // horizon
+        base_folds_needed = min(base_folds_needed, max_base_folds)
+
+        if base_folds_needed < 3:
+            logger.warning(f"Not enough data for ensemble evaluation of {model_label}")
+            return
+
+        logger.info(
+            f"Daily-rolling evaluation (ensemble): {model_label}, "
+            f"{base_folds_needed} base folds, {folds} eval folds, step={step}h"
+        )
+
+        # Step 1: Run base models with non-overlapping folds (inference only)
+        wrapper.train_evaluate_out_of_sample_base_models(
+            cv_folds_base=base_folds_needed, do_fit=False
+        )
+
+        # Step 2: Build meta-features from base model predictions
+        X_ensemble, y_ensemble = wrapper.create_X_y_for_model_from_base_models_cv_folds(
+            X_meta=wrapper.meta_ds.exog_hist, y_meta=wrapper.meta_ds.target_hist,
+            cv_folds_base_to_use=extra_model_pars['cv_folds_base'],
+            use_base_models_pred_intervals=extra_model_pars['use_base_models_pred_intervals']
+        )
+
+        # Step 3: Run meta-model with step=24 daily-rolling evaluation
+        wrapper.train_evaluate_out_of_sample(
+            folds=folds, X_train=X_ensemble, y_train=y_ensemble, ds=wrapper.meta_ds,
+            do_fit=False, step=step
+        )
+        wrapper.save_evaluation_results(dir='forecast', ds=wrapper.meta_ds)
 
     # ------ OTHERS --------
 

@@ -264,6 +264,17 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             { 'model':'MultiTargetLGBM', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             { 'model':'MultiTargetElasticNet', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
             # { 'model':'ensemble[MultiTargetLGBM](MultiTargetLGBM,MultiTargetCatBoost,MultiTargetElasticNet)', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'}
+        ],
+        "task_evaluation":[
+            {'model':'XGBoost', 'step':24},
+            {'model':'LightGBM', 'step':24},
+            {'model':'ElasticNet', 'step':24},
+            {'model':'ensemble[XGBoost](XGBoost,ElasticNet)', 'step':24},
+            {'model':'ensemble[LightGBM](LightGBM,ElasticNet)', 'step':24},
+            # ----
+            {'model':'MultiTargetCatBoost', 'step':24},
+            {'model':'MultiTargetLGBM', 'step':24},
+            {'model':'MultiTargetElasticNet', 'step':24},
         ]
     }
 
@@ -301,223 +312,14 @@ def create_task_list(country_dict:str,target:str,freq:str,models:list,tasks:list
             if task['model'] in models:
                 default_task["task_summarize"].append(copy.deepcopy(task))
 
+    default_task["task_evaluation"] = []
+    if "evaluate" in tasks:
+        for i, task in enumerate(default_task_original["task_evaluation"]):
+            if task['model'] in models:
+                default_task["task_evaluation"].append(copy.deepcopy(task))
+
     return [default_task]
 
-
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    # # create task
-    # task = dict()
-    #
-    # task["label"] = target
-    # task["targets"] = None
-    # task["region"] = None
-    # task["plot_label"] = None
-    #
-    # # empty lists for different tasks
-    # task_fine_tuning = []
-    # task_training = []
-    # task_forecasting = []
-    # task_plot = []
-    # task_summarize = []
-    #
-    # lgbm_setups = {
-    #     "task_fine_tuning":
-    #         {'model':'LightGBM',
-    #          'dataset_pars':{
-    #              'log_target':False,
-    #              'forecast_horizon':None,
-    #              'target_scaler':'StandardScaler',
-    #              'feature_scaler':'StandardScaler',
-    #              'copy_input':True,
-    #              'locations':[],
-    #              'add_cyclical_time_features':True,
-    #              'feature_engineer':'WeatherWindPowerFE'
-    #          },
-    #          'finetuning_pars':{'n_trials':30,'optim_metric':'rmse','cv_folds':cv_folds_ft}},
-    #     "task_training":{'model':'LightGBM', 'pars':{'cv_folds':cv_folds_eval}},
-    #     "task_forecasting": {'model':'LightGBM', 'past_folds':cv_folds_eval},
-    #     "task_plot":
-    #         {'model':'LightGBM','n':2, 'name':'LightGBM','lw':0.7,'color':"orange",'ci_alpha':0.0,
-    #          'train_forecast':'train'},
-    #     "task_summarize":
-    #         {'model':'LightGBM', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'},
-    # }
-    # xdg_setups = {
-    #
-    # }
-    #
-    #
-    # # add tasks based on model to be used
-    # if "LightGBM":
-    #     if "finetune" in tasks:
-    #         task_fine_tuning_ = \
-    #             {'model':'LightGBM',
-    #              'dataset_pars':{
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'copy_input':True,
-    #                  'locations':[],
-    #                  'add_cyclical_time_features':True,
-    #                  'feature_engineer':'WeatherWindPowerFE'
-    #              },
-    #              'finetuning_pars':{'n_trials':30,'optim_metric':'rmse','cv_folds':cv_folds_ft}},
-    #         task_fine_tuning.append(task_fine_tuning_)
-    #     if "train" in tasks:
-    #         task_training.append({'model':'XGBoost', 'pars':{'cv_folds':cv_folds_eval}})
-    #     if "forecast" in tasks:
-    #         task_forecasting.append({'model':'XGBoost', 'past_folds':cv_folds_eval})
-    #     if "plot" in tasks:
-    #         task_plot.append(
-    #             {'model':'XGBoost','n':2, 'name':'XGBoost','lw':0.7,'color':"green",'ci_alpha':0.0,
-    #              'train_forecast':'train'}
-    #         )
-    #     if "summarize":
-    #         task_summarize.append(
-    #             {'model':'XGBoost', 'summary_metric':'rmse', 'n_folds_best':3, 'method_for_best':'trained'}
-    #         )
-    #
-    # task["task_fine_tuning"] = copy.deepcopy(task_fine_tuning)
-    # task["task_training"] = copy.deepcopy(task_training)
-    # task["task_forecasting"] = copy.deepcopy(task_forecasting)
-    # task["task_plot"] = copy.deepcopy(task_plot)
-    # task["task_summarize"] = copy.deepcopy(task_summarize)
-    #
-    # ''' ----------------------- FINETUNING TASKS --------------------- '''
-    #
-    # task["task_fine_tuning"] = []
-    # if "finetune" in tasks:
-    #     # ---
-    #     if "LightGBM" in models:
-    #         task_fine_tuning = \
-    #         {'model':'LightGBM',
-    #              'dataset_pars':{
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'copy_input':True,
-    #                  'locations':[],
-    #                  'add_cyclical_time_features':True,
-    #                  'feature_engineer':'WeatherWindPowerFE'
-    #              },
-    #              'finetuning_pars':{'n_trials':30,'optim_metric':'rmse','cv_folds':cv_folds_ft}},
-    #         task["task_fine_tuning"].append(task_fine_tuning)
-    #     # ---
-    #     if 'XGBoost' in models:
-    #         task_fine_tuning = \
-    #             {'model':'XGBoost',
-    #              'dataset_pars':{
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'copy_input':True,
-    #                  'locations':[],
-    #                  'add_cyclical_time_features':True,
-    #                  'feature_engineer':'WeatherWindPowerFE'
-    #              },
-    #              'finetuning_pars':{'n_trials':30,'optim_metric':'rmse','cv_folds':cv_folds_ft}}
-    #         task["task_fine_tuning"].append(task_fine_tuning)
-    #     # ---
-    #     if 'ElasticNet' in models:
-    #         task_fine_tuning = \
-    #             {'model':'ElasticNet',
-    #              'dataset_pars':{
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'copy_input':True,
-    #                  'locations':[],
-    #                  'add_cyclical_time_features':True,
-    #                  'feature_engineer':'WeatherWindPowerFE'
-    #              },
-    #              'finetuning_pars':{'n_trials':30,'optim_metric':'rmse','cv_folds':cv_folds_ft}}
-    #         task["task_fine_tuning"].append(task_fine_tuning)
-    #     # ---
-    #     if 'ensemble[XGBoost](XGBoost,ElasticNet)' in models:
-    #         task_fine_tuning = \
-    #             {'model':'ensemble[XGBoost](XGBoost,ElasticNet)',
-    #              'dataset_pars': {
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'add_cyclical_time_features':True,
-    #                  'locations':[],
-    #                  'feature_engineer': None,#'WeatherWindPowerFE',
-    #                  'lags_target': None,
-    #                  'copy_input':True
-    #              },
-    #              'finetuning_pars':{'n_trials':20,
-    #                                 'optim_metric':'rmse',
-    #                                 'cv_folds':cv_folds_ft,
-    #                                 'cv_folds_base':40,#35, # at least cv_folds_eval + 1
-    #                                 'use_base_models_pred_intervals':False}}
-    #         task["task_fine_tuning"].append(task_fine_tuning)
-    #     # ---
-    #     if 'ensemble[LightGBM](LightGBM,ElasticNet)' in models:
-    #         task_fine_tuning = \
-    #             {'model':'ensemble[LightGBM](LightGBM,ElasticNet)',
-    #              'dataset_pars': {
-    #                  'log_target':False,
-    #                  'forecast_horizon':None,
-    #                  'target_scaler':'StandardScaler',
-    #                  'feature_scaler':'StandardScaler',
-    #                  'add_cyclical_time_features':True,
-    #                  'locations':[],
-    #                  'feature_engineer': None,#'WeatherWindPowerFE',
-    #                  'lags_target': None,
-    #                  'copy_input':True
-    #              },
-    #              'finetuning_pars':{'n_trials':20,
-    #                                 'optim_metric':'rmse',
-    #                                 'cv_folds':cv_folds_ft,
-    #                                 'cv_folds_base':40,#35, # at least cv_folds_eval + 1
-    #                                 'use_base_models_pred_intervals':False}}
-    #         task["task_fine_tuning"].append(task_fine_tuning)
-    #
-    # ''' ----------------------- FULL MODEL TRAINING TASKS ------------------- '''
-    #
-    # task["task_training"] = []
-    # if "training" in task:
-    #     if "XGBoost" in models:
-    #         task["task_training"].append({'model':'XGBoost', 'pars':{'cv_folds':cv_folds_eval}})
-    #     if "LightGBM" in models:
-    #         task["task_training"].append({'model':'LightGBM', 'pars':{'cv_folds':cv_folds_eval}})
-    #     if "ElasticNet" in models:
-    #         task["task_training"].append({'model':'ElasticNet', 'pars':{'cv_folds':cv_folds_eval}})
-    #     if "ensemble[XGBoost](XGBoost,ElasticNet)" in models:
-    #         task["task_training"].append(
-    #             {'model':'ensemble[XGBoost](XGBoost,ElasticNet)','pars':{'cv_folds':cv_folds_eval}}
-    #         )
-    #     if "ensemble[LightGBM](LightGBM,ElasticNet)" in models:
-    #         task["task_training"].append(
-    #             {'model':'ensemble[LightGBM](LightGBM,ElasticNet)','pars':{'cv_folds':cv_folds_eval}}
-    #         )
-    #
-    # ''' ------------------- FORECASTING WITH FULLY TRAINED MODEL TASKS --------------------- '''
-    # task['task_forecasting'] = []
-    # if 'forecasting' in tasks:
 
 
 def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variable:str,outdir:str,verbose:bool, region_filter:str=None):
@@ -555,7 +357,6 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
     ''' -------------- ONSHORE WIND POWER GENERATION (4 TSOs) ------------- '''
 
     if variable == "wind_onshore":
-        # avail_regions = ["DE_AMPRION","DE_TENNET", "DE_50HZ", "DE_TRANSNET"]
         avail_regions = [tso['name'] for tso in c_dict['regions'] if variable in tso['available_targets']]
         locations = c_dict['locations']['onshore']
         for tso_reg in de_regions:
@@ -577,7 +378,6 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
     ''' -------------- SOLAR POWER GENERATION (4 TSOs) ------------- '''
 
     if variable == "solar":
-        # avail_regions = ["DE_TENNET", "DE_50HZ", "DE_AMPRION", "DE_TRANSNET"]
         avail_regions = [tso['name'] for tso in c_dict['regions'] if variable in tso['available_targets']]
         locations = c_dict['locations']['solar']
         for tso_reg in de_regions:
@@ -600,7 +400,6 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
     ''' -------------- LOAD (4 TSOs) ------------- '''
 
     if variable == "load":
-        # avail_regions = [ "DE_TENNET", "DE_50HZ", "DE_AMPRION", "DE_TRANSNET" ]
         avail_regions = [tso['name'] for tso in c_dict['regions'] if variable in tso['available_targets']]
         locations = c_dict['locations']['cities']
         for tso_reg in de_regions:
@@ -623,7 +422,6 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
 
     if variable == "energy_mix":
 
-        # avail_regions = [ "DE_50HZ", "DE_TENNET", "DE_AMPRION", "DE_TRANSNET" ] # [ "DE_50HZ", "DE_TENNET", "DE_AMPRION", "DE_TRANSNET" ]
         avail_regions = [tso['name'] for tso in c_dict['regions'] if variable in tso['available_targets']]
         locations = c_dict['locations']['cities']
         for tso_reg in de_regions:
@@ -690,16 +488,10 @@ def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:boo
     if target == 'all': target = targets[:-1]
     else: target = [target]
 
-    # models = single_target_model_list + multi_target_model_list + ['all']
-    # if not model in models:
-    #     raise ValueError(f'model must be in {models}. Given: {model}')
-    # if model == 'all': model = models[:-1]
-    # else: model = [model]
-
-    modes = ['finetune', 'train', 'forecast', 'plot', 'summarize', 'all']
+    modes = ['finetune', 'train', 'forecast', 'plot', 'summarize', 'evaluate', 'all']
     if not mode in modes:
         raise ValueError(f'mode must be in {modes}. Given: {mode}')
-    if mode == 'all': mode = modes[1:-1]
+    if mode == 'all': mode = modes[1:-2]  # exclude 'evaluate' and 'all' from 'all'
     elif model == 'forecast': mode = ['forecast','summarize']
     else: mode = [mode]
 
@@ -754,51 +546,6 @@ def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:boo
             f"All tasks for country {country_code} are completed successfully! Execution time: "
             f"{int(hours)} hours and {int(minutes)} minutes."
         )
-
-
-
-    # # freq='hourly'
-    # # freq='minutely_15'
-    #
-    # # db_path = './database/'
-    # # db_path_15min = './database_15min/'
-    #
-    # # targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'energy_mix']
-    # targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'energy_mix']
-    # # targets = ['energy_mix']
-    #
-    # # update_forecast_production(
-    # #     database=db_path, variable='energy_mix', outdir='./output/forecasts/', verbose=True
-    # # )
-    #
-    # start_time = time.time()  # Start the timer
-    #
-    #
-    # for target in targets:
-    #     update_forecast_production(
-    #         database='./database/DE/',
-    #         variable=target,
-    #         outdir='./output/forecasts/',
-    #         freq='hourly',
-    #         verbose=True
-    #     )
-    #     # update_forecast_production(
-    #     #     database='./database_15min/',
-    #     #     variable=target,
-    #     #     outdir='./output_15min/forecasts/',
-    #     #     freq='minutely_15',
-    #     #     verbose=True
-    #     # )
-    #
-    # end_time = time.time()  # End the timer
-    # elapsed_time = end_time - start_time
-    # hours, minutes = divmod(elapsed_time // 60, 60)
-    #
-    # logger.info(
-    #     f"All tasks in update are completed successfully! Execution time: "
-    #     f"{int(hours)} hours and {int(minutes)} minutes."
-    # )
-
 
 
 if __name__ == '__main__':

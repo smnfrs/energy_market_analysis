@@ -12,7 +12,6 @@ from data_collection_modules import (
     update_smard_from_api,
     update_smard_v2,
     update_epexspot_from_files,
-    update_entsoe_from_api,
     OpenMeteo,
     countries_metadata
 )
@@ -42,9 +41,6 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
     if len(locations) == 0:
         logger.warning(f"No locations (for weather data) found for country code {country_code}.")
 
-    # Fetch API key from environment
-    entsoe_api_key = os.getenv("ENTSOE_API_KEY")
-
     today = pd.Timestamp(datetime.today()).tz_localize(tz='UTC')
     today = today.normalize() + pd.DateOffset(hours=today.hour) # leave only hours
 
@@ -54,7 +50,6 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
     tasks = [
         'all',
         'update_epexspot',
-        'update_entsoe',
         'update_smard',
         'update_smard_v2',
         'update_openmeteo_windfarms_offshore',
@@ -68,13 +63,6 @@ def main_country(country_code:str, task:str, freq:str, verbose:bool = True):
     logger.info(f"Starting task {task} for country {country_code} and frequency {freq}...")
 
     start_time = time.time()
-
-    # split tasks for lighter workflows
-    if task == "update_entsoe" or task == "all":
-        update_entsoe_from_api(
-            country_dict=c_dict, today=today, data_dir=db_path + 'entsoe/', api_key=entsoe_api_key,
-            freq=freq, verbose=verbose
-        )
 
     if country_code=='DE' and (task == "update_smard" or task == "all"):
         update_smard_from_api(

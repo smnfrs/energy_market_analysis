@@ -28,5 +28,5 @@ from .tasks import (
     analyze_model_performance
 )
 from .interface import (
-    update_forecast_production
+    main_forecasting_pipeline
 )

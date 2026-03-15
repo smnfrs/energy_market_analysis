@@ -16,7 +16,6 @@ jobs:
     permissions:
       contents: write
     env:
-      ENTSOE_API_KEY: ${{ secrets.ENTSOE_API_KEY }}
       LOG_LEVEL: WARNING
     steps:
       - name: Checkout Repository
@@ -36,6 +35,9 @@ jobs:
 
       - name: Publish Forecasts
         run: pipenv run python publish_data.py all all
+
+      - name: Export national DE/LU forecasts
+        run: pipenv run python export_national_forecasts.py
 
       - name: Commit Changes
         run: |

@@ -12,10 +12,6 @@ from .collect_data_openmeteo import (
     update_openmeteo_from_api,
     add_solar_elevation_and_azimuth
 )
-from .collect_data_entsoe import (
-    create_entsoe_from_api,
-    update_entsoe_from_api
-)
 from .eu_locations import (
     countries_metadata
 )

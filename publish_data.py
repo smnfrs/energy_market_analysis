@@ -16,7 +16,6 @@ import time
 
 from forecasting_modules import compute_error_metrics, analyze_model_performance, convert_ensemble_string
 from data_collection_modules.eu_locations import countries_metadata
-from data_collection_modules.collect_data_entsoe import entsoe_generation_type_mapping
 from data_collection_modules.collect_data_smard import DataEnergySMARD
 from data_modules.utils import (
     validate_dataframe
@@ -894,7 +893,7 @@ class PublishGenerationLoad:
         self.verbose = verbose
         self.results_root_dir = results_root_dir # 'forecasting_modules/output/',
 
-        self.load_entsoe_data()
+        self.load_smard_v2_actuals()
         if country_dict['code'] == 'DE':
             self.load_smard_data()
         else:
@@ -938,7 +937,7 @@ class PublishGenerationLoad:
 
             # dts_tarets[target] = copy.deepcopy(dt)
 
-            # # summ all contributions as we can only compare the total energy generation with ENTSO-E
+            # sum all contributions for total energy generation comparison
             # if target_label == 'energy_mix':
             #     dt_total = add_datas(dt_total, dt, target, target, expect_same_dates=True) # 'generation'
             # else:
@@ -957,7 +956,7 @@ class PublishGenerationLoad:
                 #
 
         suffix = de_reg['suffix']
-        # for energy mix we are only interested in the total generation for which there is ENTSO-E forecast
+        # for energy mix we are interested in the total generation
         if target_label == 'energy_mix':
             # target = 'generation'
             # load best wind,solar
@@ -997,14 +996,12 @@ class PublishGenerationLoad:
             dts[target].df_train_res, target, f"{target}_actual",f"{target}_fitted",
             self.metric, self.n_folds
         )
-        # compute ENTSO-E error
-        ave_entsoe_metric = dts[target].get_ave_metric(
-            self.df_entsoe, target, f"{target+suffix}",f"{target}_forecast"+suffix,
-            self.metric, self.n_folds
-        )
+        # SMARD v2 has per-TSO actuals but no per-TSO forecasts,
+        # so we can't compute a TSO reference forecast error per region.
+        ave_reference_metric = np.nan
 
-        logger.info(f'For {target} average over {self.n_folds} '
-                    f'total RMSE is {ave_total_metric:.0f} | ENTSOE RMSE is {ave_entsoe_metric:.0f}')
+        logger.info(f'For {target}{suffix} average over {self.n_folds} '
+                    f'total RMSE is {ave_total_metric:.0f}')
 
         # publish generation per tso (LAST UPDATED FORECAST)
         dts[target].save_past_and_current_forecasts_json(
@@ -1026,7 +1023,7 @@ class PublishGenerationLoad:
         #     self.save_multiitarget_data_json(de_reg['suffix'], dts_tarets)
 
         # add summary to the summary dict
-        metadata = dts[target].get_table_entry(de_reg['TSO'], ave_total_metric, ave_entsoe_metric)
+        metadata = dts[target].get_table_entry(de_reg['TSO'], ave_total_metric, ave_reference_metric)
 
         # meta = {"train_cutoffs": dt.train_cutoffs, "horizon": dt.horizon, "target": target}
         return dt, dts, metadata
@@ -1059,23 +1056,29 @@ class PublishGenerationLoad:
         })
         timeseries_to_json( df=df, fname=outdir + "forecast_curr_fitted.json" )
 
-    def load_entsoe_data(self):
-        self.df_entsoe = pd.read_parquet(self.db_path + 'entsoe/' + 'history_hourly.parquet')
+    def load_smard_v2_actuals(self):
+        """Load SMARD v2 per-TSO actuals (replaces ENTSO-E data)."""
+        smard_v2_path = self.db_path + 'smard_v2/' + 'history_hourly.parquet'
+        if not os.path.exists(smard_v2_path):
+            logger.warning(f"SMARD v2 data not found at {smard_v2_path}")
+            self.df_smard_v2 = pd.DataFrame()
+            return
 
-        self.df_entsoe = validate_dataframe(self.df_entsoe, 'df_entsoe', logger.warning, self.verbose)
+        self.df_smard_v2 = pd.read_parquet(smard_v2_path)
+        self.df_smard_v2 = self.df_smard_v2.apply(pd.to_numeric, errors='coerce')
+        self.df_smard_v2 = validate_dataframe(self.df_smard_v2, 'df_smard_v2', logger.warning, self.verbose)
 
-        # compute total generation
+        # Compute total generation per TSO (sum all non-load columns for each suffix)
         for de_reg in self.c_dict['regions']:
             suffix = de_reg['suffix']
-            self.df_entsoe['generation'+suffix] = \
-                self.df_entsoe[[
-                    col+suffix for col in list(entsoe_generation_type_mapping.keys())
-                        if col+suffix in self.df_entsoe.columns
-                ]].sum(axis=1)
+            gen_cols = [
+                c for c in self.df_smard_v2.columns
+                if c.endswith(suffix) and not c.startswith('load')
+            ]
+            if gen_cols:
+                self.df_smard_v2['generation' + suffix] = self.df_smard_v2[gen_cols].sum(axis=1)
 
-
-
-        logger.info(f'Loaded ENTSO-E with file {len(self.df_entsoe)} entries')
+        logger.info(f'Loaded SMARD v2 actuals with {len(self.df_smard_v2)} entries')
 
     def load_smard_data(self):
         def print_nans(df):
@@ -1089,7 +1092,7 @@ class PublishGenerationLoad:
         if not isinstance(self.df_smard.index, pd.DatetimeIndex):
             self.df_smard = self.df_smard.set_index(pd.to_datetime(self.df_smard.index))
 
-        self.df_smard = validate_dataframe(self.df_smard, 'df_entsoe', logger.warning, self.verbose)
+        self.df_smard = validate_dataframe(self.df_smard, 'df_smard', logger.warning, self.verbose)
         self.df_smard.rename(columns={
             "total_gen_forecasted":"generation_forecast",
             "wind_offshore_forecasted":"wind_offshore_forecast",
@@ -1127,25 +1130,24 @@ class PublishGenerationLoad:
         reference_error_ = reference_error.copy()
         metadatas_tso_ = pd.DataFrame(metadatas_tso).T
 
-        ''' error section '''
         output_mrkdown_text = \
-        f""" 
-The total energy generation week-ahead forecast has a RMSE of **{int(total_error['generation'])}**, compared to **{int(reference_error['generation'])}** for the TSO day-ahead reference forecast.  
-        """
+            f"The total energy generation week-ahead forecast has a RMSE of **{int(total_error['generation'])}**."
+
+        ref_err = reference_error.get('generation')
+        if ref_err is not None and not np.isnan(ref_err):
+            output_mrkdown_text += f" SMARD day-ahead reference forecast RMSE: **{int(ref_err)}**."
+
         if len(list(dts_tso_.keys())) > 0:
-            output_mrkdown_text+= \
-        f"""
-The largest contributor to the forecast error is **{metadatas_tso_.loc[metadatas_tso_['RMSE'].idxmax(), 'TSO/Region']}**, with an RMSE of **{int(metadatas_tso_.loc[metadatas_tso_['RMSE'].idxmax(), 'RMSE'])}**.  
+            output_mrkdown_text += (
+                f"\n\nThe largest contributor to the forecast error is "
+                f"**{metadatas_tso_.loc[metadatas_tso_['RMSE'].idxmax(), 'TSO/Region']}**, "
+                f"with an RMSE of **{int(metadatas_tso_.loc[metadatas_tso_['RMSE'].idxmax(), 'RMSE'])}**."
+            )
 
-On average, our forecast RMSE is **{(metadatas_tso_['RMSE'] / metadatas_tso_['TSO RMSE']).mean():.1f}** times the TSO forecast RMSE,   
-and our forecast achieves lower error in the following regions:  **{", ".join(metadatas_tso_.loc[metadatas_tso_['RMSE'] < metadatas_tso_['TSO RMSE'], 'TSO/Region'].tolist())}**.  
-        """
-        output_mrkdown_text += \
-        """
-For a detailed breakdown of forecast error metrics, see the **'Individual Forecasts'** section.
-
-📊 *Detailed analytics coming soon!*
-        """
+        output_mrkdown_text += (
+            "\n\nFor a detailed breakdown of forecast error metrics, "
+            "see the **'Individual Forecasts'** section."
+        )
         summary_fpath = f"{self.output_dir_for_figs}/{'energy_mix'}_notes_en.md"
         with open(summary_fpath, "w") as file:
             file.write(output_mrkdown_text)
@@ -1206,15 +1208,13 @@ For a detailed breakdown of forecast error metrics, see the **'Individual Foreca
             f"{target}_actual", f"{target}_fitted", self.metric, self.n_folds
         )
 
-        # compute smard total error
-        if not self.df_smard is None:
+        # compute SMARD national reference error (DE only — SMARD has national-level forecasts)
+        if self.df_smard is not None:
             ave_smard_metric = dts_total[target].get_ave_metric(
                 self.df_smard, target, target, f"{target}_forecast", self.metric, self.n_folds
             )
         else:
-            if len(regions) != 1:
-                raise ValueError("Expect one TSO for using ENTSOE average error as an overall error metric")
-            ave_smard_metric = metadatas_tso[region_dict['TSO']]['TSO RMSE']
+            ave_smard_metric = np.nan
 
         logger.info(f"For {target} average over {self.n_folds} "
                     f"total RMSE is {ave_total_metric:.0f} | SMARD RMSE is {ave_smard_metric:.0f}")
@@ -1232,7 +1232,7 @@ For a detailed breakdown of forecast error metrics, see the **'Individual Foreca
         table["Best Model"] = table["Best Model"].apply(lambda x: "Ensemble" if x.startswith("meta_") else x)
         # Round floating point values to integers
         table[r"RMSE"] = table[r"RMSE"].round().astype(int)
-        table[r"TSO RMSE"] = table[r"TSO RMSE"].round().astype(int)
+        table[r"TSO RMSE"] = table[r"TSO RMSE"].round().astype('Int64')  # nullable int, handles NaN
         # Save as markdown
         summary_fpath = f'{self.output_dir_for_figs}/{target}_notes_en.md'
         table.to_markdown(summary_fpath, index=False)
