@@ -35,9 +35,6 @@ jobs:
       - name: Update SMARD v2 Data
         run: pipenv run python update_database.py DE update_smard_v2 hourly
 
-      - name: Update EPEXSPOT Data
-        run: pipenv run python update_database.py all update_epexspot hourly
-        
       - name: Update OpenMeteo Offshore Windfarms Data
         run: pipenv run python update_database.py all update_openmeteo_windfarms_offshore hourly
 

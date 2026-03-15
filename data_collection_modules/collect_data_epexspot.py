@@ -43,7 +43,8 @@ def update_epexspot_from_files(
         df_da_upd = pd.concat([df_da_upd, df_i])
 
     if len(files) == 0:
-        raise FileNotFoundError(f"File in {raw_data_dir} does not exist")
+        logger.warning(f"No CSV files found in {raw_data_dir} — skipping EPEX update")
+        return
 
     df_da_upd['date'] = pd.to_datetime(df_da_upd['date'])
     df_da_upd.sort_values(by='date', inplace=True)
