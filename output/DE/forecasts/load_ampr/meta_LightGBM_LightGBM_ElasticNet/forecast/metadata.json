@@ -1,34 +1,30 @@
 {
-    "start_date": "2024-03-30T00:00:00+00:00",
-    "end_date": "2026-02-27T23:00:00+00:00",
+    "start_date": "2024-04-12T00:00:00+00:00",
+    "end_date": "2026-03-12T23:00:00+00:00",
     "horizon": 168,
     "features": [
         "temperature_2m_agg",
         "relative_humidity_2m_agg",
+        "surface_pressure_agg",
+        "precipitation_agg",
+        "cloud_cover_agg",
         "wind_speed_10m_agg",
         "wind_speed_100m_agg",
         "wind_direction_10m_agg",
         "wind_direction_100m_agg",
         "wind_gusts_10m_agg",
-        "shortwave_radiation_agg",
-        "direct_radiation_agg",
-        "diffuse_radiation_agg",
-        "direct_normal_irradiance_agg",
-        "global_tilted_irradiance_agg",
-        "terrestrial_radiation_agg",
-        "dew_point_temperature_agg",
-        "dew_point_spread_agg",
+        "HDH_agg",
+        "CDH_agg",
         "wind_chill_agg",
-        "humidex_agg",
-        "pressure_trend_agg",
+        "air_density_agg",
         "rain_indicator_agg",
         "wind_speed_gradient_agg",
-        "wind_u_agg",
-        "wind_v_agg",
-        "cloud_cover_fraction_agg",
         "effective_solar_agg",
+        "temp_lag_1_agg",
+        "temp_lag_3_agg",
         "precip_lags_lag_1_agg",
         "precip_lags_lag_3_agg",
+        "precip_lags_lag_6_agg",
         "temp_roll_6_agg",
         "temp_roll_12_agg",
         "temp_roll_24_agg",
@@ -38,10 +34,12 @@
         "wind_onshore_50hz",
         "wind_onshore_tenn",
         "wind_onshore_tran",
+        "wind_onshore_lu",
         "solar_ampr",
         "solar_50hz",
         "solar_tenn",
         "solar_tran",
+        "solar_lu",
         "hour",
         "dayofweek",
         "is_holiday",
@@ -51,79 +49,79 @@
         "day_cos"
     ],
     "error_metrics": {
-        "2026-01-24T00:00:00+00:00": {
+        "2026-02-06T00:00:00+00:00": {
             "load_ampr": {
-                "mse": 472622.1378555608,
-                "rmse": 687.475190720044,
-                "mae": 496.6393784759187,
-                "mape": 2.29378327389538,
-                "smape": 4.491868442216063,
-                "bias": 395.54724933421045,
-                "variance": 316164.51139970083,
-                "std": 562.2850801859328,
-                "r2": 0.9590432767231616,
-                "prediction_interval_coverage": 0.7738095238095238,
-                "prediction_interval_width": 1404.0565620910513
+                "mse": 121053.57527773544,
+                "rmse": 347.9275431433037,
+                "mae": 282.40587274596044,
+                "mape": 1.2907993521521304,
+                "smape": 2.5838583917242373,
+                "bias": 11.731887301128976,
+                "variance": 120915.93809808904,
+                "std": 347.7296911367924,
+                "r2": 0.9862168121206469,
+                "prediction_interval_coverage": 0.9464285714285714,
+                "prediction_interval_width": 1334.176275264576
             }
         },
-        "2026-01-31T00:00:00+00:00": {
+        "2026-02-13T00:00:00+00:00": {
             "load_ampr": {
-                "mse": 130534.9692068006,
-                "rmse": 361.29623469779006,
-                "mae": 278.72040823329326,
-                "mape": 1.2726771724083608,
-                "smape": 2.5370749945324897,
-                "bias": 43.89204310854184,
-                "variance": 128608.45775855849,
-                "std": 358.6202138175684,
-                "r2": 0.9867475927333943,
-                "prediction_interval_coverage": 0.9523809523809523,
-                "prediction_interval_width": 1404.0565620910518
+                "mse": 187343.4153762438,
+                "rmse": 432.83185577801896,
+                "mae": 349.2013457340677,
+                "mape": 1.578451763557744,
+                "smape": 3.1336632458768223,
+                "bias": 194.19408193831973,
+                "variance": 149632.07391637692,
+                "std": 386.8230524624624,
+                "r2": 0.9764707859470171,
+                "prediction_interval_coverage": 0.8690476190476191,
+                "prediction_interval_width": 1334.1762752645764
             }
         },
-        "2026-02-07T00:00:00+00:00": {
+        "2026-02-20T00:00:00+00:00": {
             "load_ampr": {
-                "mse": 193361.96180717976,
-                "rmse": 439.72941885570924,
-                "mae": 347.92738169871956,
-                "mape": 1.6342300879871554,
-                "smape": 3.289114130018426,
-                "bias": -103.65956261284269,
-                "variance": 182616.6568860939,
-                "std": 427.3367020115332,
-                "r2": 0.9778011137064958,
-                "prediction_interval_coverage": 0.8869047619047619,
-                "prediction_interval_width": 1404.0565620910518
+                "mse": 125384.0355595737,
+                "rmse": 354.09608238382657,
+                "mae": 276.2394185442714,
+                "mape": 1.3055199216921776,
+                "smape": 2.60277279794655,
+                "bias": 46.47374448110027,
+                "variance": 123224.2266334791,
+                "std": 351.0330848132112,
+                "r2": 0.9861739708302035,
+                "prediction_interval_coverage": 0.9404761904761905,
+                "prediction_interval_width": 1334.1762752645761
             }
         },
-        "2026-02-14T00:00:00+00:00": {
+        "2026-02-27T00:00:00+00:00": {
             "load_ampr": {
-                "mse": 174561.76337380387,
-                "rmse": 417.80589198071857,
-                "mae": 321.9585618545252,
-                "mape": 1.4565055417314752,
-                "smape": 2.920621626673047,
-                "bias": -44.84531127724759,
-                "variance": 172550.66143025065,
-                "std": 415.3921778635831,
-                "r2": 0.9783034041098975,
-                "prediction_interval_coverage": 0.8809523809523809,
-                "prediction_interval_width": 1404.0565620910518
+                "mse": 251962.14529059356,
+                "rmse": 501.95831031131814,
+                "mae": 398.98803372736535,
+                "mape": 2.0775135355551746,
+                "smape": 4.207592027070356,
+                "bias": -224.22571444592054,
+                "variance": 201684.97427181012,
+                "std": 449.0935028162956,
+                "r2": 0.9667326168483952,
+                "prediction_interval_coverage": 0.8035714285714286,
+                "prediction_interval_width": 1334.1762752645764
             }
         },
-        "2026-02-21T00:00:00+00:00": {
+        "2026-03-06T00:00:00+00:00": {
             "load_ampr": {
-                "mse": 1481454.465619268,
-                "rmse": 1217.1501409519155,
-                "mae": 1008.0478285749708,
-                "mape": 4.808171646070417,
-                "smape": 9.925341688382561,
-                "bias": -850.3508946996034,
-                "variance": 758357.8215028519,
-                "std": 870.8374254146705,
-                "r2": 0.8195080556993335,
-                "prediction_interval_coverage": 0.36904761904761907,
-                "prediction_interval_width": 1404.056562091052
+                "mse": 671507.7791646796,
+                "rmse": 819.4557823120657,
+                "mae": 670.7309916749543,
+                "mape": 3.467562412210861,
+                "smape": 7.03986331066015,
+                "bias": -328.67616962209365,
+                "variance": 563479.7546872282,
+                "std": 750.6528856183984,
+                "r2": 0.9240276928432823,
+                "prediction_interval_coverage": 0.5654761904761905,
+                "prediction_interval_width": 1334.1762752645764
             }
         }
     }

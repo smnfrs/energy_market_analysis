@@ -439,10 +439,11 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
 
 
     if df_forecast.isna().any().any():
-        raise ValueError(
-            f"df_forecast contains NaN entries."
-            f"Target: {targets} country: {c_dict['code']} TSO: {tso_dict['TSO']}"
-            f" df_forecast={df_forecast[df_forecast.isna()]}"
+        nan_cols = df_forecast.columns[df_forecast.isna().any()].tolist()
+        logger.warning(
+            f"df_forecast contains NaN entries (will be interpolated in clean_and_impute). "
+            f"Target: {targets} country: {c_dict['code']} TSO: {tso_dict['TSO']} "
+            f"NaN columns: {nan_cols}"
         )
 
 
