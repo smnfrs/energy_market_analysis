@@ -1115,14 +1115,18 @@ class ForecastingTaskSingleTarget:
             run_label=self.run_label,targets_list=self.targets_list, model_label=model_label,
             working_dir=self.outdir_,verbose=self.verbose
         )
-        wrapper.set_load_dataset_from_dir(
-            dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
-        )
-        wrapper.set_load_datasets_for_base_models_from_dir(
-            dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
-        )
-        wrapper.load_base_models_from_dir(dir='trained')
-        model_pars, extra_model_pars = wrapper.load_forecaster_from_dir(dir='trained')
+        try:
+            wrapper.set_load_dataset_from_dir(
+                dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
+            )
+            wrapper.set_load_datasets_for_base_models_from_dir(
+                dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast
+            )
+            wrapper.load_base_models_from_dir(dir='trained')
+            model_pars, extra_model_pars = wrapper.load_forecaster_from_dir(dir='trained')
+        except FileNotFoundError as e:
+            logger.warning(f"Skipping forecast for {model_label} ({self.run_label}): {e}")
+            return
         wrapper.train_evaluate_out_of_sample_base_models(cv_folds_base=folds, do_fit=False)
 
         # wrapper.set_meta_X_y( X_meta=wrapper.meta_ds.exog_hist, y_meta=wrapper.meta_ds.target_hist)
@@ -1167,8 +1171,12 @@ class ForecastingTaskSingleTarget:
             run_label=self.run_label,targets_list=self.targets_list, model_label=model_label,
             working_dir=self.outdir_,verbose=self.verbose
         )
-        wrapper.set_load_dataset_from_dir(dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast)
-        wrapper.load_forecaster_from_dir(dir='trained')
+        try:
+            wrapper.set_load_dataset_from_dir(dir='trained', df_hist=self.df_history, df_forecast=self.df_forecast)
+            wrapper.load_forecaster_from_dir(dir='trained')
+        except FileNotFoundError as e:
+            logger.warning(f"Skipping forecast for {model_label} ({self.run_label}): {e}")
+            return
         wrapper.train_evaluate_out_of_sample(folds=folds, X_train=None, y_train=None, ds=None, do_fit=False)
         wrapper.save_results(dir='forecast', ds=None)
         wrapper.run_save_forecast(X_test=None, y_train=None, folds=folds)
