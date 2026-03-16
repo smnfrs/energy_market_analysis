@@ -36,16 +36,16 @@ jobs:
         run: pipenv run python update_database.py DE update_smard_v2 hourly
 
       - name: Update OpenMeteo Offshore Windfarms Data
-        run: pipenv run python update_database.py all update_openmeteo_windfarms_offshore hourly
+        run: pipenv run python update_database.py DE update_openmeteo_windfarms_offshore hourly
 
       - name: Update OpenMeteo Onshore Windfarms Data
-        run: pipenv run python update_database.py all update_openmeteo_windfarms_onshore hourly
+        run: pipenv run python update_database.py DE update_openmeteo_windfarms_onshore hourly
 
       - name: Update OpenMeteo Solarfarms Data
-        run: pipenv run python update_database.py all update_openmeteo_solarfarms hourly
+        run: pipenv run python update_database.py DE update_openmeteo_solarfarms hourly
 
       - name: Update OpenMeteo Cities Data
-        run: pipenv run python update_database.py all update_openmeteo_cities hourly
+        run: pipenv run python update_database.py DE update_openmeteo_cities hourly
 
       - name: Commit Updated Data
         run: |
