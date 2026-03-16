@@ -6,9 +6,7 @@ on:
       - Update Forecasts # The name of the first workflow
     types:
       - completed
-#  push:
-#    paths:
-#      - output/**
+  workflow_dispatch:
       
 jobs:
   update_forecasts:
