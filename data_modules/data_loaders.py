@@ -145,9 +145,18 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
     df_om_cities, df_om_cities_f = load_combine_continous_weather(weather_regions,db_path, freq, suffix='cities')
 
 
-    df_targets = pd.read_parquet(db_path + 'smard_v2/' + 'history_hourly.parquet')
-    df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
-    df_targets = impute_smard_nans(df_targets)
+    smard_v2_path = db_path + 'smard_v2/' + 'history_hourly.parquet'
+    entsoe_path = db_path + 'entsoe/' + 'history_hourly.parquet'
+    if os.path.isfile(smard_v2_path):
+        df_targets = pd.read_parquet(smard_v2_path)
+        df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
+        df_targets = impute_smard_nans(df_targets)
+    elif os.path.isfile(entsoe_path):
+        df_targets = pd.read_parquet(entsoe_path)
+        df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
+        logger.info(f"Using ENTSO-E target data (SMARD v2 not available for {db_path})")
+    else:
+        raise FileNotFoundError(f"No target data found at {smard_v2_path} or {entsoe_path}")
 
     # Compute gen_load_diff on-the-fly if needed
     if 'gen_load_diff' in target_label:
