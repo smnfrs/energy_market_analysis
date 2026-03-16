@@ -1,0 +1,142 @@
+{
+    "start_date": "2024-04-12T00:00:00+00:00",
+    "end_date": "2026-03-12T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_agg",
+        "relative_humidity_2m_agg",
+        "surface_pressure_agg",
+        "precipitation_agg",
+        "cloud_cover_agg",
+        "wind_speed_10m_agg",
+        "wind_speed_100m_agg",
+        "wind_direction_10m_agg",
+        "wind_direction_100m_agg",
+        "wind_gusts_10m_agg",
+        "shortwave_radiation_agg",
+        "direct_radiation_agg",
+        "diffuse_radiation_agg",
+        "direct_normal_irradiance_agg",
+        "global_tilted_irradiance_agg",
+        "terrestrial_radiation_agg",
+        "HDH_agg",
+        "CDH_agg",
+        "dew_point_temperature_agg",
+        "dew_point_spread_agg",
+        "temp_gradient_agg",
+        "wind_chill_agg",
+        "humidex_agg",
+        "rain_indicator_agg",
+        "wind_speed_gradient_agg",
+        "wind_u_agg",
+        "wind_v_agg",
+        "wind_power_density_100m_agg",
+        "effective_solar_agg",
+        "temp_lag_1_agg",
+        "temp_lag_3_agg",
+        "precip_lags_lag_1_agg",
+        "precip_lags_lag_3_agg",
+        "precip_lags_lag_6_agg",
+        "cloud_lags_lag_1_agg",
+        "cloud_lags_lag_3_agg",
+        "cloud_lags_lag_6_agg",
+        "temp_roll_3_agg",
+        "temp_roll_6_agg",
+        "wind_offshore_50hz",
+        "wind_offshore_tenn",
+        "wind_onshore_ampr",
+        "wind_onshore_50hz",
+        "wind_onshore_tenn",
+        "wind_onshore_tran",
+        "wind_onshore_lu",
+        "solar_ampr",
+        "solar_50hz",
+        "solar_tenn",
+        "solar_tran",
+        "solar_lu",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-02-06T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 12242393.562217593,
+                "rmse": 3498.9131972967825,
+                "mae": 2745.75848081337,
+                "mape": 959.8918387931911,
+                "smape": 159.29958851688488,
+                "bias": -2254.2087691796073,
+                "variance": 7160936.38717135,
+                "std": 2675.9925984896427,
+                "r2": 0.5280649543046868,
+                "prediction_interval_coverage": 0.875,
+                "prediction_interval_width": 10382.914025770817
+            }
+        },
+        "2026-02-13T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 11167237.088098703,
+                "rmse": 3341.7416249762196,
+                "mae": 2658.8021326596877,
+                "mape": 215.47376298471926,
+                "smape": 153.71572876857377,
+                "bias": -1630.902235688596,
+                "variance": 8507394.985724643,
+                "std": 2916.7439012920972,
+                "r2": 0.7222571895883194,
+                "prediction_interval_coverage": 0.9166666666666666,
+                "prediction_interval_width": 10381.594687072622
+            }
+        },
+        "2026-02-20T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 4666955.719647998,
+                "rmse": 2160.3138011983347,
+                "mae": 1754.0578639797798,
+                "mape": 66.69827131895168,
+                "smape": 110.28670004252403,
+                "bias": -582.4685326692912,
+                "variance": 4327686.128098081,
+                "std": 2080.3091424348645,
+                "r2": 0.9064286264114071,
+                "prediction_interval_coverage": 1.0,
+                "prediction_interval_width": 10382.465129247712
+            }
+        },
+        "2026-02-27T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 7195031.532589311,
+                "rmse": 2682.3555939862467,
+                "mae": 2157.5599249036686,
+                "mape": 1255.6915734061793,
+                "smape": 136.10432519172963,
+                "bias": -1424.278576310282,
+                "variance": 5166462.069652868,
+                "std": 2272.9852770426974,
+                "r2": 0.8478655068037327,
+                "prediction_interval_coverage": 0.9523809523809523,
+                "prediction_interval_width": 10384.578641546828
+            }
+        },
+        "2026-03-06T00:00:00+00:00": {
+            "gen_load_diff_delu": {
+                "mse": 6304016.242920999,
+                "rmse": 2510.780006874557,
+                "mae": 2006.8120380008515,
+                "mape": 138.93417707335834,
+                "smape": 105.77948481263446,
+                "bias": -625.3328708073038,
+                "variance": 5912975.043608895,
+                "std": 2431.6609639521903,
+                "r2": 0.8772022062521136,
+                "prediction_interval_coverage": 0.9583333333333334,
+                "prediction_interval_width": 10389.824321246002
+            }
+        }
+    }
+}

@@ -1,0 +1,113 @@
+{
+    "start_date": "2024-04-12T00:00:00+00:00",
+    "end_date": "2026-03-12T23:00:00+00:00",
+    "horizon": 168,
+    "features": [
+        "temperature_2m_city_luxembourg",
+        "relative_humidity_2m_city_luxembourg",
+        "CDH_city_luxembourg",
+        "temp_gradient_city_luxembourg",
+        "humidex_city_luxembourg",
+        "air_density_city_luxembourg",
+        "wind_speed_gradient_city_luxembourg",
+        "precip_lags_lag_1_city_luxembourg",
+        "precip_lags_lag_3_city_luxembourg",
+        "precip_lags_lag_6_city_luxembourg",
+        "wind_offshore_50hz",
+        "wind_offshore_tenn",
+        "wind_onshore_ampr",
+        "wind_onshore_50hz",
+        "wind_onshore_tenn",
+        "wind_onshore_tran",
+        "wind_onshore_lu",
+        "solar_ampr",
+        "solar_50hz",
+        "solar_tenn",
+        "solar_tran",
+        "solar_lu",
+        "hour",
+        "dayofweek",
+        "is_holiday",
+        "hour_sin",
+        "hour_cos",
+        "day_sin",
+        "day_cos"
+    ],
+    "error_metrics": {
+        "2026-02-06T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 138.8650060818392,
+                "rmse": 11.78409971452377,
+                "mae": 8.396115543331941,
+                "mape": 1.4464961213056948,
+                "smape": 2.8525906394148324,
+                "bias": 6.880160224341337,
+                "variance": 91.52840136923058,
+                "std": 9.56704768302273,
+                "r2": 0.9832652668871125,
+                "prediction_interval_coverage": 0.9583333333333334,
+                "prediction_interval_width": 50.91576477183283
+            }
+        },
+        "2026-02-13T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 76.83300267239937,
+                "rmse": 8.765443666603497,
+                "mae": 6.538518263278452,
+                "mape": 1.0766012751723812,
+                "smape": 2.146833710793822,
+                "bias": 0.9707828899456059,
+                "variance": 75.89058325298822,
+                "std": 8.711520145932523,
+                "r2": 0.9882639809404625,
+                "prediction_interval_coverage": 0.9880952380952381,
+                "prediction_interval_width": 50.91576477183283
+            }
+        },
+        "2026-02-20T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 117.07942670539924,
+                "rmse": 10.820324704249833,
+                "mae": 7.875155459834727,
+                "mape": 1.3992393904278215,
+                "smape": 2.77052815685609,
+                "bias": 3.819897239973363,
+                "variance": 102.4878117814431,
+                "std": 10.123626414553389,
+                "r2": 0.9833718623839347,
+                "prediction_interval_coverage": 0.9642857142857143,
+                "prediction_interval_width": 50.91576477183283
+            }
+        },
+        "2026-02-27T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 158.40585697519697,
+                "rmse": 12.585938859504958,
+                "mae": 9.627957259484887,
+                "mape": 1.7715561685514216,
+                "smape": 3.5583130122762894,
+                "bias": 0.41657435547080757,
+                "variance": 158.23232278156104,
+                "std": 12.579042999432072,
+                "r2": 0.9709523247246851,
+                "prediction_interval_coverage": 0.9464285714285714,
+                "prediction_interval_width": 50.91576477183284
+            }
+        },
+        "2026-03-06T00:00:00+00:00": {
+            "load_lu": {
+                "mse": 1427.182632027099,
+                "rmse": 37.77807078222893,
+                "mae": 29.85404464531526,
+                "mape": 5.5315451362815535,
+                "smape": 11.085353985605764,
+                "bias": -11.889493629285063,
+                "variance": 1285.8225732662886,
+                "std": 35.858368246007636,
+                "r2": 0.7931238592754964,
+                "prediction_interval_coverage": 0.5595238095238095,
+                "prediction_interval_width": 50.91576477183283
+            }
+        }
+    }
+}
