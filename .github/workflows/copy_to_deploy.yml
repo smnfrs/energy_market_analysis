@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "deploy/**"  # Only trigger when files in 'deploy' change
+  workflow_dispatch:
 
 jobs:
   deploy:
