@@ -339,6 +339,14 @@ class HistForecastDataset:
                 self.feature_scaler = joblib.load(feature_scaler_name) # dir + 'target_scaler.pkl'
                 do_load_feature_scaler = True
             if do_load_feature_scaler:
+                expected_cols = list(self.feature_scaler.feature_names_in_)
+                extra = set(df_hist_.columns) - set(expected_cols)
+                missing = set(expected_cols) - set(df_hist_.columns)
+                if extra:
+                    logger.warning(f"Dropping {len(extra)} columns unseen during training: {sorted(extra)}")
+                    df_hist_ = df_hist_[expected_cols]
+                if missing:
+                    raise ValueError(f"Missing features expected by scaler: {sorted(missing)}")
                 X_scaled = self.feature_scaler.transform(df_hist_)
                 logger.info(f"Using pre-fitted scaler for features")
             else:
@@ -392,6 +400,9 @@ class HistForecastDataset:
 
         exog_forecast = pd.DataFrame(index=df_forecast_.index)
         if do_exog_feature_engineering:
+            if do_load_feature_scaler:
+                expected_cols = list(self.feature_scaler.feature_names_in_)
+                df_forecast_ = df_forecast_[expected_cols]
             X_scaled = self.feature_scaler.transform(df_forecast_)
             df_forecast_scaled = pd.DataFrame(X_scaled, index=df_forecast_.index, columns=df_forecast_.columns)
             exog_forecast = exog_forecast.merge(df_forecast_scaled, left_index=True, right_index=True, how='left')
