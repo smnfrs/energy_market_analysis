@@ -32,7 +32,7 @@ jobs:
         run: pipenv install
 
       - name: Publish Forecasts
-        run: pipenv run python publish_data.py all all
+        run: pipenv run python publish_data.py DE all
 
       - name: Export national DE/LU forecasts
         run: pipenv run python export_national_forecasts.py
