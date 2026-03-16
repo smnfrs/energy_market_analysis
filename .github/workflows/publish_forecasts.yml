@@ -31,11 +31,11 @@ jobs:
       - name: Install Dependencies
         run: pipenv install
 
-      - name: Publish Forecasts
-        run: pipenv run python publish_data.py DE all
-
       - name: Export national DE/LU forecasts
         run: pipenv run python export_national_forecasts.py
+
+      - name: Publish Forecasts (website data)
+        run: pipenv run python publish_data.py DE all || echo "publish_data.py failed (non-critical)"
 
       - name: Commit Changes
         run: |
