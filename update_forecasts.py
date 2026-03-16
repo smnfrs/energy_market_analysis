@@ -458,6 +458,9 @@ def adjust_and_run_for_tasklist(database:str,c_dict:dict, task_list:list, variab
     ''' -------------- GEN_LOAD_DIFF (DE/LU national, runs once) ------------- '''
 
     if variable == "gen_load_diff":
+        if c_dict['code'] != 'DE':
+            logger.info(f"Skipping gen_load_diff for {c_dict['code']} (DE/LU only)")
+            return
         task_list_ = copy.deepcopy(task_list)
         for t in task_list_:
             t['label'] = "gen_load_diff_delu"
