@@ -517,6 +517,9 @@ def compute_error_metrics_cutoffs(
             f'{target}_upper': np.zeros_like(actual[mask_].values)
         }, index=actual[mask_].index)
 
+        if len(df) == 0:
+            continue  # skip cutoffs with no data
+
         metrics[cutoff] = compute_error_metrics([target], df)
 
     return metrics
