@@ -422,13 +422,12 @@ async function fetchNationalForecast(fileName) {
     }
 }
 
-async function initNationalSummaryChart() {
+async function initNationalSummaryCharts() {
     await initializeI18n();
-    const container = document.querySelector('#national-summary-chart');
-    if (!container) return;
 
-    const [load, onshore, offshore, solar, sonstige] = await Promise.all([
+    const [load, genTotal, onshore, offshore, solar, sonstige] = await Promise.all([
         fetchNationalForecast('national_load.json'),
+        fetchNationalForecast('national_generation_total.json'),
         fetchNationalForecast('national_wind_onshore.json'),
         fetchNationalForecast('national_wind_offshore.json'),
         fetchNationalForecast('national_solar.json'),
@@ -440,102 +439,95 @@ async function initNationalSummaryChart() {
         return;
     }
 
-    // Convert data to [timestamp, value] arrays for ApexCharts
-    const toTimestampPairs = (arr) => arr.map(d => [d.x.getTime(), d.y]);
-
-    // Generation components (stacked areas) — order matters for stacking
-    // Sonstige (other) at bottom, then solar, onshore, offshore on top
-    const series = [];
-    const colors = [];
-    const strokeWidths = [];
-    const fillTypes = [];
-
-    if (sonstige.data.length > 0) {
-        series.push({ name: 'Other', type: 'area', data: toTimestampPairs(sonstige.data) });
-        colors.push('#999999');
-        strokeWidths.push(0);
-    }
-    if (solar.data.length > 0) {
-        series.push({ name: 'Solar', type: 'area', data: toTimestampPairs(solar.data) });
-        colors.push('#DDAA00');
-        strokeWidths.push(0);
-    }
-    if (onshore.data.length > 0) {
-        series.push({ name: 'Wind Onshore', type: 'area', data: toTimestampPairs(onshore.data) });
-        colors.push('#2266CC');
-        strokeWidths.push(0);
-    }
-    if (offshore.data.length > 0) {
-        series.push({ name: 'Wind Offshore', type: 'area', data: toTimestampPairs(offshore.data) });
-        colors.push('#44AADD');
-        strokeWidths.push(0);
-    }
-
-    // Load as a line overlay (not stacked)
-    if (load.data.length > 0) {
-        series.push({ name: 'Load', type: 'line', data: toTimestampPairs(load.data) });
-        colors.push('#EE0000');
-        strokeWidths.push(3);
-    }
-
-    const annotations = [];
+    const toTS = (arr) => arr.map(d => [d.x.getTime(), d.y]);
     const now = new Date();
-    annotations.push({
+    const nowAnnotation = {
         x: now.getTime(), borderColor: '#FF0000',
         label: { text: 'Now', style: { color: '#FFF', background: '#FF0000' } }
-    });
+    };
+    const dateFormatter = (val, timestamp) =>
+        new Intl.DateTimeFormat(i18next.language || 'en', {
+            month: 'short', day: 'numeric', hour: '2-digit'
+        }).format(new Date(timestamp));
+    const yFormatter = val => val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val.toFixed(0);
 
-    const chart = new ApexCharts(container, {
-        chart: {
-            type: 'area', height: 400, stacked: true,
-            toolbar: { show: true }, zoom: { enabled: true, type: 'x' }
-        },
-        series: series,
-        colors: colors,
-        stroke: { width: strokeWidths, curve: 'smooth' },
-        fill: { opacity: series.map(s => s.type === 'area' ? 0.9 : 0) },
-        xaxis: {
-            type: 'datetime',
-            labels: {
-                style: { colors: isDarkMode ? '#e0e0e0' : '#000' },
-                formatter: function(val, timestamp) {
-                    return new Intl.DateTimeFormat(i18next.language || 'en', {
-                        month: 'short', day: 'numeric', hour: '2-digit'
-                    }).format(new Date(timestamp));
-                }
-            }
-        },
-        yaxis: {
-            min: 0,
-            title: { text: 'Power (MW)', style: { color: isDarkMode ? '#e0e0e0' : '#000' } },
-            labels: {
-                style: { colors: isDarkMode ? '#e0e0e0' : '#000', fontSize: '13px' },
-                formatter: val => val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val.toFixed(0)
-            }
-        },
-        annotations: { xaxis: annotations },
-        tooltip: {
-            shared: true, intersect: false, theme: isDarkMode ? 'dark' : 'light',
-            x: { format: 'dd MMM yyyy HH:mm' },
-            y: { formatter: val => val !== null ? Math.round(val) + ' MW' : 'N/A' }
-        },
-        grid: {
-            show: true, borderColor: isDarkMode ? '#555' : '#E0E0E0', strokeDashArray: 3,
-            xaxis: { lines: { show: false } }, yaxis: { lines: { show: true } }
-        },
-        legend: {
-            show: true, position: 'top', horizontalAlign: 'center',
-            labels: { colors: isDarkMode ? '#e0e0e0' : '#000' }
-        },
-        dataLabels: { enabled: false }
-    });
+    // --- Chart 1: Generation vs Load (line chart) ---
+    const genLoadContainer = document.querySelector('#national-genload-chart');
+    if (genLoadContainer) {
+        const glSeries = [];
+        if (genTotal.data.length > 0) glSeries.push({ name: 'Generation', data: toTS(genTotal.data) });
+        if (load.data.length > 0) glSeries.push({ name: 'Load', data: toTS(load.data) });
 
-    await chart.render();
-    chartState['nationalSummaryChart'] = chart;
+        const glChart = new ApexCharts(genLoadContainer, {
+            chart: { type: 'line', height: 200, toolbar: { show: false }, zoom: { enabled: true, type: 'x' } },
+            series: glSeries,
+            colors: ['#00AA44', '#EE0000'],
+            stroke: { width: 2, curve: 'smooth' },
+            xaxis: {
+                type: 'datetime',
+                labels: { show: false }
+            },
+            yaxis: {
+                min: 0,
+                title: { text: 'MW', style: { color: isDarkMode ? '#e0e0e0' : '#000', fontSize: '12px' } },
+                labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000', fontSize: '12px' }, formatter: yFormatter }
+            },
+            annotations: { xaxis: [nowAnnotation] },
+            tooltip: {
+                shared: true, intersect: false, theme: isDarkMode ? 'dark' : 'light',
+                x: { format: 'dd MMM yyyy HH:mm' },
+                y: { formatter: val => val !== null ? Math.round(val) + ' MW' : 'N/A' }
+            },
+            grid: { show: true, borderColor: isDarkMode ? '#555' : '#E0E0E0', strokeDashArray: 3, xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
+            legend: { show: true, position: 'top', horizontalAlign: 'center', labels: { colors: isDarkMode ? '#e0e0e0' : '#000' } },
+            dataLabels: { enabled: false }
+        });
+        await glChart.render();
+        chartState['nationalGenLoadChart'] = glChart;
+    }
+
+    // --- Chart 2: Generation mix (stacked area) ---
+    const mixContainer = document.querySelector('#national-mix-chart');
+    if (mixContainer) {
+        const mixSeries = [];
+        const mixColors = [];
+        if (sonstige.data.length > 0) { mixSeries.push({ name: 'Other', data: toTS(sonstige.data) }); mixColors.push('#999999'); }
+        if (solar.data.length > 0)    { mixSeries.push({ name: 'Solar', data: toTS(solar.data) });    mixColors.push('#DDAA00'); }
+        if (onshore.data.length > 0)  { mixSeries.push({ name: 'Wind Onshore', data: toTS(onshore.data) }); mixColors.push('#2266CC'); }
+        if (offshore.data.length > 0) { mixSeries.push({ name: 'Wind Offshore', data: toTS(offshore.data) }); mixColors.push('#44AADD'); }
+
+        const mixChart = new ApexCharts(mixContainer, {
+            chart: { type: 'area', height: 300, stacked: true, toolbar: { show: true }, zoom: { enabled: true, type: 'x' } },
+            series: mixSeries,
+            colors: mixColors,
+            stroke: { width: 0, curve: 'smooth' },
+            fill: { type: 'solid', opacity: 1 },
+            xaxis: {
+                type: 'datetime',
+                labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000' }, formatter: dateFormatter }
+            },
+            yaxis: {
+                min: 0,
+                title: { text: 'MW', style: { color: isDarkMode ? '#e0e0e0' : '#000', fontSize: '12px' } },
+                labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000', fontSize: '12px' }, formatter: yFormatter }
+            },
+            annotations: { xaxis: [nowAnnotation] },
+            tooltip: {
+                shared: true, intersect: false, theme: isDarkMode ? 'dark' : 'light',
+                x: { format: 'dd MMM yyyy HH:mm' },
+                y: { formatter: val => val !== null ? Math.round(val) + ' MW' : 'N/A' }
+            },
+            grid: { show: true, borderColor: isDarkMode ? '#555' : '#E0E0E0', strokeDashArray: 3, xaxis: { lines: { show: false } }, yaxis: { lines: { show: true } } },
+            legend: { show: true, position: 'bottom', horizontalAlign: 'center', labels: { colors: isDarkMode ? '#e0e0e0' : '#000' } },
+            dataLabels: { enabled: false }
+        });
+        await mixChart.render();
+        chartState['nationalMixChart'] = mixChart;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initNationalSummaryChart();
+    initNationalSummaryCharts();
 });
 
 // ========================== TSO DEFINITIONS =============================== */
@@ -818,17 +810,13 @@ function toggleDarkMode() {
         }
     }
 
-    // Re-render national summary chart if it exists
-    if (chartState['nationalSummaryChart']) {
-        chartState['nationalSummaryChart'].updateOptions({
-            tooltip: { theme: isDarkMode ? 'dark' : 'light' },
-            xaxis: { labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000' } } },
-            yaxis: {
-                title: { style: { color: isDarkMode ? '#e0e0e0' : '#000' } },
-                labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000' } }
-            },
-            grid: { borderColor: isDarkMode ? '#555' : '#E0E0E0' },
-            legend: { labels: { colors: isDarkMode ? '#e0e0e0' : '#000' } }
-        });
-    }
+    const darkOpts = {
+        tooltip: { theme: isDarkMode ? 'dark' : 'light' },
+        xaxis: { labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000' } } },
+        yaxis: { title: { style: { color: isDarkMode ? '#e0e0e0' : '#000' } }, labels: { style: { colors: isDarkMode ? '#e0e0e0' : '#000' } } },
+        grid: { borderColor: isDarkMode ? '#555' : '#E0E0E0' },
+        legend: { labels: { colors: isDarkMode ? '#e0e0e0' : '#000' } }
+    };
+    if (chartState['nationalGenLoadChart']) chartState['nationalGenLoadChart'].updateOptions(darkOpts);
+    if (chartState['nationalMixChart']) chartState['nationalMixChart'].updateOptions(darkOpts);
 }
