@@ -5,6 +5,7 @@ on:
     workflows: ["Publish Forecasts"]  # Name of the workflow to wait for
     types:
       - completed  # Trigger only when the workflow is completed successfully
+  workflow_dispatch:
 
 jobs:
   deploy:
