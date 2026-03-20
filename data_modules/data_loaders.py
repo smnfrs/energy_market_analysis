@@ -9,7 +9,8 @@ from data_collection_modules.eu_locations import (
     countries_metadata
 )
 from data_modules.utils import (
-    validate_dataframe
+    validate_dataframe,
+    merge_tso_dataframes,
 )
 from logger import get_logger
 logger = get_logger(__name__)
@@ -55,9 +56,9 @@ def compute_gen_load_diff(df: pd.DataFrame) -> pd.Series:
 def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suffix:str)->tuple[pd.DataFrame, pd.DataFrame]:
 
     if freq == 'hourly':
-        df_past = pd.DataFrame()
-        df_past_forecast = pd.DataFrame()
-        df_forecast = pd.DataFrame()
+        past_parts = []
+        past_forecast_parts = []
+        forecast_parts = []
 
         for tso_dict in regions:
             tso_name = tso_dict['TSO']
@@ -66,33 +67,21 @@ def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suf
                 logger.info(f'Directory does not exist: {dir_}')
                 continue
 
-            # --- #
-            df_past_ = pd.read_parquet(dir_+f'history_{freq}.parquet')
-            df_past_forecast_ = pd.read_parquet(dir_+f'hist_forecast_{freq}.parquet')
-            df_forecast_ = pd.read_parquet(dir_+f'forecast_{freq}.parquet')
-            # --- #
-            # --- #
-            if df_past.empty: df_past = df_past_.copy()
-            else: df_past = pd.merge(df_past, df_past_,left_index=True, right_index=True, how='left')
+            past_parts.append(pd.read_parquet(dir_+f'history_{freq}.parquet'))
+            past_forecast_parts.append(pd.read_parquet(dir_+f'hist_forecast_{freq}.parquet'))
+            forecast_parts.append(pd.read_parquet(dir_+f'forecast_{freq}.parquet'))
 
-            if df_past_forecast.empty: df_past_forecast = df_past_forecast_.copy()
-            else: df_past_forecast = pd.merge(df_past_forecast, df_past_forecast_,left_index=True, right_index=True, how='left')
+        if not past_parts: raise ValueError('No history data loaded')
+        if not forecast_parts: raise ValueError('No forecast data loaded')
 
-            if df_forecast.empty: df_forecast = df_forecast_.copy()
-            else: df_forecast = pd.merge(df_forecast, df_forecast_,left_index=True, right_index=True, how='left')
+        df_past = merge_tso_dataframes(past_parts, label=f"{suffix}/history")
+        df_past_forecast = merge_tso_dataframes(
+            past_forecast_parts, label=f"{suffix}/hist_forecast"
+        )
+        df_forecast = merge_tso_dataframes(forecast_parts, label=f"{suffix}/forecast")
 
-            # --- checks
-            if (not df_forecast.empty) and df_forecast.index[-1] != df_forecast_.index[-1]:
-                raise ValueError(
-                    f"Forecast Data Time Mismatch. Expected {df_forecast.index[-1]} while got "
-                    f"{df_forecast_.index[-1]} for freq={freq} tso={tso_name} suffix={suffix}"
-                )
-            if df_forecast.isna().any().any():
-                raise ValueError("NaNs in forecast data")
-
-        if df_past.empty: raise ValueError('df_past.empty')
-        if df_forecast.empty: raise ValueError('df_forecast.empty')
-
+        if df_forecast.isna().any().any():
+            raise ValueError("NaNs in forecast data")
 
         # combine past actual with past forecast to bridge the data gap
         last_valid_index = df_past.dropna(how='any').index[-1]
@@ -101,7 +90,6 @@ def load_combine_continous_weather(regions:list[dict],db_path:str, freq:str, suf
             raise ValueError("Not enough data remains")
         df_past = df_past[:df_forecast.index[0]-timedelta(hours=1)]
         df_past_forecast = df_past_forecast[df_past.index[-1]:df_forecast.index[0]-timedelta(hours=1)]
-
 
         df = pd.concat([df_past, df_past_forecast],axis=0)
         df.sort_index(inplace=True)
@@ -146,17 +134,11 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
 
 
     smard_v2_path = db_path + 'smard_v2/' + 'history_hourly.parquet'
-    entsoe_path = db_path + 'entsoe/' + 'history_hourly.parquet'
-    if os.path.isfile(smard_v2_path):
-        df_targets = pd.read_parquet(smard_v2_path)
-        df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
-        df_targets = impute_smard_nans(df_targets)
-    elif os.path.isfile(entsoe_path):
-        df_targets = pd.read_parquet(entsoe_path)
-        df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
-        logger.info(f"Using ENTSO-E target data (SMARD v2 not available for {db_path})")
-    else:
-        raise FileNotFoundError(f"No target data found at {smard_v2_path} or {entsoe_path}")
+    if not os.path.isfile(smard_v2_path):
+        raise FileNotFoundError(f"SMARD v2 target data not found at {smard_v2_path}")
+    df_targets = pd.read_parquet(smard_v2_path)
+    df_targets = df_targets.apply(pd.to_numeric, errors='coerce')
+    df_targets = impute_smard_nans(df_targets)
 
     # Compute gen_load_diff on-the-fly if needed
     if 'gen_load_diff' in target_label:

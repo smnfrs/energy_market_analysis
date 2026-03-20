@@ -198,6 +198,15 @@ class OpenMeteo:
             if df.empty:df = minutely_15_dataframe
             else: df = pd.merge(df, minutely_15_dataframe, left_index=True, right_index=True, how='left')
 
+        # Validate no NaN was introduced by date range mismatch between locations
+        if df.isna().any().any():
+            nan_counts = df.isna().sum()
+            nan_cols = nan_counts[nan_counts > 0]
+            logger.warning(
+                f"NaN values after merging {len(self.location_list)} locations (15min) "
+                f"(date range mismatch between locations): {nan_cols.to_dict()}"
+            )
+
         return df
 
     def make_request_hourly(self, url: str, params: dict) -> pd.DataFrame:
@@ -259,6 +268,15 @@ class OpenMeteo:
 
             if df.empty:df = hourly_dataframe
             else: df = pd.merge(df, hourly_dataframe, left_index=True, right_index=True, how='left')
+
+        # Validate no NaN was introduced by date range mismatch between locations
+        if df.isna().any().any():
+            nan_counts = df.isna().sum()
+            nan_cols = nan_counts[nan_counts > 0]
+            logger.warning(
+                f"NaN values after merging {len(self.location_list)} locations "
+                f"(date range mismatch between locations): {nan_cols.to_dict()}"
+            )
 
         return df
 
@@ -389,7 +407,7 @@ def create_openmeteo_from_api(
         logger.info(f"Openmeteo does not have actual historical data for freq={freq}. Skipping...")
 
     # --- collect past forecast
-    start_date_ = pd.Timestamp(datetime(year=2025, month=1, day=1),tz='UTC') # openmeteo does not give past forecasts before that
+    start_date_ = pd.Timestamp(datetime(year=2022, month=1, day=1),tz='UTC')  # Open-Meteo historical forecast API available from ~2022
     logger.info(
         f"Collecting historical forecasts from OpenMeteo from {start_date_} ({len(locations)})"
         f"freq={freq} and {[loc['name'] for loc in locations]} locations"
