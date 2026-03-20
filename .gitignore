@@ -4,3 +4,7 @@ __pycache__/
 *.py[cod]
 upd_epexspot.parquet
 .env
+local/
+*.log
+output/DE/historical_forecasts/
+.checkpoints_*/
