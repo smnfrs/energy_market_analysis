@@ -1,5 +1,9 @@
 # Predictive Analytics for the German Energy Market
 
+**[Live Dashboard](https://smnfrse.github.io/energy_market_analysis/)** -- updated daily with 7-day forecasts for generation, load, and carbon intensity.
+
+[![Dashboard preview](docs/dashboard_preview.png)](https://smnfrse.github.io/energy_market_analysis/)
+
 > **This project is a fork of [vsevolodnedora/energy_market_analysis](https://github.com/vsevolodnedora/energy_market_analysis) by [Vsevolod Nedora](https://github.com/vsevolodnedora).**
 >
 > All original domain knowledge -- curated weather station locations, physics-based feature engineering, spatial aggregation methods, the multi-step recursive forecasting architecture, and the automated pipeline design -- comes from the upstream project. See the upstream [README](https://github.com/vsevolodnedora/energy_market_analysis#readme), the [live demo](https://vsevolodnedora.github.io/energy_market_analysis/), and the author's [Medium articles](https://medium.com/@vsevolod.nedora) for the full project history, motivation, and detailed technical write-ups. This fork adapts the infrastructure for a specific downstream use case and is not affiliated with the original author.
