@@ -44,9 +44,6 @@
 
 <nav class="top-nav">
     <div class="controls-buttons">
-        <input type="checkbox" id="toggle-overview" checked onclick="toggleSubpage('overview-page', this.checked)" />
-        <label for="toggle-overview" data-i18n="nav-overview">Overview</label>
-
         <input type="checkbox" id="toggle-forecasts" checked onclick="toggleSubpage('individual-forecasts', this.checked)" />
         <label for="toggle-forecasts" data-i18n="nav-forecasts">Per-TSO Forecasts</label>
 
@@ -57,15 +54,9 @@
 
 <div class="subpages-container">
 
-    <!-- ========== OVERVIEW ========== -->
-    <div id="overview-page" class="subpage active">
-        <div id="main_info-content"></div>
-
-        <h2 data-i18n="national-summary-title" style="margin: 20px 0 5px 0;">National DE/LU Forecast Summary</h2>
-        <p style="color: gray; font-size: 13px; margin: 0 0 10px 0;" data-i18n="national-summary-desc">
-            7-day forecasts for the German/Luxembourg bidding zone, updated daily from weather data.
-        </p>
-        <div id="national-summary-chart" style="min-height: 350px;"></div>
+    <!-- ========== NATIONAL SUMMARY (always visible, top-left) ========== -->
+    <div id="national-summary-section" class="subpage active">
+        <div id="national-summary-chart" style="min-height: 400px;"></div>
         <div id="national-summary-error" class="error-message"></div>
     </div>
 

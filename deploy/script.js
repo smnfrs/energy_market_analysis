@@ -47,9 +47,6 @@ async function toggleLanguage() {
     await i18next.changeLanguage(newLang);
     updateContent();
 
-    const mainInfoFileName = (newLang === 'en') ? 'main_info_en.html' : 'main_info_de.html';
-    await loadHTML(`./assets/html/${mainInfoFileName}`, 'main_info-content');
-
     const apiInfoFileName = (newLang === 'en') ? 'api_info_en.html' : 'api_info_de.html';
     await loadHTML(`./assets/html/${apiInfoFileName}`, 'api_info-content');
 
@@ -58,15 +55,6 @@ async function toggleLanguage() {
 }
 
 // HTML LOADERS
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const initialLanguage = i18next.language || 'en';
-        const mainFileFileName = (initialLanguage === 'en') ? 'main_info_en.html' : 'main_info_de.html';
-        await loadHTML(`./assets/html/${mainFileFileName}`, 'main_info-content');
-    } catch (error) {
-        console.error('Error loading main info content:', error);
-    }
-});
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const initialLanguage = i18next.language || 'en';
@@ -439,11 +427,12 @@ async function initNationalSummaryChart() {
     const container = document.querySelector('#national-summary-chart');
     if (!container) return;
 
-    const [load, onshore, offshore, solar] = await Promise.all([
+    const [load, onshore, offshore, solar, sonstige] = await Promise.all([
         fetchNationalForecast('national_load.json'),
         fetchNationalForecast('national_wind_onshore.json'),
         fetchNationalForecast('national_wind_offshore.json'),
-        fetchNationalForecast('national_solar.json')
+        fetchNationalForecast('national_solar.json'),
+        fetchNationalForecast('national_sonstige.json')
     ]);
 
     if (load.data.length === 0 && onshore.data.length === 0) {
@@ -451,17 +440,43 @@ async function initNationalSummaryChart() {
         return;
     }
 
-    // Determine forecast datetime from metadata
-    let forecastTime = null;
-    if (load.metadata && load.metadata.forecast_datetime) {
-        forecastTime = new Date(load.metadata.forecast_datetime).getTime();
+    // Convert data to [timestamp, value] arrays for ApexCharts
+    const toTimestampPairs = (arr) => arr.map(d => [d.x.getTime(), d.y]);
+
+    // Generation components (stacked areas) — order matters for stacking
+    // Sonstige (other) at bottom, then solar, onshore, offshore on top
+    const series = [];
+    const colors = [];
+    const strokeWidths = [];
+    const fillTypes = [];
+
+    if (sonstige.data.length > 0) {
+        series.push({ name: 'Other', type: 'area', data: toTimestampPairs(sonstige.data) });
+        colors.push('#999999');
+        strokeWidths.push(0);
+    }
+    if (solar.data.length > 0) {
+        series.push({ name: 'Solar', type: 'area', data: toTimestampPairs(solar.data) });
+        colors.push('#DDAA00');
+        strokeWidths.push(0);
+    }
+    if (onshore.data.length > 0) {
+        series.push({ name: 'Wind Onshore', type: 'area', data: toTimestampPairs(onshore.data) });
+        colors.push('#2266CC');
+        strokeWidths.push(0);
+    }
+    if (offshore.data.length > 0) {
+        series.push({ name: 'Wind Offshore', type: 'area', data: toTimestampPairs(offshore.data) });
+        colors.push('#44AADD');
+        strokeWidths.push(0);
     }
 
-    const series = [];
-    if (load.data.length > 0) series.push({ name: 'Load', data: load.data, color: '#FF4444' });
-    if (onshore.data.length > 0) series.push({ name: 'Wind Onshore', data: onshore.data, color: '#2266CC' });
-    if (offshore.data.length > 0) series.push({ name: 'Wind Offshore', data: offshore.data, color: '#44AADD' });
-    if (solar.data.length > 0) series.push({ name: 'Solar', data: solar.data, color: '#DDAA00' });
+    // Load as a line overlay (not stacked)
+    if (load.data.length > 0) {
+        series.push({ name: 'Load', type: 'line', data: toTimestampPairs(load.data) });
+        colors.push('#EE0000');
+        strokeWidths.push(3);
+    }
 
     const annotations = [];
     const now = new Date();
@@ -471,9 +486,14 @@ async function initNationalSummaryChart() {
     });
 
     const chart = new ApexCharts(container, {
-        chart: { type: 'line', height: 350, toolbar: { show: true }, zoom: { enabled: true, type: 'x' } },
+        chart: {
+            type: 'area', height: 400, stacked: true,
+            toolbar: { show: true }, zoom: { enabled: true, type: 'x' }
+        },
         series: series,
-        stroke: { width: 2, curve: 'smooth' },
+        colors: colors,
+        stroke: { width: strokeWidths, curve: 'smooth' },
+        fill: { opacity: series.map(s => s.type === 'area' ? 0.9 : 0) },
         xaxis: {
             type: 'datetime',
             labels: {
@@ -486,6 +506,7 @@ async function initNationalSummaryChart() {
             }
         },
         yaxis: {
+            min: 0,
             title: { text: 'Power (MW)', style: { color: isDarkMode ? '#e0e0e0' : '#000' } },
             labels: {
                 style: { colors: isDarkMode ? '#e0e0e0' : '#000', fontSize: '13px' },
