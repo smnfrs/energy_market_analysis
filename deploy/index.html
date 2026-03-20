@@ -15,15 +15,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
 
-    <link rel="stylesheet" href="assets/css/styles.css"> <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <body class="dark-mode">
 
-
-
 <header class="header-container">
-    <!-- Left Side: Title, Subtitle, Description -->
     <div class="header-left">
         <h1 class="header-title" data-i18n="title"></h1>
         <p class="header-subtitle" data-i18n="subtitle"></p>
@@ -33,19 +30,8 @@
             <strong class="update-label" data-i18n="updated-daily-label"></strong>
             <span class="update-description" data-i18n="updated-daily-description"></span>
         </div>
-        <p class="project-author">
-            <small>
-                <span data-i18n="personal-project">Personal project by</span>
-                <strong>Vsevolod Nedora, PhD</strong>:
-                <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank" rel="noopener noreferrer">👨‍💻 GitHub</a> |
-                <a href="https://www.linkedin.com/in/vsevolodnedora/" target="_blank" rel="noopener noreferrer">💼 LinkedIn</a> |
-                <a href="https://vsevolodnedora.github.io/" target="_blank" rel="noopener noreferrer">🌐 WebPage</a> |
-                <a href="https://vsevolodnedora.substack.com/" target="_blank" rel="noopener noreferrer">✍️ SubStack</a>
-            </small>
-        </p>
     </div>
 
-    <!-- Right Side: Buttons and Links -->
     <div class="header-right">
         <button id="dark-mode-toggle" class="toggle-button" onclick="toggleDarkMode()">
             🌙 Dark Mode
@@ -53,104 +39,59 @@
         <button id="language-toggle" class="toggle-button" onclick="toggleLanguage()">
             🌍 DE
         </button>
-        <!--        <a href="https://github.com/vsevolodnedora/energy_market_analysis"-->
-        <!--           target="_blank"-->
-        <!--           class="cta-link">-->
-        <!--            🔗 GitHub-->
-        <!--        </a>-->
     </div>
 </header>
 
-
-<!-- ====== TOP NAVIGATION BAR WITH SUBPAGE TOGGLES ====== -->
 <nav class="top-nav">
     <div class="controls-buttons">
-        <input type="checkbox" id="toggle-main" checked onclick="toggleSubpage('main-page', this.checked)" />
-        <label for="toggle-main">Information</label>
-
-        <input type="checkbox" id="toggle-market" onclick="toggleSubpage('market-analytics', this.checked)" />
-        <label for="toggle-market">Market Analytics</label>
-
-        <input type="checkbox" id="toggle-energy" checked onclick="toggleSubpage('energy-mix', this.checked)" />
-        <label for="toggle-energy">Energy Mix</label>
+        <input type="checkbox" id="toggle-overview" checked onclick="toggleSubpage('overview-page', this.checked)" />
+        <label for="toggle-overview" data-i18n="nav-overview">Overview</label>
 
         <input type="checkbox" id="toggle-forecasts" checked onclick="toggleSubpage('individual-forecasts', this.checked)" />
-        <label for="toggle-forecasts">Individual Forecasts</label>
+        <label for="toggle-forecasts" data-i18n="nav-forecasts">Per-TSO Forecasts</label>
 
         <input type="checkbox" id="toggle-api_info" onclick="toggleSubpage('api-info', this.checked)" />
         <label for="toggle-api_info">API</label>
     </div>
 </nav>
 
-
-
-<!-- Dark mode & language toggles could stay inside header, or in nav bar, whichever you prefer -->
-<!-- Keeping your existing header with i18n text here (moved inside the "main-page" so it only shows if "Main Page" is toggled on). -->
 <div class="subpages-container">
 
-    <!-- ========== MAIN PAGE ========== -->
-    <div id="main-page" class="subpage active">
+    <!-- ========== OVERVIEW ========== -->
+    <div id="overview-page" class="subpage active">
+        <div id="main_info-content"></div>
 
-<!--        <details id="project-main_in" open>-->
-<!--            <summary>About the Project</summary>-->
-<!--            <div id="main_info-content">-->
-<!--                &lt;!&ndash; Footer content will be dynamically loaded here &ndash;&gt;-->
-<!--            </div>-->
-<!--        </details>-->
-        <div id="main_info-content">
-            <!-- Footer content will be dynamically loaded here -->
-        </div>
-
-    </div>
-    <!-- End of #main-page -->
-
-    <!-- ========== MARKET ANALYTICS (EMPTY SHELL) ========== -->
-    <div id="market-analytics" class="subpage">
-        <h2>Market Analytics</h2>
-        <p>This section is currently empty. Once I am able to forecast generation, load and cross-border flows, I will start this section by adding day-ahead price forecast.</p>
+        <h2 data-i18n="national-summary-title" style="margin: 20px 0 5px 0;">National DE/LU Forecast Summary</h2>
+        <p style="color: gray; font-size: 13px; margin: 0 0 10px 0;" data-i18n="national-summary-desc">
+            7-day forecasts for the German/Luxembourg bidding zone, updated daily from weather data.
+        </p>
+        <div id="national-summary-chart" style="min-height: 350px;"></div>
+        <div id="national-summary-error" class="error-message"></div>
     </div>
 
-    <!-- ========== ENERGY MIX (EMPTY SHELL) ========== -->
-    <div id="energy-mix" class="subpage active">
-        <h2>Energy Mix</h2>
-        <p>This section is currently empty. Once I have most of the energy generation by technology forecasted, I will add the complete chart here.</p>
-    </div>
-
-    <!-- ========== INDIVIDUAL FORECASTS (WITH DETAILS) ========== -->
+    <!-- ========== PER-TSO FORECASTS ========== -->
     <div id="individual-forecasts" class="subpage active">
-        <!-- INTRODUCTION TO RENEWABLE FORECSTING SECTION -->
         <section class="forecast-intro">
             <p data-i18n="forecast-intro"></p>
         </section>
-
-
     </div>
-    <!-- End of #individual-forecasts -->
 
-    <!-- ========== API PAGE ========== -->
+    <!-- ========== API ========== -->
     <div id="api-info" class="subpage">
-
-        <div id="api_info-content">
-            <!-- Footer content will be dynamically loaded here -->
-        </div>
-
+        <div id="api_info-content"></div>
     </div>
 
-</div> <!-- End of .subpages-container -->
+</div>
 
-
-<!-- Load Project Info (footer) Content -->
-
-
-
-<!-- ================================================ -->
-<!-- ================   MAIN SCRIPTS   ============== -->
-<!-- ================================================ -->
+<footer style="text-align: center; padding: 20px; font-size: 12px; color: gray; border-top: 1px solid #444; margin-top: 30px;">
+    Fork of <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">vsevolodnedora/energy_market_analysis</a>
+    by <a href="https://github.com/vsevolodnedora" target="_blank">Vsevolod Nedora</a>.
+    All original domain knowledge, feature engineering, and pipeline design from the upstream project.
+</footer>
 
 <script src="script.js"></script>
 
 <script>
-    // This function toggles each "subpage" div by adding/removing an .active class
     function toggleSubpage(subpageId, isChecked) {
       const subpage = document.getElementById(subpageId);
       if (!subpage) return;
@@ -161,20 +102,6 @@
       }
     }
 </script>
-
-<script>
-    function showFileURL() {
-        const dropdown = document.getElementById('file-dropdown');
-        const url = dropdown.value;
-        const display = document.getElementById('file-url');
-        if (url) {
-            display.innerHTML = `Selected file URL: <a href="${url}" target="_blank">${url}</a>`;
-        } else {
-            display.innerHTML = '';
-        }
-    }
-</script>
-
 
 </body>
 </html>

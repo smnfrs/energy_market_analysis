@@ -1,87 +1,43 @@
 <section id="project-details" style="line-height: 1.4; font-size: 14px;">
     <p>
-        This project uses advanced MLOps pipelines to produce accurate week-ahead forecasts for renewable energy generation, electricity load, and prices. Combining robust data engineering, modern machine learning, and automated workflows, it optimizes operations, enhances trading strategies, and promotes sustainable energy integration.
+        Week-ahead forecasts for electricity generation and load in the German/Luxembourg (DE/LU) bidding zone,
+        produced from <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> weather data
+        using gradient-boosted tree models (LightGBM, XGBoost) with physics-informed features.
     </p>
-    <p><strong>Source code:</strong>
-        <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">GitHub Repository</a>
-    </p>
-
-    <h3 style="margin: 10px 0;">Value Proposition</h3>
-    <ul style="margin: 5px 0 10px 20px; padding: 0;">
-        <li><strong>Optimize Operations:</strong> Efficient maintenance schedules minimize disruptions and costs.</li>
-        <li><strong>Enhance Trading:</strong> Improved bidding strategies and reduced financial risk.</li>
-        <li><strong>Support Grid Stability:</strong> Effective supply-demand balance for renewable integration.</li>
-        <li><strong>Drive Sustainability:</strong> Actionable insights for decarbonization and long-term planning.</li>
-    </ul>
-
-    <h3 style="margin: 10px 0;">Core Features & Workflow</h3>
-    <ul style="margin: 5px 0 10px 20px; padding: 0;">
-        <li><strong>Daily Data Collection:</strong> Automatic retrieval from APIs (
-            <a href="https://transparency.entsoe.eu" target="_blank">ENTSO-E</a>,
-            <a href="https://www.smard.de/home" target="_blank">SMARD</a>,
-            <a href="https://open-meteo.com/" target="_blank">openmeteo</a>,
-            <a href="https://www.epexspot.com/en" target="_blank">EPEXSPOT</a>
-            and <a href="https://www.eex.com/en/" target="_blank">EEX</a>
-            ).
-        </li>
-        <li><strong>Preprocessing:</strong> Tailored cleaning and feature engineering for wind, solar, and load data.</li>
-        <li><strong>Forecasting Models:</strong> Prophet, XGBoost, and Elastic Net, with ensemble methods for higher accuracy.</li>
-        <li><strong>Hyperparameter Optimization:</strong> Automated tuning (Optuna) to minimize forecast error.</li>
-        <li><strong>Pipeline Automation:</strong> GitHub Actions for continuous data updates and deployment.</li>
-    </ul>
-
-    <h3 style="margin: 10px 0;">Technical Highlights</h3>
-    <ul style="margin: 5px 0 10px 20px; padding: 0;">
-        <li><strong>Multi-Step Forecasting:</strong> Hourly forecasts for an entire week.</li>
-        <li><strong>Advanced Feature Engineering:</strong> Weather-driven inputs (wind power density, solar radiation, etc.).</li>
-        <li><strong>Interactive Visualizations:</strong> Charts built with
-            <a href="https://apexcharts.com/" target="_blank">ApexCharts</a>.
-        </li>
-        <li><strong>Extendability:</strong> Explainable models (SHAP) and customizable pipelines.</li>
-    </ul>
-
-    <h3 style="margin: 10px 0;">Project Roadmap</h3>
-    <div style="border-left: 3px solid #007bff; padding-left: 10px; margin-bottom: 15px;">
-        <div style="position: relative; margin-bottom: 15px;">
-          <span style="font-weight: bold;">
-            1. <a href="https://vsevolodnedora.substack.com/p/mlops-driven-energy-forecasting-week" target="_blank">Offshore</a> and
-            <a href="https://vsevolodnedora.substack.com/p/from-offshore-to-onshore-scaling" target="_blank">Onshore</a> Wind Power Generation
-          </span>
-            <p style="margin: 0; color: gray;">Using weather-related features</p>
-            </div>
-            <div style="position: relative; margin-bottom: 15px;">
-          <span style="font-weight: bold;">
-            2. <a href="https://vsevolodnedora.substack.com/p/physics-informed-solar-generation" target="_blank">Solar</a> Power Generation
-          </span>
-             <p style="margin: 0; color: gray;">Using weather-related features</p>
-             </div>
-             <div style="position: relative; margin-bottom: 15px;">
-          <span style="font-weight: bold;">
-            3. <a href="https://vsevolodnedora.substack.com/p/load-forecasting-adding-another-piece" target="_blank">Load</a> & Residual Load Forecasting
-          </span>
-             <p style="margin: 0; color: gray;">Incorporating wind and solar generation</p>
-        </div>
-
-        <div style="position: relative; margin-bottom: 15px;">
-          <span style="font-weight: bold;">
-            4. <a href="https://vsevolodnedora.substack.com/p/forecasting-the-german-energy-mix" target="_blank">Merit Order</a> (Coal, Oil, Gas, etc.) Forecasting
-          </span>
-            <p style="margin: 0;">Adding fossil fuel generation as well as other renewables types</p>
-        </div>
-        <div style="position: relative; margin-bottom: 15px; color: #007bff;">
-            <span style="font-weight: bold;">5. Cross-Border Flows</span> <span style="font-size: smaller; font-style: italic;">[Current Stage]</span>
-            <p style="margin: 0; color: gray;">Main imports and exports</p>
-        </div>
-        <div style="position: relative; margin-bottom: 15px;">
-            <span style="font-weight: bold;">6. Prices & Carbon Indicators</span>
-            <p style="margin: 0; color: gray;">Forecasting based on all factors</p>
-        </div>
-    </div>
-
-    <h3 style="margin: 10px 0;">Contact & Contributions</h3>
     <p>
-        We welcome feedback and collaboration. Visit the
-        <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">GitHub repository</a>
-        to contribute or learn more.
+        <strong>Why this exists:</strong>
+        SMARD publishes official TSO forecasts at ~18:00 CET &mdash; six hours <em>after</em> the 12:00 CET
+        day-ahead auction. These forecasts use the same weather inputs but are available days in advance,
+        enabling earlier price modelling and trading decisions.
+    </p>
+
+    <h3 style="margin: 10px 0;">What's Forecasted</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li><strong>Wind Offshore</strong> &mdash; 50Hertz, TenneT</li>
+        <li><strong>Wind Onshore</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>Solar</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>Load</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>National aggregates</strong> &mdash; DE/LU totals including Luxembourg (Creos TSO)</li>
+    </ul>
+
+    <h3 style="margin: 10px 0;">Data Sources</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li><strong>Weather:</strong> <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> &mdash; 30+ curated locations near generation assets</li>
+        <li><strong>Actuals:</strong> <a href="https://www.smard.de/home" target="_blank">SMARD v2</a> &mdash; per-TSO generation and load (no API key required)</li>
+    </ul>
+
+    <h3 style="margin: 10px 0;">How It Works</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li>Physics-informed features: wind power density, air density, wind shear, solar angle, heating/cooling degree days</li>
+        <li>Multi-step recursive hourly forecasting over a 168-hour (7-day) horizon</li>
+        <li>MAPIE conformal prediction intervals</li>
+        <li>Hyperparameter tuning via Optuna with honest rolling cross-validation</li>
+        <li>Fully automated: GitHub Actions collects data, runs inference, and publishes daily</li>
+    </ul>
+
+    <p><strong>Source code:</strong>
+        <a href="https://github.com/smnfrse/energy_market_analysis" target="_blank">GitHub</a>
+        &mdash; fork of
+        <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">vsevolodnedora/energy_market_analysis</a>
     </p>
 </section>
