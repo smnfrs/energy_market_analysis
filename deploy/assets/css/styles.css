@@ -928,6 +928,13 @@ body.dark-mode .controls-buttons label:hover {
   border-color: #d39e00;
 }
 
+/* Specific styles for activated orange button */
+.controls-buttons input[type="checkbox"]:checked + label.btn-orange {
+  background: linear-gradient(90deg, #ff8800, #cc6d00); /* Orange */
+  color: #fff;
+  border-color: #cc6d00;
+}
+
 /* Specific styles for activated purple button */
 .controls-buttons input[type="checkbox"]:checked + label.btn-purple {
   background: linear-gradient(90deg, #6f42c1, #5936a6); /* Purple */
@@ -997,6 +1004,14 @@ body.dark-mode .controls-buttons input[type="checkbox"]:checked + label.btn-yell
   background: linear-gradient(90deg, #d39e00, #a37700); /* Dark yellow */
   color: #fff;
   border-color: #a37700;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Toggled orange button in dark mode */
+body.dark-mode .controls-buttons input[type="checkbox"]:checked + label.btn-orange {
+  background: linear-gradient(90deg, #cc6d00, #995200); /* Dark orange */
+  color: #fff;
+  border-color: #995200;
   box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 }
 

@@ -42,15 +42,6 @@
     </div>
 </header>
 
-<nav class="top-nav">
-    <div class="controls-buttons">
-        <input type="checkbox" id="toggle-forecasts" checked onclick="toggleSubpage('individual-forecasts', this.checked)" />
-        <label for="toggle-forecasts" data-i18n="nav-forecasts">Per-TSO Forecasts</label>
-
-        <input type="checkbox" id="toggle-api_info" onclick="toggleSubpage('api-info', this.checked)" />
-        <label for="toggle-api_info">API</label>
-    </div>
-</nav>
 
 <div class="subpages-container">
 
@@ -68,10 +59,6 @@
         </section>
     </div>
 
-    <!-- ========== API ========== -->
-    <div id="api-info" class="subpage">
-        <div id="api_info-content"></div>
-    </div>
 
 </div>
 
@@ -83,17 +70,6 @@
 
 <script src="script.js"></script>
 
-<script>
-    function toggleSubpage(subpageId, isChecked) {
-      const subpage = document.getElementById(subpageId);
-      if (!subpage) return;
-      if (isChecked) {
-        subpage.classList.add('active');
-      } else {
-        subpage.classList.remove('active');
-      }
-    }
-</script>
 
 </body>
 </html>
