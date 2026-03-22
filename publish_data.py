@@ -1069,7 +1069,13 @@ class PublishGenerationLoad:
 
         self.df_smard_v2 = pd.read_parquet(smard_v2_path)
         self.df_smard_v2 = self.df_smard_v2.apply(pd.to_numeric, errors='coerce')
-        self.df_smard_v2 = validate_dataframe(self.df_smard_v2, 'df_smard_v2', logger.warning, self.verbose)
+        try:
+            self.df_smard_v2 = validate_dataframe(self.df_smard_v2, 'df_smard_v2', logger.warning, self.verbose)
+        except ValueError as e:
+            # Actuals are used for display/error metrics only — tolerate larger gaps
+            logger.warning(f"SMARD v2 validation failed ({e}); interpolating with relaxed limits")
+            full_range = pd.date_range(start=self.df_smard_v2.index.min(), end=self.df_smard_v2.index.max(), freq='h')
+            self.df_smard_v2 = self.df_smard_v2.reindex(full_range).interpolate(method='time', limit=168)
 
         # Compute total generation per TSO (sum all non-load columns for each suffix)
         for de_reg in self.c_dict['regions']:
