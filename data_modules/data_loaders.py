@@ -524,8 +524,8 @@ def mask_outliers_and_unphysical_values(
 def clean_and_impute(df_hist, df_forecast, freq:str, verbose:bool)->tuple[pd.DataFrame, pd.DataFrame]:
 
     df_hist, df_forecast = mask_outliers_and_unphysical_values(df_hist, df_forecast, verbose)
-    df_hist = validate_dataframe(df_hist, 'df_hist', log_func=logger.warning, verbose=verbose)
-    df_forecast = validate_dataframe(df_forecast, 'df_forecast', log_func=logger.warning, verbose=verbose)
+    df_hist = validate_dataframe(df_hist, 'df_hist', log_func=logger.warning, verbose=verbose, max_gap=168)
+    df_forecast = validate_dataframe(df_forecast, 'df_forecast', log_func=logger.warning, verbose=verbose, max_gap=168)
     if not freq in ['minutely_15', 'hourly']:
         raise ValueError(f'Frequency must be "minutely_15" or "hourly" Given: {freq}')
     if freq == 'hourly':

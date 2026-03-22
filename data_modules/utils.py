@@ -77,13 +77,13 @@ def fix_broken_periodicity_with_interpolation(df: pd.DataFrame, name: str) -> pd
 
     return fixed_df
 
-def validate_dataframe(df: pd.DataFrame, name: str, log_func:Callable[...,None], verbose:bool=False) -> pd.DataFrame:
+def validate_dataframe(df: pd.DataFrame, name: str, log_func:Callable[...,None], verbose:bool=False, max_gap:int=48) -> pd.DataFrame:
     """Check for NaNs, missing values, and periodicity in a time-series DataFrame."""
 
     # Check for NaNs
     if df.isnull().any().any():
         if verbose: logger.error(f"{name} DataFrame contains NaN values.")
-        df = handle_nans_with_interpolation(df, name, log_func)
+        df = handle_nans_with_interpolation(df, name, log_func, max_gap=max_gap)
 
     # Check if index is sorted in ascending order
     if not df.index.is_monotonic_increasing:
