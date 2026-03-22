@@ -2,7 +2,10 @@
   "en": {
     "translation": {
       "title": "German Energy Market Forecasts",
-      "subtitle": "Week-Ahead Generation & Load Forecasts for the DE/LU Bidding Zone",
+      "subtitle": "Week-Ahead Generation & Load Forecasts for the Germany-Luxembourg Bidding Area",
+      "national-heading": "Generation and Load Forecasts for the Germany-Luxembourg Bidding Area",
+      "national-genload-heading": "Total Generation and Load",
+      "national-mix-heading": "Forecast Generation Mix",
       "description": "Weather-based forecasts for wind, solar, and load — available before the day-ahead auction.",
       "updated-daily-label": "Updated Daily:",
       "updated-daily-description": "Forecasts are produced from Open-Meteo weather data via automated GitHub Actions pipelines.",
@@ -38,7 +41,10 @@
   "de": {
     "translation": {
       "title": "Deutsche Energiemarkt-Prognosen",
-      "subtitle": "Wochenprognosen f\u00fcr Erzeugung & Last in der DE/LU-Gebotszone",
+      "subtitle": "Wochenprognosen f\u00fcr Erzeugung & Last in der deutsch-luxemburgischen Gebotszone",
+      "national-heading": "Erzeugungs- und Lastprognosen f\u00fcr die deutsch-luxemburgische Gebotszone",
+      "national-genload-heading": "Gesamterzeugung und Last",
+      "national-mix-heading": "Prognostizierter Erzeugungsmix",
       "description": "Wetterbasierte Prognosen f\u00fcr Wind, Solar und Last \u2014 verf\u00fcgbar vor der Day-Ahead-Auktion.",
       "updated-daily-label": "T\u00e4glich aktualisiert:",
       "updated-daily-description": "Prognosen werden aus Open-Meteo-Wetterdaten \u00fcber automatisierte GitHub-Actions-Pipelines erstellt.",

@@ -411,10 +411,9 @@ async function initNationalSummaryCharts() {
         fetchNationalForecast('national_sonstige.json')
     ]);
 
-    // Also fetch actuals from per-TSO total directories
-    const [loadActual, loadFitted, onshoreActual, offshoreActual, solarActual] = await Promise.all([
+    // Fetch actuals from per-TSO total directories (last 7 days only)
+    const [loadActual, onshoreActual, offshoreActual, solarActual] = await Promise.all([
         fetchPerTsoTotal('load', 'forecast_prev_actual.json'),
-        fetchPerTsoTotal('load', 'forecast_prev_fitted.json'),
         fetchPerTsoTotal('wind_onshore', 'forecast_prev_actual.json'),
         fetchPerTsoTotal('wind_offshore', 'forecast_prev_actual.json'),
         fetchPerTsoTotal('solar', 'forecast_prev_actual.json')
@@ -425,12 +424,15 @@ async function initNationalSummaryCharts() {
         return;
     }
 
+    // Trim actuals to last 7 days (168 hourly points)
+    const last7d = (arr) => arr.length > 168 ? arr.slice(-168) : arr;
+
     // Compute generation actuals by summing component actuals
-    let genActual = [];
+    let genActualRaw = [];
     if (onshoreActual.length > 0 && offshoreActual.length > 0 && solarActual.length > 0) {
         const minLen = Math.min(onshoreActual.length, offshoreActual.length, solarActual.length);
         for (let i = 0; i < minLen; i++) {
-            genActual.push([onshoreActual[i][0], onshoreActual[i][1] + offshoreActual[i][1] + solarActual[i][1]]);
+            genActualRaw.push([onshoreActual[i][0], onshoreActual[i][1] + offshoreActual[i][1] + solarActual[i][1]]);
         }
     }
 
@@ -446,21 +448,23 @@ async function initNationalSummaryCharts() {
         }).format(new Date(timestamp));
     const yFormatter = val => val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val.toFixed(0);
 
-    // --- Chart 1: Generation vs Load (line chart, actuals + forecasts) ---
+    // --- Chart 1: Generation vs Load (line chart, actuals solid + forecasts dashed) ---
     const genLoadContainer = document.querySelector('#national-genload-chart');
     if (genLoadContainer) {
         const glSeries = [];
         const glColors = [];
         const glDash = [];
 
-        if (loadActual.length > 0)          { glSeries.push({ name: 'Load (Actual)',       data: loadActual });              glColors.push('#EE0000'); glDash.push(0); }
-        if (loadForecast.data.length > 0)   { glSeries.push({ name: 'Load (Forecast)',     data: toTS(loadForecast.data) }); glColors.push('#EE0000'); glDash.push(5); }
-        if (genActual.length > 0)           { glSeries.push({ name: 'Generation (Actual)', data: genActual });               glColors.push('#00AA44'); glDash.push(0); }
-        if (genForecast.data.length > 0)    { glSeries.push({ name: 'Generation (Forecast)', data: toTS(genForecast.data) }); glColors.push('#00AA44'); glDash.push(5); }
+        const loadActual7d = last7d(loadActual);
+        const genActual7d = last7d(genActualRaw);
+
+        if (loadActual7d.length > 0)        { glSeries.push({ name: 'Load (actual)',          data: loadActual7d });            glColors.push('#EE0000'); glDash.push(0); }
+        if (loadForecast.data.length > 0)   { glSeries.push({ name: 'Load (forecast)',        data: toTS(loadForecast.data) }); glColors.push('#EE0000'); glDash.push(5); }
+        if (genActual7d.length > 0)         { glSeries.push({ name: 'Generation (actual)',    data: genActual7d });             glColors.push('#00AA44'); glDash.push(0); }
+        if (genForecast.data.length > 0)    { glSeries.push({ name: 'Generation (forecast)',  data: toTS(genForecast.data) }); glColors.push('#00AA44'); glDash.push(5); }
 
         const glChart = new ApexCharts(genLoadContainer, {
             chart: { type: 'line', height: 220, toolbar: { show: false }, zoom: { enabled: true, type: 'x' } },
-            title: { text: 'Generation & Load (DE/LU)', style: { color: isDarkMode ? '#e0e0e0' : '#333', fontSize: '14px' } },
             series: glSeries,
             colors: glColors,
             stroke: { width: 2, curve: 'smooth', dashArray: glDash },
@@ -496,7 +500,6 @@ async function initNationalSummaryCharts() {
 
         const mixChart = new ApexCharts(mixContainer, {
             chart: { type: 'area', height: 300, stacked: true, toolbar: { show: true }, zoom: { enabled: true, type: 'x' } },
-            title: { text: 'Forecast Generation Mix (DE/LU)', style: { color: isDarkMode ? '#e0e0e0' : '#333', fontSize: '14px' } },
             series: mixSeries,
             colors: mixColors,
             stroke: { width: 0, curve: 'smooth' },
@@ -717,12 +720,7 @@ function generateForecastSection({ id, title, dataKey, descriptionFile, buttons 
 
 const allForecastSectionsDE = forecastChartDataDE.map(generateForecastSection).join("");
 
-document.getElementById("individual-forecasts").innerHTML += `
-  <details class="country-section" open>
-    <summary>Germany (DE/LU) &mdash; Generation &amp; Load</summary>
-    ${allForecastSectionsDE}
-  </details>
-`;
+document.getElementById("individual-forecasts").innerHTML += allForecastSectionsDE;
 
 // ========================== CHART EVENT SETUP ============================= */
 
@@ -743,8 +741,9 @@ function setupChartEvents({
             }
         });
 
-    document.querySelector(detailsSelector)
-        .addEventListener('toggle', async function(e) {
+    // Find this chart's own <details> parent
+    const detailsEl = document.getElementById(`chart${id}`).closest('details.forecast-section');
+    detailsEl.addEventListener('toggle', async function(e) {
             if (e.target.open && !chartState[createdKey]) {
                 await initializeI18n();
                 chartState[createdKey] = true;
