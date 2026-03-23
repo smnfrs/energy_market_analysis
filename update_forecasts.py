@@ -485,7 +485,7 @@ def main(country_code:str, target:str, model:str, mode:str, freq:str,verbose:boo
     if country_code == 'all': country_code = countries[:-1] # all countries
     else: country_code = [country_code]
 
-    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'gen_load_diff', 'energy_mix', 'all']
+    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'gen_load_diff', 'all']
     if not target in targets:
         raise ValueError(f'target must be in {targets}. Given: {target}')
     if target == 'all': target = targets[:-1]

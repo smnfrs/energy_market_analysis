@@ -1299,7 +1299,7 @@ def main(country_code:str, target:str, verboose:bool):
     if country_code == 'all': country_code_ = countries[:-1] # all countries
     else: country_code_ = [country_code]
 
-    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'energy_mix', 'all']
+    targets = ['wind_offshore', 'wind_onshore', 'solar', 'load', 'all']
     if not target in targets:
         raise ValueError(f'target must be in {targets}. Given: {target}')
     if target == 'all': target_ = targets[:-1]
