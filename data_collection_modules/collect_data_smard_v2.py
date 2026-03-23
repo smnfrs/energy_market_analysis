@@ -107,7 +107,10 @@ def fetch_filter_region(filter_id, region, resolution="hour",
         return None
 
     if after_ts is not None:
-        timestamps = [ts for ts in timestamps if ts > after_ts]
+        # Chunk timestamps mark week start; include the chunk containing the
+        # cutoff by subtracting one week so partial-week updates are re-fetched.
+        week_ms = 7 * 24 * 3600 * 1000
+        timestamps = [ts for ts in timestamps if ts > after_ts - week_ms]
 
     if not timestamps:
         return None
