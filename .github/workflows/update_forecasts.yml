@@ -32,7 +32,9 @@ jobs:
         run: pipenv install
 
       - name: Update Forecasts
-        run: pipenv run python update_forecasts.py DE all all forecast hourly
+        run: |
+          pipenv run python update_forecasts.py DE all all forecast hourly
+          pipenv run python update_forecasts.py DE all all summarize hourly
 
       - name: Commit Changes
         run: |
