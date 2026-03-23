@@ -1245,7 +1245,7 @@ class PublishGenerationLoad:
         # Rename values starting with 'meta_' to 'Ensemble'
         table["Best Model"] = table["Best Model"].apply(lambda x: "Ensemble" if x.startswith("meta_") else x)
         # Round floating point values to integers
-        table[r"RMSE"] = table[r"RMSE"].round().astype(int)
+        table[r"RMSE"] = table[r"RMSE"].round().astype('Int64')
         table[r"TSO RMSE"] = table[r"TSO RMSE"].round().astype('Int64')  # nullable int, handles NaN
         # Save as markdown
         summary_fpath = f'{self.output_dir_for_figs}/{target}_notes_en.md'
