@@ -1120,11 +1120,8 @@ class PublishGenerationLoad:
             col for col in DataEnergySMARD.mapping_energy.values() if col in self.df_smard.columns
         ]].sum(axis=1)
         for target in ['generation', 'generation_forecast']:
-            # Replace 0 values with NaN
-            self.df_smard[target].replace(0, np.nan, inplace=True)
-            # Interpolate NaN values using time series interpolation (backward direction)
-            self.df_smard[target].interpolate(method='time', limit_direction='both', inplace=True)
-        print_nans(self.df_smard)
+            self.df_smard[target] = self.df_smard[target].replace(0, np.nan)
+            self.df_smard[target] = self.df_smard[target].interpolate(method='time', limit_direction='both')
         logger.info(f'Loaded SMARD with file {len(self.df_smard)} entries')
 
     def write_notes_for_energy_mix(
