@@ -1,7 +1,7 @@
 {
     "wind_onshore_lu": {
-        "method": "trained",
-        "model_label": "XGBoost",
-        "avg_rmse": 16.759119510650635
+        "method": "forecast",
+        "model_label": "ElasticNet",
+        "avg_rmse": 38.08661719878113
     }
 }
