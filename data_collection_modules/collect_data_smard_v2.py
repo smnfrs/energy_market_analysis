@@ -137,12 +137,15 @@ def _merge_column_into_parquet(fname, col_name, series):
     """Merge a single new column/series into an existing parquet file (or create it)."""
     if os.path.isfile(fname):
         df = ParquetOperations.read(fname)
+        # Extend index to cover new timestamps before merging
+        new_idx = series.index.difference(df.index)
+        if len(new_idx) > 0:
+            df = df.reindex(df.index.union(new_idx))
         if col_name in df.columns:
             # Update: preserve existing data, overwrite only where new data exists
             df[col_name] = series.combine_first(df[col_name])
         else:
             df[col_name] = series
-        # Reindex to cover the full union of timestamps
         df = df.sort_index()
         df = df[~df.index.duplicated(keep="last")]
     else:
