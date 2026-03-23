@@ -1,1 +1,7 @@
-{}
+{
+    "wind_onshore_50hz": {
+        "method": "trained",
+        "model_label": "LightGBM",
+        "avg_rmse": 1576.3599930246685
+    }
+}

@@ -96,6 +96,8 @@ def load_best_forecast(target_dir: Path) -> dict:
         raise FileNotFoundError(f"No best_model*.json found in {target_dir}")
 
     # best_models has one key (the target name) with model_label
+    if not best_models:
+        raise ValueError(f"best_model.json in {target_dir} is empty (model selection incomplete)")
     target_name = list(best_models.keys())[0]
     model_label = best_models[target_name]["model_label"]
 
@@ -162,7 +164,7 @@ def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
                 if "ci_upper" in data:
                     ci_uppers.append(data["ci_upper"])
                 models_used.append(f"{tso_dir_name}:{data['model_label']}")
-            except (FileNotFoundError, KeyError) as e:
+            except (FileNotFoundError, KeyError, ValueError) as e:
                 logger.warning(f"Skipping {tso_dir_name}: {e}")
                 continue
 

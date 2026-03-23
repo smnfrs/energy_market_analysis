@@ -359,12 +359,16 @@ def extract_from_database(main_pars:dict,c_dict:dict, db_path:str, outdir:str, f
                     logger.warning(f"No trained model for exogenous feature {exog_tso_} (best_model.json not found). Skipping.")
                     continue
 
-                target_col = df_targets[exog_tso_]
-                df_hist = pd.merge(left=df_hist, right=target_col, left_index=True, right_index=True, how='left')
-
                 # load forecast from current best forecast
                 with open(best_model_path, 'r') as file:
                     best_models : dict = json.load(file)
+                if exog_tso_ not in best_models:
+                    logger.warning(f"No model selection result for {exog_tso_} (best_model.json is empty). Skipping.")
+                    continue
+
+                target_col = df_targets[exog_tso_]
+                df_hist = pd.merge(left=df_hist, right=target_col, left_index=True, right_index=True, how='left')
+
                 target_dict = best_models[exog_tso_]
                 best_model = target_dict['model_label']
 

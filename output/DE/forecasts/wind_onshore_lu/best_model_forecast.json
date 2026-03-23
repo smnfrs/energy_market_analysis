@@ -2,6 +2,6 @@
     "wind_onshore_lu": {
         "method": "forecast",
         "model_label": "ElasticNet",
-        "avg_rmse": 38.08661719878113
+        "avg_rmse": 31.464415889294184
     }
 }
