@@ -756,16 +756,14 @@ def add_datas(dt1:TargetData, dt2:TargetData, target1:str, target2:str, expect_s
 
     if len(dt1.train_cutoffs) == 0: dt1.train_cutoffs = copy.deepcopy(dt2.train_cutoffs)
     elif len(dt1.train_cutoffs) > 0 and len(dt2.train_cutoffs) > 0 and list(dt1.train_cutoffs) != list(dt2.train_cutoffs):
-        raise ValueError(
-            f"Train cuttofs mismatch: {target1} ({dt1.best_model_label}) vs {target2} ({dt2.best_model_label}) | "
-            f"\n{dt1.train_cutoffs},  \n{dt2.train_cutoffs}"
+        logger.warning(
+            f"Train cutoffs mismatch: {target1} ({dt1.best_model_label}) vs {target2} ({dt2.best_model_label}); using intersection"
         )
 
     if len(dt1.forecast_cutoffs) == 0: dt1.forecast_cutoffs = copy.deepcopy(dt2.forecast_cutoffs)
     elif len(dt1.forecast_cutoffs) > 0 and len(dt2.forecast_cutoffs) > 0 and list(dt1.forecast_cutoffs) != list(dt2.forecast_cutoffs):
-        raise ValueError(
-            f"Forecast cuttofs mismatch: {target1} vs {target2} | "
-            f"\n{dt1.forecast_cutoffs}, \n{dt2.forecast_cutoffs}"
+        logger.warning(
+            f"Forecast cutoffs mismatch: {target1} vs {target2}; using intersection"
         )
 
     if (dt1.finetune_time is None): dt1.finetune_time = copy.deepcopy(dt2.finetune_time)
