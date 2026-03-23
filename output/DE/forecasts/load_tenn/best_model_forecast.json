@@ -1,7 +1,7 @@
 {
     "load_tenn": {
-        "method": "trained",
+        "method": "forecast",
         "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 423.6099944630453
+        "avg_rmse": 1612.7392247445316
     }
 }

@@ -2,6 +2,6 @@
     "load_lu": {
         "method": "trained",
         "model_label": "XGBoost",
-        "avg_rmse": 26.223782221476238
+        "avg_rmse": 34.467628479003906
     }
 }
