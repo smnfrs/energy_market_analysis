@@ -9,7 +9,7 @@
         "target_name": "solar",
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
-        "forecast_datetime": "2026-03-23T07:23:00Z",
+        "forecast_datetime": "2026-03-23T07:44:19Z",
         "source": "https://smnfrse.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",
