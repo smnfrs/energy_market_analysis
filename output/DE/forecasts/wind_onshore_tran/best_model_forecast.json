@@ -1,7 +1,7 @@
 {
     "wind_onshore_tran": {
         "method": "forecast",
-        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
-        "avg_rmse": 169.2999153137207
+        "model_label": "ElasticNet",
+        "avg_rmse": 217.30566739796413
     }
 }

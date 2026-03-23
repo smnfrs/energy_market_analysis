@@ -2,6 +2,6 @@
     "solar_ampr": {
         "method": "forecast",
         "model_label": "ElasticNet",
-        "avg_rmse": 1861.5645844584997
+        "avg_rmse": 1971.5076907927144
     }
 }
