@@ -424,8 +424,23 @@ async function initNationalSummaryCharts() {
         return;
     }
 
-    // Trim actuals to last 7 days (168 hourly points)
-    const last7d = (arr) => arr.length > 168 ? arr.slice(-168) : arr;
+    const toTS = (arr) => arr.map(d => [d.x.getTime(), d.y]);
+
+    // Find the earliest forecast start time to anchor actuals
+    const forecastStart = Math.min(
+        ...[loadForecast, genForecast].filter(f => f.data.length > 0).map(f => f.data[0].x.getTime())
+    );
+
+    // Trim actuals: keep last 7 days, but only if they end within 48h of the forecast start.
+    // If the gap is larger, the data is too stale to display meaningfully.
+    const trimActuals = (arr) => {
+        if (arr.length === 0) return [];
+        const lastActualTime = arr[arr.length - 1][0];
+        const gapHours = (forecastStart - lastActualTime) / 3600000;
+        if (gapHours > 48) return [];  // stale — don't show
+        const cutoff = forecastStart - 7 * 24 * 3600000;
+        return arr.filter(d => d[0] >= cutoff && d[0] < forecastStart);
+    };
 
     // Compute generation actuals by summing component actuals
     let genActualRaw = [];
@@ -435,8 +450,6 @@ async function initNationalSummaryCharts() {
             genActualRaw.push([onshoreActual[i][0], onshoreActual[i][1] + offshoreActual[i][1] + solarActual[i][1]]);
         }
     }
-
-    const toTS = (arr) => arr.map(d => [d.x.getTime(), d.y]);
     const now = new Date();
     const nowAnnotation = {
         x: now.getTime(), borderColor: '#FF0000',
@@ -455,8 +468,8 @@ async function initNationalSummaryCharts() {
         const glColors = [];
         const glDash = [];
 
-        const loadActual7d = last7d(loadActual);
-        const genActual7d = last7d(genActualRaw);
+        const loadActual7d = trimActuals(loadActual);
+        const genActual7d = trimActuals(genActualRaw);
 
         if (loadActual7d.length > 0)        { glSeries.push({ name: 'Load (actual)',          data: loadActual7d });            glColors.push('#EE0000'); glDash.push(0); }
         if (loadForecast.data.length > 0)   { glSeries.push({ name: 'Load (forecast)',        data: toTS(loadForecast.data) }); glColors.push('#EE0000'); glDash.push(5); }

@@ -1101,7 +1101,12 @@ class PublishGenerationLoad:
         if not isinstance(self.df_smard.index, pd.DatetimeIndex):
             self.df_smard = self.df_smard.set_index(pd.to_datetime(self.df_smard.index))
 
-        self.df_smard = validate_dataframe(self.df_smard, 'df_smard', logger.warning, self.verbose)
+        try:
+            self.df_smard = validate_dataframe(self.df_smard, 'df_smard', logger.warning, self.verbose)
+        except ValueError as e:
+            logger.warning(f"SMARD validation failed ({e}); interpolating with relaxed limits")
+            full_range = pd.date_range(start=self.df_smard.index.min(), end=self.df_smard.index.max(), freq='h')
+            self.df_smard = self.df_smard.reindex(full_range).interpolate(method='time', limit=168)
         self.df_smard.rename(columns={
             "total_gen_forecasted":"generation_forecast",
             "wind_offshore_forecasted":"wind_offshore_forecast",
