@@ -1,7 +1,7 @@
 {
     "solar_lu": {
         "method": "trained",
-        "model_label": "LightGBM",
-        "avg_rmse": 18.000172561966654
+        "model_label": "XGBoost",
+        "avg_rmse": 83.65275573730469
     }
 }
