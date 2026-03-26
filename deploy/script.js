@@ -375,11 +375,13 @@ async function fetchNationalForecast(fileName) {
         const json = await res.json();
         return {
             data: json.data.map(d => ({ x: new Date(d.datetime), y: d.forecast })),
+            actuals: (json.actuals || []).filter(d => d[1] !== null),
+            fitted: (json.fitted || []).filter(d => d[1] !== null),
             metadata: json.metadata
         };
     } catch (err) {
         console.error(err);
-        return { data: [], metadata: null };
+        return { data: [], actuals: [], fitted: [], metadata: null };
     }
 }
 
@@ -411,14 +413,6 @@ async function initNationalSummaryCharts() {
         fetchNationalForecast('national_sonstige.json')
     ]);
 
-    // Fetch actuals from per-TSO total directories (last 7 days only)
-    const [loadActual, onshoreActual, offshoreActual, solarActual] = await Promise.all([
-        fetchPerTsoTotal('load', 'forecast_prev_actual.json'),
-        fetchPerTsoTotal('wind_onshore', 'forecast_prev_actual.json'),
-        fetchPerTsoTotal('wind_offshore', 'forecast_prev_actual.json'),
-        fetchPerTsoTotal('solar', 'forecast_prev_actual.json')
-    ]);
-
     if (loadForecast.data.length === 0 && onshore.data.length === 0) {
         document.getElementById('national-summary-error').textContent = 'No forecast data available.';
         return;
@@ -431,25 +425,17 @@ async function initNationalSummaryCharts() {
         ...[loadForecast, genForecast].filter(f => f.data.length > 0).map(f => f.data[0].x.getTime())
     );
 
-    // Trim actuals: keep last 7 days, but only if they end within 48h of the forecast start.
-    // If the gap is larger, the data is too stale to display meaningfully.
-    const trimActuals = (arr) => {
+    // Trim past series: keep last 7 days before forecast start.
+    // If gap > 48h the data is too stale to display.
+    const trimPast = (arr) => {
         if (arr.length === 0) return [];
-        const lastActualTime = arr[arr.length - 1][0];
-        const gapHours = (forecastStart - lastActualTime) / 3600000;
-        if (gapHours > 48) return [];  // stale — don't show
+        const lastTime = arr[arr.length - 1][0];
+        const gapHours = (forecastStart - lastTime) / 3600000;
+        if (gapHours > 48) return [];
         const cutoff = forecastStart - 7 * 24 * 3600000;
         return arr.filter(d => d[0] >= cutoff && d[0] < forecastStart);
     };
 
-    // Compute generation actuals by summing component actuals
-    let genActualRaw = [];
-    if (onshoreActual.length > 0 && offshoreActual.length > 0 && solarActual.length > 0) {
-        const minLen = Math.min(onshoreActual.length, offshoreActual.length, solarActual.length);
-        for (let i = 0; i < minLen; i++) {
-            genActualRaw.push([onshoreActual[i][0], onshoreActual[i][1] + offshoreActual[i][1] + solarActual[i][1]]);
-        }
-    }
     const now = new Date();
     const nowAnnotation = {
         x: now.getTime(), borderColor: '#FF0000',
@@ -468,13 +454,18 @@ async function initNationalSummaryCharts() {
         const glColors = [];
         const glDash = [];
 
-        const loadActual7d = trimActuals(loadActual);
-        const genActual7d = trimActuals(genActualRaw);
+        // Use national-level actuals and fitted from the JSON (includes total generation, not just renewables)
+        const loadActual7d = trimPast(loadForecast.actuals);
+        const loadFitted7d = trimPast(loadForecast.fitted);
+        const genActual7d = trimPast(genForecast.actuals);
+        const genFitted7d = trimPast(genForecast.fitted);
 
         if (loadActual7d.length > 0)        { glSeries.push({ name: 'Load (actual)',          data: loadActual7d });            glColors.push('#EE0000'); glDash.push(0); }
-        if (loadForecast.data.length > 0)   { glSeries.push({ name: 'Load (forecast)',        data: toTS(loadForecast.data) }); glColors.push('#EE0000'); glDash.push(5); }
+        if (loadFitted7d.length > 0)        { glSeries.push({ name: 'Load (forecast)',        data: loadFitted7d.concat(toTS(loadForecast.data)) }); glColors.push('#EE0000'); glDash.push(5); }
+        else if (loadForecast.data.length > 0) { glSeries.push({ name: 'Load (forecast)',     data: toTS(loadForecast.data) }); glColors.push('#EE0000'); glDash.push(5); }
         if (genActual7d.length > 0)         { glSeries.push({ name: 'Generation (actual)',    data: genActual7d });             glColors.push('#00AA44'); glDash.push(0); }
-        if (genForecast.data.length > 0)    { glSeries.push({ name: 'Generation (forecast)',  data: toTS(genForecast.data) }); glColors.push('#00AA44'); glDash.push(5); }
+        if (genFitted7d.length > 0)         { glSeries.push({ name: 'Generation (forecast)',  data: genFitted7d.concat(toTS(genForecast.data)) }); glColors.push('#00AA44'); glDash.push(5); }
+        else if (genForecast.data.length > 0) { glSeries.push({ name: 'Generation (forecast)',data: toTS(genForecast.data) }); glColors.push('#00AA44'); glDash.push(5); }
 
         const glChart = new ApexCharts(genLoadContainer, {
             chart: { type: 'line', height: 220, toolbar: { show: false }, zoom: { enabled: true, type: 'x' } },

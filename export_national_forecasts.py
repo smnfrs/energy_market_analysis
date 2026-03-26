@@ -136,6 +136,47 @@ def load_best_forecast(target_dir: Path) -> dict:
     return result
 
 
+def load_best_result(target_dir: Path) -> dict | None:
+    """Load the best model's result CSV (past actuals + fitted).
+
+    Returns dict with keys: actual (Series), fitted (Series), or None if unavailable.
+    """
+    for json_name in ["best_model.json", "best_model_forecast.json"]:
+        json_path = target_dir / json_name
+        if json_path.exists():
+            with open(json_path) as f:
+                best_models = json.load(f)
+            break
+    else:
+        return None
+
+    if not best_models:
+        return None
+    target_name = list(best_models.keys())[0]
+    model_label = best_models[target_name]["model_label"]
+
+    if "ensemble" in model_label:
+        model_dir = convert_ensemble_string(model_label)
+    else:
+        model_dir = model_label
+
+    result_csv = target_dir / model_dir / "forecast" / "result.csv"
+    if not result_csv.exists():
+        return None
+
+    df = pd.read_csv(result_csv, index_col=0, parse_dates=True)
+
+    actual_col = f"{target_name}_actual"
+    fitted_col = f"{target_name}_fitted"
+
+    out = {}
+    if actual_col in df.columns:
+        out["actual"] = df[actual_col]
+    if fitted_col in df.columns:
+        out["fitted"] = df[fitted_col]
+    return out if out else None
+
+
 def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
     """Aggregate per-TSO forecasts to DE/LU national level.
 
@@ -148,6 +189,8 @@ def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
         forecasts = []
         ci_lowers = []
         ci_uppers = []
+        actuals = []
+        fitteds = []
         models_used = []
 
         for tso_dir_name in tso_dirs:
@@ -168,6 +211,14 @@ def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
                 logger.warning(f"Skipping {tso_dir_name}: {e}")
                 continue
 
+            # Also load past actuals + fitted from result.csv
+            result_data = load_best_result(target_dir)
+            if result_data:
+                if "actual" in result_data:
+                    actuals.append(result_data["actual"])
+                if "fitted" in result_data:
+                    fitteds.append(result_data["fitted"])
+
         if not forecasts:
             raise ValueError(f"No forecasts found for component '{component_name}'")
 
@@ -180,6 +231,12 @@ def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
             component_data[component_name]["ci_lower"] = pd.concat(ci_lowers, axis=1).sum(axis=1)
         if ci_uppers:
             component_data[component_name]["ci_upper"] = pd.concat(ci_uppers, axis=1).sum(axis=1)
+
+        # Sum past actuals and fitted across TSOs
+        if actuals:
+            component_data[component_name]["actual"] = pd.concat(actuals, axis=1).sum(axis=1)
+        if fitteds:
+            component_data[component_name]["fitted"] = pd.concat(fitteds, axis=1).sum(axis=1)
 
         logger.info(
             f"  {component_name}: {len(forecasts)} TSOs summed, "
@@ -204,6 +261,18 @@ def aggregate_delu(forecasts_base: Path) -> pd.DataFrame:
             component_data["gesamt"]["ci_upper"] = (
                 component_data["verbrauch"]["ci_upper"] + gld_data["ci_upper"]
             )
+
+        # Past actuals + fitted for gesamt = verbrauch + gen_load_diff
+        gld_result = load_best_result(gen_load_diff_dir)
+        if gld_result and "actual" in gld_result and "actual" in component_data["verbrauch"]:
+            component_data["gesamt"]["actual"] = (
+                component_data["verbrauch"]["actual"] + gld_result["actual"]
+            )
+        if gld_result and "fitted" in gld_result and "fitted" in component_data["verbrauch"]:
+            component_data["gesamt"]["fitted"] = (
+                component_data["verbrauch"]["fitted"] + gld_result["fitted"]
+            )
+
         logger.info(f"  gesamt: verbrauch + gen_load_diff_delu (model: {gld_data['model_label']})")
     else:
         logger.warning("gen_load_diff_delu not found — gesamt will be unavailable")
@@ -310,6 +379,18 @@ def export_json(component_data: dict, output_dir: Path) -> None:
             },
             "data": records,
         }
+
+        # Add past actuals and fitted as [[timestamp_ms, value], ...] arrays
+        def series_to_ts_array(s: pd.Series) -> list:
+            return [
+                [int(ts.timestamp() * 1000), round(float(val), 2)]
+                for ts, val in s.dropna().items()
+            ]
+
+        if "actual" in data:
+            json_data["actuals"] = series_to_ts_array(data["actual"])
+        if "fitted" in data:
+            json_data["fitted"] = series_to_ts_array(data["fitted"])
 
         fpath = output_dir / fname
         with open(fpath, "w") as f:
