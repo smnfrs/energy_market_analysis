@@ -2,6 +2,6 @@
     "solar_lu": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 22.418573864177482
+        "avg_rmse": 24.828172544457267
     }
 }
