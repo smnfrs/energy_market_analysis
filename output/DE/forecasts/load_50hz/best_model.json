@@ -1,7 +1,1 @@
-{
-    "load_50hz": {
-        "method": "trained",
-        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
-        "avg_rmse": 755.8963623046875
-    }
-}
+{}
