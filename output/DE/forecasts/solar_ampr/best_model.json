@@ -2,6 +2,6 @@
     "solar_ampr": {
         "method": "trained",
         "model_label": "XGBoost",
-        "avg_rmse": 3155.833984375
+        "avg_rmse": 2009.0835266113281
     }
 }
