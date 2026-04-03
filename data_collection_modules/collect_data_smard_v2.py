@@ -1,4 +1,4 @@
-"""Per-TSO SMARD data collector using the smard.api.proxy.bund.dev GET API.
+"""Per-TSO SMARD data collector using the www.smard.de GET API.
 
 Fetches per-TSO generation and load data and stores as a single parquet file.
 Supports incremental updates and saves after each column for crash resilience.
@@ -17,7 +17,7 @@ from data_collection_modules.parquet_operations import ParquetOperations
 from logger import get_logger
 logger = get_logger(__name__)
 
-BASE_URL = "https://smard.api.proxy.bund.dev/app/chart_data"
+BASE_URL = "https://www.smard.de/app/chart_data"
 
 # TSO region -> column suffix mapping (matches eu_locations.py conventions)
 TSO_SUFFIX = {
