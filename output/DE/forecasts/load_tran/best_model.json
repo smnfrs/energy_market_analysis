@@ -1,1 +1,7 @@
-{}
+{
+    "load_tran": {
+        "method": "trained",
+        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
+        "avg_rmse": 546.5066528320312
+    }
+}
