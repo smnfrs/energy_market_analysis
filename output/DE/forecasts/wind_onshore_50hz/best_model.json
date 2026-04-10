@@ -1,1 +1,7 @@
-{}
+{
+    "wind_onshore_50hz": {
+        "method": "trained",
+        "model_label": "XGBoost",
+        "avg_rmse": 2585.428955078125
+    }
+}

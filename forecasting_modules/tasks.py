@@ -1446,8 +1446,26 @@ class ForecastingTaskSingleTarget:
         best_models_train, best_models_forecast = analyze_model_performance(
             data=df, n_folds=task_['n_folds_best'], metric=task_['summary_metric']
         )
-        with open(outdir + "best_model.json", "w") as json_file:
-            json.dump(best_models_train, json_file, indent=4, cls=NumpyEncoder)
+
+        # Guard: never overwrite a non-empty best_model.json with an empty dict.
+        # If model selection produces nothing, log an error and keep the
+        # previous file so downstream pipelines don't cascade-fail.
+        best_model_path = outdir + "best_model.json"
+        prev_had_content = False
+        if os.path.isfile(best_model_path):
+            try:
+                with open(best_model_path) as existing_file:
+                    prev_had_content = bool(json.load(existing_file))
+            except (json.JSONDecodeError, OSError):
+                prev_had_content = False
+        if not best_models_train and prev_had_content:
+            logger.error(
+                f"analyze_model_performance returned empty best_models_train for {outdir}; "
+                f"refusing to overwrite existing non-empty {best_model_path}"
+            )
+        else:
+            with open(best_model_path, "w") as json_file:
+                json.dump(best_models_train, json_file, indent=4, cls=NumpyEncoder)
         with open(outdir + "best_model_forecast.json", "w") as json_file:
             json.dump(best_models_forecast, json_file, indent=4, cls=NumpyEncoder)
 

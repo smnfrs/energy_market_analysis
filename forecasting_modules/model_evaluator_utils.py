@@ -115,55 +115,39 @@ def compute_error_metrics_aggregate_over_cv_runs(
 
 def analyze_model_performance( data: pd.DataFrame, n_folds: int, metric: str )->tuple[dict, dict]:
 
-    # targets = list(data['target'].unique())
-
     # Validate inputs
     if metric not in ['mse', 'rmse', 'mae', 'mape']:
         raise ValueError(f"Invalid metric '{metric}'. Choose from 'mse', 'rmse', 'mae', 'mape'.")
 
-    targets = data['target'].unique()
-    horizons = []
-    for target in targets:
-        horizons_ = data.loc[data['target']==target]['horizon'].unique().tolist()
-        if horizons == []: horizons = horizons_
-        else:
-            if not horizons_ == horizons_:
-                raise ValueError("All horizons must have same number of horizons.")
+    data = data.copy()
+    data['horizon'] = pd.to_datetime(data['horizon'])
 
-    # select last n_folds
-    latest_timestamps = pd.Series(
-        [pd.Timestamp(d,tz='UTC') for d in horizons],
-    ).nlargest(n_folds).tolist()
+    # Select the latest n_folds horizons within each method independently.
+    # Trained horizons are frozen at training time while forecast horizons roll
+    # forward every run; using a single combined nlargest(n_folds) would drop
+    # all trained rows once the forecast window outruns the trained window,
+    # silently producing an empty best_models_train.
+    def _select_best_per_method(method: str) -> dict:
+        method_rows = data[data['method'] == method]
+        if method_rows.empty:
+            return {}
+        latest = pd.Series(method_rows['horizon'].unique()).nlargest(n_folds).tolist()
+        method_rows = method_rows[method_rows['horizon'].isin(latest)]
+        ave_metric = method_rows.groupby(
+            by=['target', 'model_label'], as_index=False
+        )[metric].mean()
+        if ave_metric.empty:
+            return {}
+        best = ave_metric.loc[ave_metric.groupby("target")[metric].idxmin()]
+        return {
+            row["target"]: {
+                "method": method,
+                "model_label": row["model_label"],
+                "avg_rmse": row[metric],
+            } for _, row in best.iterrows()
+        }
 
-    data['horizon'] = pd.to_datetime(data["horizon"])
-    data = data[data["horizon"].isin(latest_timestamps)]
-    ave_metric = data.groupby(by=['target', 'method', 'model_label'])[metric].mean().reset_index()
-    trained_metrics = ave_metric[ave_metric['method'] == 'trained'].drop(columns=['method'],inplace=False)
-    forecast_metrics = ave_metric[ave_metric['method'] == 'forecast'].drop(columns=['method'],inplace=False)
-
-    # Finding the best model for each target based on the lowest RMSE
-    best_models_train = trained_metrics.loc[trained_metrics.groupby("target")[metric].idxmin()]
-    # Creating the JSON structure
-    json_output_train = {
-        row["target"]: {
-            "method": "trained",
-            "model_label": row["model_label"],
-            "avg_rmse": row[metric],
-        } for _, row in best_models_train.iterrows()
-    }
-
-    # Finding the best model for each target based on the lowest RMSE
-    best_models_forecast = forecast_metrics.loc[forecast_metrics.groupby("target")[metric].idxmin()]
-    # Creating the JSON structure
-    json_output_forecast = {
-        row["target"]: {
-            "method": "forecast",
-            "model_label": row["model_label"],
-            "avg_rmse": row[metric],
-        } for _, row in best_models_forecast.iterrows()
-    }
-
-    return json_output_train, json_output_forecast
+    return _select_best_per_method('trained'), _select_best_per_method('forecast')
 
 def write_summary(summary: dict):
     # Collect datagrams

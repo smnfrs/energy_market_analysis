@@ -10,6 +10,9 @@ on:
       
 jobs:
   update_forecasts:
+    # Gate: only run if the upstream Update Forecasts run succeeded (or on manual dispatch).
+    # Prevents silent redeployment of stale data when forecasting is broken.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

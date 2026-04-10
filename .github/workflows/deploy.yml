@@ -9,6 +9,9 @@ on:
 
 jobs:
   deploy:
+    # Gate: only run if the upstream Publish Forecasts run succeeded (or on manual dispatch).
+    # Prevents silent redeployment of stale data when the upstream pipeline is broken.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
