@@ -1,7 +1,7 @@
 {
     "load_50hz": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 1057.7247649105705
+        "model_label": "LightGBM",
+        "avg_rmse": 1070.5222147700053
     }
 }
