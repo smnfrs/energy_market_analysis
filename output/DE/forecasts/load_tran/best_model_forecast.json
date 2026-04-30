@@ -2,6 +2,6 @@
     "load_tran": {
         "method": "forecast",
         "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 642.1469264903662
+        "avg_rmse": 646.2943165654777
     }
 }
