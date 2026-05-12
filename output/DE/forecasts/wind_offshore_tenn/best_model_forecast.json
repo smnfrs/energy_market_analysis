@@ -1,7 +1,7 @@
 {
     "wind_offshore_tenn": {
         "method": "forecast",
-        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
-        "avg_rmse": 588.3309224446615
+        "model_label": "XGBoost",
+        "avg_rmse": 602.5650024414062
     }
 }
