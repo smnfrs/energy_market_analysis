@@ -372,7 +372,7 @@ def export_json(component_data: dict, output_dir: Path) -> None:
                 "tso_region": "DE_LU",
                 "model_label": "national_aggregate",
                 "forecast_datetime": now_str,
-                "source": "https://smnfrse.github.io/energy_market_analysis/",
+                "source": "https://smnfrs.github.io/energy_market_analysis/",
                 "forecast_horizon_hours": len(fc),
                 "units": "MW",
                 "notes": "National DE/LU aggregate. CIs summed directly (conservative, assumes correlated errors).",

@@ -1,5 +1,5 @@
 // GLOBAL DEFINITIONS
-let baseUrl = "https://raw.githubusercontent.com/smnfrse/energy_market_analysis/main/deploy/";
+let baseUrl = "https://raw.githubusercontent.com/smnfrs/energy_market_analysis/main/deploy/";
 
 // ===================  LANGUAGE ========================= */
 

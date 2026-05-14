@@ -10,7 +10,7 @@
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
         "forecast_datetime": "2026-05-13T11:56:33Z",
-        "source": "https://smnfrse.github.io/energy_market_analysis/",
+        "source": "https://smnfrs.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",
         "notes": "National DE/LU aggregate. CIs summed directly (conservative, assumes correlated errors)."

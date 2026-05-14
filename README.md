@@ -1,8 +1,8 @@
 # Predictive Analytics for the German Energy Market
 
-**[Live Dashboard](https://smnfrse.github.io/energy_market_analysis/)** -- updated daily with 7-day forecasts for generation, load, and carbon intensity.
+**[Live Dashboard](https://smnfrs.github.io/energy_market_analysis/)** -- updated daily with 7-day forecasts for generation, load, and carbon intensity.
 
-[![Dashboard preview](docs/dashboard_preview.png)](https://smnfrse.github.io/energy_market_analysis/)
+[![Dashboard preview](docs/dashboard_preview.png)](https://smnfrs.github.io/energy_market_analysis/)
 
 > **This project is a fork of [vsevolodnedora/energy_market_analysis](https://github.com/vsevolodnedora/energy_market_analysis) by [Vsevolod Nedora](https://github.com/vsevolodnedora).**
 >
