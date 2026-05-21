@@ -2,6 +2,6 @@
     "wind_offshore_50hz": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 212.64660969183203
+        "avg_rmse": 210.795166763065
     }
 }
