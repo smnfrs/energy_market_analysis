@@ -9,7 +9,7 @@
         "target_name": "load",
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
-        "forecast_datetime": "2026-05-24T11:34:54Z",
+        "forecast_datetime": "2026-05-25T11:24:44Z",
         "source": "https://smnfrs.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",

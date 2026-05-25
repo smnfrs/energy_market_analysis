@@ -9,7 +9,7 @@
         "target_name": "generation",
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
-        "forecast_datetime": "2026-05-24T11:34:54Z",
+        "forecast_datetime": "2026-05-25T11:24:44Z",
         "source": "https://smnfrs.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",
@@ -866,9 +866,9 @@
         {
             "index": 121,
             "datetime": "2026-05-29T01:00:00Z",
-            "forecast": 31358.0626699898,
-            "ci_lower": 27621.77252424947,
-            "ci_upper": 35094.35342573014
+            "forecast": 31444.228064653194,
+            "ci_lower": 27707.937918912867,
+            "ci_upper": 35180.51882039354
         },
         {
             "index": 122,
