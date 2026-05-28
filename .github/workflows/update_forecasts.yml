@@ -42,6 +42,15 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add ./output/*
-          git commit -m "Update forecasts"
-          git pull --rebase origin main
-          git push
+          git commit -m "Update forecasts" || echo "No changes to commit"
+          n=0
+          until [ $n -ge 3 ]; do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+            n=$((n+1))
+            echo "Push attempt $n failed; retrying in 30s..."
+            sleep 30
+          done
+          echo "All push attempts failed"
+          exit 1

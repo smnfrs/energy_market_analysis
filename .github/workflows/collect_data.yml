@@ -36,15 +36,19 @@ jobs:
         run: pipenv run python update_database.py DE update_smard_v2 hourly
 
       - name: Update OpenMeteo Offshore Windfarms Data
+        continue-on-error: true
         run: pipenv run python update_database.py DE update_openmeteo_windfarms_offshore hourly
 
       - name: Update OpenMeteo Onshore Windfarms Data
+        continue-on-error: true
         run: pipenv run python update_database.py DE update_openmeteo_windfarms_onshore hourly
 
       - name: Update OpenMeteo Solarfarms Data
+        continue-on-error: true
         run: pipenv run python update_database.py DE update_openmeteo_solarfarms hourly
 
       - name: Update OpenMeteo Cities Data
+        continue-on-error: true
         run: pipenv run python update_database.py DE update_openmeteo_cities hourly
 
       - name: Commit Updated Data
@@ -52,6 +56,15 @@ jobs:
           git config --global user.name 'Collector'
           git config --global user.email 'noreply@nedora.digital'
           git add database/
-          git commit -m "Add data for today"
-          git pull -r
-          git push
+          git commit -m "Add data for today" || echo "No changes to commit"
+          n=0
+          until [ $n -ge 3 ]; do
+            if git pull --rebase origin main && git push origin main; then
+              exit 0
+            fi
+            n=$((n+1))
+            echo "Push attempt $n failed; retrying in 30s..."
+            sleep 30
+          done
+          echo "All push attempts failed"
+          exit 1
