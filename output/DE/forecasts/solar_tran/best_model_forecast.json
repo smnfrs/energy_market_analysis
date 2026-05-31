@@ -2,6 +2,6 @@
     "solar_tran": {
         "method": "forecast",
         "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 490.6162585403625
+        "avg_rmse": 500.99265857951696
     }
 }
