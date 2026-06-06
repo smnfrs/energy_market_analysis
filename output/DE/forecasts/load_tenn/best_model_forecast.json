@@ -2,6 +2,6 @@
     "load_tenn": {
         "method": "forecast",
         "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
-        "avg_rmse": 2104.447998046875
+        "avg_rmse": 1944.0194905598958
     }
 }
