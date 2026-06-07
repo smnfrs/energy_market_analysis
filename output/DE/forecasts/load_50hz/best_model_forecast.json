@@ -2,6 +2,6 @@
     "load_50hz": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 726.3659353056478
+        "avg_rmse": 740.617906756167
     }
 }
