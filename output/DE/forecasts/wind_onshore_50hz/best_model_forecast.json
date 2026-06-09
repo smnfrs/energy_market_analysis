@@ -2,6 +2,6 @@
     "wind_onshore_50hz": {
         "method": "forecast",
         "model_label": "XGBoost",
-        "avg_rmse": 685.1463216145834
+        "avg_rmse": 671.827392578125
     }
 }
