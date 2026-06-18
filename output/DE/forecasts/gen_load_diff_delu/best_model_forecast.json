@@ -1,7 +1,7 @@
 {
     "gen_load_diff_delu": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 3799.0869554654255
+        "model_label": "LightGBM",
+        "avg_rmse": 3905.8117890431254
     }
 }
