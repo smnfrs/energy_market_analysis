@@ -2,6 +2,6 @@
     "gen_load_diff_delu": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 3905.23097999741
+        "avg_rmse": 3939.508482045166
     }
 }
