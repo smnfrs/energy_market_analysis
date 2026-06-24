@@ -2,6 +2,6 @@
     "load_lu": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 26.837519160926828
+        "avg_rmse": 29.723882411533406
     }
 }
