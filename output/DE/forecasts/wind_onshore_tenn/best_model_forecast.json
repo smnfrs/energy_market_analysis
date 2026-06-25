@@ -1,7 +1,7 @@
 {
     "wind_onshore_tenn": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 1457.0008181186995
+        "model_label": "LightGBM",
+        "avg_rmse": 1416.150479723132
     }
 }
