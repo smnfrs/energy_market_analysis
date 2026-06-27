@@ -1,7 +1,7 @@
 {
     "wind_onshore_lu": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 22.32915208275158
+        "model_label": "LightGBM",
+        "avg_rmse": 22.52531794724693
     }
 }

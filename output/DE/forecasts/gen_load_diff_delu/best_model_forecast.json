@@ -2,6 +2,6 @@
     "gen_load_diff_delu": {
         "method": "forecast",
         "model_label": "XGBoost",
-        "avg_rmse": 4115.835856119792
+        "avg_rmse": 4222.346354166667
     }
 }
