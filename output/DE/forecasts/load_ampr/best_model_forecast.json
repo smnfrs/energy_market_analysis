@@ -1,7 +1,7 @@
 {
     "load_ampr": {
         "method": "forecast",
-        "model_label": "LightGBM",
-        "avg_rmse": 1265.459133469885
+        "model_label": "XGBoost",
+        "avg_rmse": 1278.0437622070312
     }
 }
