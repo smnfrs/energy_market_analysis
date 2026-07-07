@@ -1,7 +1,7 @@
 {
     "solar_ampr": {
         "method": "forecast",
-        "model_label": "XGBoost",
-        "avg_rmse": 912.0291137695312
+        "model_label": "LightGBM",
+        "avg_rmse": 851.5028037452012
     }
 }
