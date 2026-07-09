@@ -2,6 +2,6 @@
     "load_tenn": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 1218.4797143993087
+        "avg_rmse": 1157.7444024390597
     }
 }
