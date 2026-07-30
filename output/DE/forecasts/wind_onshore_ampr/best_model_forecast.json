@@ -2,6 +2,6 @@
     "wind_onshore_ampr": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 557.3597885370694
+        "avg_rmse": 564.0337915561965
     }
 }
