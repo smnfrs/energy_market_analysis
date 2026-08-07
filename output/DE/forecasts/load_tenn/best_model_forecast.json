@@ -2,6 +2,6 @@
     "load_tenn": {
         "method": "forecast",
         "model_label": "XGBoost",
-        "avg_rmse": 790.2638549804688
+        "avg_rmse": 761.7486165364584
     }
 }
