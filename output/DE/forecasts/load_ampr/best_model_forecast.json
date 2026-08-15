@@ -2,6 +2,6 @@
     "load_ampr": {
         "method": "forecast",
         "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 1505.5249390863676
+        "avg_rmse": 1751.6179880713055
     }
 }
