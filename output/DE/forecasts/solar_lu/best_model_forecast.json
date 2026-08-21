@@ -1,7 +1,7 @@
 {
     "solar_lu": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 32.99584068830809
+        "model_label": "XGBoost",
+        "avg_rmse": 32.12889862060547
     }
 }
