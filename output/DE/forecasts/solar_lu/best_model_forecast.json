@@ -2,6 +2,6 @@
     "solar_lu": {
         "method": "forecast",
         "model_label": "XGBoost",
-        "avg_rmse": 32.12889862060547
+        "avg_rmse": 32.22095934549967
     }
 }
