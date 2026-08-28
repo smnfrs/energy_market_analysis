@@ -2,6 +2,6 @@
     "solar_50hz": {
         "method": "forecast",
         "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 826.4168238934717
+        "avg_rmse": 818.9079456951213
     }
 }
