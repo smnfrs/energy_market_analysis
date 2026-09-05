@@ -2,6 +2,6 @@
     "solar_tran": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 484.67862162269495
+        "avg_rmse": 483.6605101214377
     }
 }
