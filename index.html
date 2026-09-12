@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title data-i18n="title"></title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts/dist/apexcharts.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/showdown/dist/showdown.min.js"></script>
+    <script src="https://unpkg.com/i18next/i18next.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body class="dark-mode">
+
+<header class="header-container">
+    <div class="header-left">
+        <h1 class="header-title" data-i18n="title"></h1>
+        <p class="header-subtitle" data-i18n="subtitle"></p>
+        <p class="header-description" data-i18n="description"></p>
+
+        <div class="header-updates">
+            <strong class="update-label" data-i18n="updated-daily-label"></strong>
+            <span class="update-description" data-i18n="updated-daily-description"></span>
+        </div>
+    </div>
+
+    <div class="header-right">
+        <button id="dark-mode-toggle" class="toggle-button" onclick="toggleDarkMode()">
+            🌙 Dark Mode
+        </button>
+        <button id="language-toggle" class="toggle-button" onclick="toggleLanguage()">
+            🌍 DE
+        </button>
+    </div>
+</header>
+
+
+<div class="subpages-container">
+
+    <!-- ========== NATIONAL SUMMARY (always visible) ========== -->
+    <div id="national-summary-section" class="subpage active">
+        <h2 class="section-heading" data-i18n="national-heading">Generation and Load Forecasts for the Germany-Luxembourg Bidding Area</h2>
+        <h3 class="chart-subheading" data-i18n="national-genload-heading">Total Generation and Load</h3>
+        <div id="national-genload-chart" style="min-height: 220px;"></div>
+        <h3 class="chart-subheading" data-i18n="national-mix-heading">Forecast Generation Mix</h3>
+        <div id="national-mix-chart" style="min-height: 320px;"></div>
+        <div id="national-summary-error" class="error-message"></div>
+    </div>
+
+    <!-- ========== PER-TSO FORECASTS ========== -->
+    <div id="individual-forecasts" class="subpage active">
+        <section class="forecast-intro">
+            <p data-i18n="forecast-intro"></p>
+        </section>
+    </div>
+
+
+</div>
+
+<footer style="text-align: center; padding: 20px; font-size: 12px; color: gray; border-top: 1px solid #444; margin-top: 30px;">
+    Fork of <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">vsevolodnedora/energy_market_analysis</a>
+    by <a href="https://github.com/vsevolodnedora" target="_blank">Vsevolod Nedora</a>.
+    All original domain knowledge, feature engineering, and pipeline design from the upstream project.
+</footer>
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
