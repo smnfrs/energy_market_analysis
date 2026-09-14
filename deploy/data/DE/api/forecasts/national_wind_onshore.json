@@ -9,7 +9,7 @@
         "target_name": "wind_onshore",
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
-        "forecast_datetime": "2026-09-13T14:09:54Z",
+        "forecast_datetime": "2026-09-14T19:46:28Z",
         "source": "https://smnfrs.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",
