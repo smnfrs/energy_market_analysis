@@ -2,6 +2,6 @@
     "wind_offshore_tenn": {
         "method": "forecast",
         "model_label": "ElasticNet",
-        "avg_rmse": 978.5367528993794
+        "avg_rmse": 980.7614407761531
     }
 }
