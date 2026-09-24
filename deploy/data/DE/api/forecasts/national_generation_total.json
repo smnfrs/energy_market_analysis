@@ -9,7 +9,7 @@
         "target_name": "generation",
         "tso_region": "DE_LU",
         "model_label": "national_aggregate",
-        "forecast_datetime": "2026-09-23T14:25:12Z",
+        "forecast_datetime": "2026-09-24T12:41:50Z",
         "source": "https://smnfrs.github.io/energy_market_analysis/",
         "forecast_horizon_hours": 168,
         "units": "MW",
