@@ -1,0 +1,72 @@
+<div id="api-content">
+    <p>
+        Forecast data can be accessed as JSON files via a static API hosted on GitHub Pages.
+        Each file contains <strong>'metadata'</strong> (forecast context) and <strong>'data'</strong> (time-series values).
+        National aggregates and per-TSO breakdowns are available. Files are ~40-220 KB each.
+    </p>
+    <p>Example: fetch and parse a forecast file with Python:</p>
+</div>
+
+<pre><code class="language-python">
+import requests, pandas as pd
+base_url = (
+    "https://smnfrs.github.io/"
+    "energy_market_analysis/"
+    "data/DE/api/forecasts/"
+)
+file_name = "national_load.json"
+response = requests.get(f"{base_url}{file_name}")
+response.raise_for_status()
+json_data = response.json()
+metadata = json_data['metadata']
+df = pd.DataFrame.from_records(json_data['data'], index=['index'])
+df.set_index('datetime', inplace=True)
+df.index = pd.to_datetime(df.index, utc=True)
+print(df.head())
+</code></pre>
+
+<details>
+    <summary>Available Files &mdash; National Aggregates (DE/LU)</summary>
+    <ul>
+        <li><code><a href="./data/DE/api/forecasts/national_load.json">national_load.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_wind_onshore.json">national_wind_onshore.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_wind_offshore.json">national_wind_offshore.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_solar.json">national_solar.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_generation_total.json">national_generation_total.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_wind_solar_combined.json">national_wind_solar_combined.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_sonstige.json">national_sonstige.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/national_residual_load.json">national_residual_load.json</a></code></li>
+    </ul>
+</details>
+
+<details>
+    <summary>Available Files &mdash; Per-TSO Forecasts</summary>
+    <ul>
+        <li><code><a href="./data/DE/api/forecasts/load_total.json">load_total.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/load_50hertz.json">load_50hertz.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/load_amprion.json">load_amprion.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/load_tennet.json">load_tennet.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/load_transnetbw.json">load_transnetbw.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/solar_total.json">solar_total.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/solar_50hertz.json">solar_50hertz.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/solar_amprion.json">solar_amprion.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/solar_tennet.json">solar_tennet.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/solar_transnetbw.json">solar_transnetbw.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_offshore_total.json">wind_offshore_total.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_offshore_50hertz.json">wind_offshore_50hertz.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_offshore_tennet.json">wind_offshore_tennet.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_onshore_total.json">wind_onshore_total.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_onshore_50hertz.json">wind_onshore_50hertz.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_onshore_amprion.json">wind_onshore_amprion.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_onshore_tennet.json">wind_onshore_tennet.json</a></code></li>
+        <li><code><a href="./data/DE/api/forecasts/wind_onshore_transnetbw.json">wind_onshore_transnetbw.json</a></code></li>
+    </ul>
+</details>
+
+<details>
+    <summary>CSV Download</summary>
+    <p>
+        All national forecasts in one file with SMARD-compatible column names:
+        <code><a href="./data/DE/downloads/national_forecasts.csv">national_forecasts.csv</a></code>
+    </p>
+</details>
