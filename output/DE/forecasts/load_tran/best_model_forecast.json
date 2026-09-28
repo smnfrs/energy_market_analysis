@@ -2,6 +2,6 @@
     "load_tran": {
         "method": "forecast",
         "model_label": "LightGBM",
-        "avg_rmse": 225.5792714804693
+        "avg_rmse": 222.98260148883574
     }
 }
