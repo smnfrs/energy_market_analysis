@@ -1,7 +1,7 @@
 {
     "solar_tenn": {
         "method": "forecast",
-        "model_label": "LightGBM",
-        "avg_rmse": 1421.6641227611592
+        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
+        "avg_rmse": 1454.5503336588542
     }
 }
