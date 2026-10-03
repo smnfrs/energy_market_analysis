@@ -1,7 +1,7 @@
 {
     "solar_ampr": {
         "method": "forecast",
-        "model_label": "ensemble[LightGBM](LightGBM,ElasticNet)",
-        "avg_rmse": 1211.412898721345
+        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
+        "avg_rmse": 1203.36328125
     }
 }
