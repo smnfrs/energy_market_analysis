@@ -1,0 +1,43 @@
+<section id="project-details" style="line-height: 1.4; font-size: 14px;">
+    <p>
+        Wochenprognosen f&uuml;r Stromerzeugung und -verbrauch in der deutsch-luxemburgischen (DE/LU) Gebotszone,
+        erstellt aus <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a>-Wetterdaten
+        mit Gradient-Boosted-Tree-Modellen (LightGBM, XGBoost) und physikalisch informierten Features.
+    </p>
+    <p>
+        <strong>Warum:</strong>
+        SMARD ver&ouml;ffentlicht offizielle &Uuml;NB-Prognosen um ~18:00 MEZ &mdash; sechs Stunden <em>nach</em> der
+        Day-Ahead-Auktion um 12:00 MEZ. Diese Prognosen nutzen dieselben Wetterdaten, sind aber Tage im Voraus
+        verf&uuml;gbar und erm&ouml;glichen fr&uuml;here Preismodellierung und Handelsentscheidungen.
+    </p>
+
+    <h3 style="margin: 10px 0;">Was prognostiziert wird</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li><strong>Wind Offshore</strong> &mdash; 50Hertz, TenneT</li>
+        <li><strong>Wind Onshore</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>Solar</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>Last</strong> &mdash; 50Hertz, TenneT, Amprion, TransnetBW</li>
+        <li><strong>Nationale Aggregate</strong> &mdash; DE/LU-Summen inkl. Luxemburg (Creos)</li>
+    </ul>
+
+    <h3 style="margin: 10px 0;">Datenquellen</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li><strong>Wetter:</strong> <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> &mdash; 30+ kuratierte Standorte nahe Erzeugungsanlagen</li>
+        <li><strong>Ist-Werte:</strong> <a href="https://www.smard.de/home" target="_blank">SMARD v2</a> &mdash; Erzeugung und Last je &Uuml;NB</li>
+    </ul>
+
+    <h3 style="margin: 10px 0;">Funktionsweise</h3>
+    <ul style="margin: 5px 0 10px 20px; padding: 0;">
+        <li>Physikalisch informierte Features: Windleistungsdichte, Luftdichte, Windscherung, Sonnenwinkel, Heiz-/K&uuml;hlgradtage</li>
+        <li>Mehrstufige rekursive st&uuml;ndliche Prognose &uuml;ber 168 Stunden (7 Tage)</li>
+        <li>MAPIE konforme Vorhersageintervalle</li>
+        <li>Hyperparameter-Optimierung mit Optuna und rollierender Kreuzvalidierung</li>
+        <li>Vollst&auml;ndig automatisiert: GitHub Actions sammelt Daten, f&uuml;hrt Inferenz durch und ver&ouml;ffentlicht t&auml;glich</li>
+    </ul>
+
+    <p><strong>Quellcode:</strong>
+        <a href="https://github.com/smnfrs/energy_market_analysis" target="_blank">GitHub</a>
+        &mdash; Fork von
+        <a href="https://github.com/vsevolodnedora/energy_market_analysis" target="_blank">vsevolodnedora/energy_market_analysis</a>
+    </p>
+</section>
