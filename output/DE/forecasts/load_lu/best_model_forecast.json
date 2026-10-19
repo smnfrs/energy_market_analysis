@@ -1,7 +1,7 @@
 {
     "load_lu": {
         "method": "forecast",
-        "model_label": "ensemble[XGBoost](XGBoost,ElasticNet)",
-        "avg_rmse": 32.063795725504555
+        "model_label": "LightGBM",
+        "avg_rmse": 26.905747244391517
     }
 }
